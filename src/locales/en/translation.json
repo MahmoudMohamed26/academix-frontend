@@ -1,0 +1,30 @@
+{
+  "welcome": "Welcome",
+  "language": "Language",
+  "genericError": "Something went wrong. Please try again later.",
+  "login": {
+    "title": "Welcome to",
+    "description": "Sign in to continue your learning journey",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Login",
+    "forgotPassword": "Forgot Password?",
+    "createAccount": "Create a New Account",
+    "rememberMe": "Remember Me",
+    "orcontinueWith": "OR CONTINUE WITH",
+    "google": "Google",
+    "linkedin": "LinkedIn",
+    "github": "GitHub",
+    "donthaveAccount": "Don't have an account?",
+    "placeholder-email": "Enter your email",
+    "placeholder-password": "Enter your password",
+    "success": "Logged in successfully.",
+    "errors": {
+      "emailRequired": "Email is required.",
+      "passwordRequired": "Password is required.",
+      "emailInvalid": "Please enter a valid email",
+      "passwordMinLength": "Password must be at least 6 characters.",
+      "invalidCredentials": "Invalid email or password."
+    }
+  }
+}

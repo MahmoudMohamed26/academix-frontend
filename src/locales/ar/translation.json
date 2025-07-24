@@ -1,0 +1,30 @@
+{
+  "welcome": "مرحبًا",
+  "language": "اللغة",
+  "genericError": "حدث خطأ ما. يرجى المحاولة مرة أخرى لاحقًا.",
+  "login": {
+    "title": "مرحبا بك في",
+    "description": "قم بتسجيل الدخول لمواصلة رحلة التعلم الخاصة بك",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "submit": "تسجيل الدخول",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "createAccount": "إنشاء حساب جديد",
+    "rememberMe": "تذكرني",
+    "orcontinueWith": "أو سجل بإستخدام",
+    "google": "جوجل",
+    "linkedin": "لينكد إن",
+    "github": "جيت هاب",
+    "donthaveAccount": "ليس لديك حساب؟",
+    "placeholder-email": "أدخل بريدك الإلكتروني",
+    "placeholder-password": "أدخل كلمة المرور",
+    "success": "تم تسجيل الدخول بنجاح.",
+    "errors": {
+      "emailRequired": "البريد الإلكتروني مطلوب.",
+      "passwordRequired": "كلمة المرور مطلوبة.",
+      "emailInvalid": "البريد الإلكتروني غير صالح.",
+      "passwordMinLength": "يجب أن تكون كلمة المرور على الأقل 6 أحرف.",
+      "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة."
+    }
+  }
+}
