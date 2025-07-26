@@ -141,7 +141,7 @@ export default function Login() {
             <div className="flex gap-2 flex-wrap">
               <Link
                 className="flex items-center gap-4 px-4 justify-center py-2 w-[calc(50%-4px)] font-semibold text-sm border rounded-md text-gray-700 hover:bg-gray-100 transition duration-300 mb-2"
-                to="/auth/google"
+                to={`${import.meta.env.VITE_baseURL}/auth/google`}
               >
                 <svg
                   viewBox="0 0 512 512"
@@ -159,7 +159,7 @@ export default function Login() {
 
               <Link
                 className="flex items-center gap-4 px-4 justify-center py-2 w-[calc(50%-4px)] font-semibold text-sm border rounded-md text-gray-700 hover:bg-gray-100 transition duration-300 mb-2"
-                to="/auth/github"
+                to={`${import.meta.env.VITE_baseURL}/auth/github`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -178,7 +178,7 @@ export default function Login() {
 
               <Link
                 className="flex items-center gap-4 px-4 py-2 w-full justify-center font-semibold text-sm border rounded-md text-gray-700 hover:bg-gray-100 transition duration-300 mb-2"
-                to="/auth/linkedin"
+                to={`${import.meta.env.VITE_baseURL}/auth/linkedin`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
