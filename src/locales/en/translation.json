@@ -3,7 +3,7 @@
   "language": "Language",
   "genericError": "Something went wrong. Please try again later.",
   "login": {
-    "title": "Welcome to",
+    "title": "Login to",
     "description": "Sign in to continue your learning journey",
     "email": "Email",
     "password": "Password",
@@ -25,6 +25,39 @@
       "emailInvalid": "Please enter a valid email",
       "passwordMinLength": "Password must be at least 6 characters.",
       "invalidCredentials": "Invalid email or password."
+    }
+  },
+  "register": {
+    "title": "Register to",
+    "description": "Start your learning journey by creating your account",
+    "name": "Full Name",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "submit": "Sign Up",
+    "alreadyHaveAccount": "Already have an account?",
+    "loginNow": "Login Now",
+    "orcontinueWith": "OR CONTINUE WITH",
+    "google": "Google",
+    "linkedin": "LinkedIn",
+    "github": "GitHub",
+    "placeholder-name": "Enter your full name",
+    "placeholder-email": "Enter your email",
+    "placeholder-password": "Enter your password",
+    "placeholder-confirmPassword": "Re-enter your password",
+    "success": "Account created successfully.",
+    "errors": {
+      "nameRequired": "Full name is required.",
+      "emailRequired": "Email is required.",
+      "passwordRequired": "Password is required.",
+      "confirmPasswordRequired": "Confirmation password is required.",
+      "emailInvalid": "Please enter a valid email.",
+      "passwordMinLength": "Password must be at least 6 characters.",
+      "passwordsNotMatch": "Passwords do not match.",
+      "emailExists": "This email is already in use.",
+      "nameMinLength": "Name must be at least 8 characters.",
+      "nameMaxLength": "Name must not exceed 30 characters.",
+      "passwordStrong": "Password must be at least 8 characters long and include an uppercase letter, a number, and a special character."
     }
   }
 }

@@ -4,56 +4,71 @@ import * as Yup from "yup"
 import { useFormik } from "formik"
 import Input from "./Components/Input"
 import bgImg from "../assets/loginImg.jpeg"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Link, useNavigate } from "react-router"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import axios, { isAxiosError } from "axios"
 import BtnLoad from "./Components/BtnLoad"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Label } from "@/components/ui/label"
 import Language from "./Components/Language"
 
-export default function Login() {
+export default function Register() {
   const [load, setLoad] = useState<boolean>(false);
+  const nav = useNavigate();
+  const [usedEmail, setUsedEmail] = useState<boolean>(false);
   const { i18n, t } = useTranslation()
-  const nav = useNavigate()
   const validationSchema = Yup.object({
+    name: Yup.string()
+    .required(t("register.errors.nameRequired"))
+    .min(8, t("register.errors.nameMinLength"))
+    .max(30, t("register.errors.nameMaxLength")),
     email: Yup.string()
     .required(t("register.errors.emailRequired"))
     .matches(
       /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
       t("register.errors.emailInvalid")
     ),
-    password: Yup.string().required(t("login.errors.passwordRequired")),
+    password: Yup.string()
+    .required(t("register.errors.passwordRequired"))
+    .matches(
+      /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>]).{8,}$/,
+      t("register.errors.passwordStrong")
+    ),
+    confirmPassword: Yup.string()
+    .required(t("register.errors.confirmPasswordRequired"))
+    .oneOf([Yup.ref("password")], t("register.errors.passwordsNotMatch"))
   })
   const form = useFormik({
     initialValues: {
+      name: "",
+      confirmPassword: "",
       email: "",
       password: "",
       remember: false,
     },
     validationSchema,
     onSubmit: async () => {
-      await Login()
+      await register()
+      console.log(form.values);
     },
   })
 
-  async function Login() {
+  async function register() {
     try {
       setLoad(true)
-      await axios.post(`/auth/login`, form.values)
+      await axios.post(`/auth/register`, form.values)
       setLoad(false)
-      toast.success(t("login.success"))
+      setUsedEmail(false)
+      toast.success(t("register.success"))
       nav("/" , { replace: true })
     } catch (err) {
       setLoad(false)
-      form.setFieldValue("password", "")
-      if (isAxiosError(err)) {
-        if (err.response?.status === 422) {
-          toast.error(t("login.errors.invalidCredentials"))
-        } else {
-          toast.error(t("genericError"))
+      if(isAxiosError(err)){
+        if(err.response?.data.message === "This email is already in use"){
+          setUsedEmail(true)
+          toast.error(t("register.errors.emailExists"))
         }
       }
     }
@@ -65,33 +80,56 @@ export default function Login() {
 
   return (
     <div className="bg-[var(--main-bg)]">
-      <div className=" min-h-screen flex items-center justify-center gap-10 lg:justify-between">
+      <div className=" min-h-screen flex justify-center gap-10 lg:justify-between">
         <div className="flex flex-col items-center grow md:ms-10">
           <Logo w={100} h={100} />
           <div className="bg-white rounded-md w-[400px] duration-300 md:w-[500px] py-4 px-4 shadow-xl">
             <h1 className="text-3xl font-semibold text-gray-900 text-center">
-              {t("login.title")}{" "}
+              {t("register.title")}{" "}
               <span className="text-[var(--main-color)]">Academix</span>
             </h1>
             <p className="text-gray-600 text-sm mt-2 text-center">
-              {t("login.description")}
+              {t("register.description")}
             </p>
             <form className="mt-4" onSubmit={form.handleSubmit}>
               <div className="mb-4">
                 <Input
                   formik={form as any}
-                  placeholder={t("login.placeholder-email")}
-                  label={t("login.email")}
+                  placeholder={t("register.placeholder-name")}
+                  label={t("register.name")}
+                  name="name"
+                />
+              </div>
+              <div className="mb-4">
+                <Input
+                  formik={form as any}
+                  placeholder={t("register.placeholder-email")}
+                  label={t("register.email")}
                   name="email"
+                  emailExist={usedEmail}
+                />
+                {usedEmail && (
+                  <p className="text-xs text-red-500">
+                    {t("register.errors.emailExists")}
+                  </p>
+                )}
+              </div>
+              <div className="mb-4">
+                <Input
+                  formik={form as any}
+                  password={true}
+                  placeholder={t("register.placeholder-password")}
+                  label={t("register.password")}
+                  name="password"
                 />
               </div>
               <div className="mb-4">
                 <Input
                   formik={form as any}
                   password={true}
-                  placeholder={t("login.placeholder-password")}
-                  label={t("login.password")}
-                  name="password"
+                  placeholder={t("register.placeholder-confirmPassword")}
+                  label={t("register.confirmPassword")}
+                  name="confirmPassword"
                 />
               </div>
               <div className="flex items-center mb-4 justify-between">
@@ -109,21 +147,13 @@ export default function Login() {
                     {t("login.rememberMe")}
                   </Label>
                 </div>
-                <div>
-                  <Link
-                    to="/forgot-password"
-                    className="text-[var(--main-color)] block text-sm hover:underline"
-                  >
-                    {t("login.forgotPassword")}
-                  </Link>
-                </div>
               </div>
               <button
                 type="submit"
                 disabled={load}
                 className={`bg-[var(--main-color)] flex justify-center mb-4 w-full text-white rounded py-2 px-4 hover:bg-[var(--main-darker-color)] transition duration-300 ${load ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
               >
-                {load ? <BtnLoad size={24} /> : t("login.submit")}
+                {load ? <BtnLoad size={24} /> : t("register.submit")}
               </button>
             </form>
 
@@ -133,7 +163,7 @@ export default function Login() {
               </div>
               <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-white px-2 text-gray-500">
-                  {t("login.orcontinueWith")}
+                  {t("register.orcontinueWith")}
                 </span>
               </div>
             </div>
@@ -200,12 +230,12 @@ export default function Login() {
               </Link>
             </div>
             <p className="text-gray-600 text-sm mt-4">
-              {t("login.donthaveAccount")}{" "}
+              {t("register.alreadyHaveAccount")}{" "}
               <Link
-                to="/register"
+                to="/login"
                 className="text-[var(--main-color)] hover:underline"
               >
-                {t("login.createAccount")}
+                {t("register.loginNow")}
               </Link>
             </p>
           </div>
@@ -214,7 +244,7 @@ export default function Login() {
           </div>
         </div>
         <div
-          className="h-screen w-full max-w-4xl hidden lg:block bg-red-500 relative before:absolute before:top-0 before:left-0 before:w-full before:h-full before:bg-[var(--main-color)] before:opacity-40 bg-cover bg-center"
+          className="h-screen w-full max-w-4xl hidden lg:block bg-red-500 sticky top-0 before:absolute before:top-0 before:left-0 before:w-full before:h-full before:bg-[var(--main-color)] before:opacity-40 bg-cover bg-center"
           style={{ backgroundImage: `url(${bgImg})` }}
         ></div>
       </div>

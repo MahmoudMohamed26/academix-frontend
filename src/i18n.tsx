@@ -11,16 +11,11 @@ i18n
       en: { translation: translationEN },
       ar: { translation: translationAR },
     },
-    lng: 'en',
+    lng: window.localStorage.getItem('academixLanguage') || 'en',
     fallbackLng: 'en',
     interpolation: {
       escapeValue: false,
     },
   });
-
-i18n.on('languageChanged', (lng) => {
-  document.documentElement.dir = lng === 'ar' ? 'rtl' : 'ltr';
-  document.documentElement.lang = lng;
-});
 
 export default i18n;

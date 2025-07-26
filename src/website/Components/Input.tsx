@@ -9,9 +9,10 @@ type Input = {
   formik: ReturnType<(typeof useFormik)>;
   placeholder?: string;
   password?: boolean;
+  emailExist?: boolean;
 }
 
-export default function Input({ label, name, disabled, formik, placeholder, password }: Input) {
+export default function Input({ label, name, disabled, formik, placeholder, password, emailExist }: Input) {
   const [showPass, setShowPass] = useState(false);
   const isPassword = password || false;
 
@@ -23,7 +24,7 @@ export default function Input({ label, name, disabled, formik, placeholder, pass
           autoComplete="true"
           disabled={disabled}
           type={!isPassword ? "text" : showPass ? "text" : "password"}
-          className={`w-full border focus:border-[var(--main-color)] text-gray-700 duration-300 text-sm py-2 border-[#e2e6f1] rounded-md outline-none p-2 my-2 ${formik.errors[name] && formik.touched[name] ? "!border-red-500" : "special_shadow"}`}
+          className={`w-full border focus:border-[var(--main-color)] text-gray-700 duration-300 text-sm py-2 border-[#e2e6f1] rounded-sm outline-none p-2 my-2 ${(formik.errors[name] && formik.touched[name]) || emailExist ? "!border-red-500" : "special_shadow"}`}
           placeholder={placeholder}
           name={name as string}
           value={formik.values[name] as string}

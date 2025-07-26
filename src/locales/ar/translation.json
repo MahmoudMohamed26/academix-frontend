@@ -3,7 +3,7 @@
   "language": "اللغة",
   "genericError": "حدث خطأ ما. يرجى المحاولة مرة أخرى لاحقًا.",
   "login": {
-    "title": "مرحبا بك في",
+    "title": "سجل الدخول إلى",
     "description": "قم بتسجيل الدخول لمواصلة رحلة التعلم الخاصة بك",
     "email": "البريد الإلكتروني",
     "password": "كلمة المرور",
@@ -25,6 +25,39 @@
       "emailInvalid": "البريد الإلكتروني غير صالح.",
       "passwordMinLength": "يجب أن تكون كلمة المرور على الأقل 6 أحرف.",
       "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة."
+    }
+  },
+  "register": {
+    "title": "انشاء حساب في",
+    "description": "ابدأ رحلتك التعليمية من خلال إنشاء حسابك الآن",
+    "name": "الاسم الكامل",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "submit": "إنشاء حساب",
+    "alreadyHaveAccount": "لديك حساب بالفعل؟",
+    "loginNow": "تسجيل الدخول الآن",
+    "orcontinueWith": "أو أنشئ حسابك باستخدام",
+    "google": "جوجل",
+    "linkedin": "لينكد إن",
+    "github": "جيت هاب",
+    "placeholder-name": "أدخل اسمك الكامل",
+    "placeholder-email": "أدخل بريدك الإلكتروني",
+    "placeholder-password": "أدخل كلمة المرور",
+    "placeholder-confirmPassword": "أعد إدخال كلمة المرور",
+    "success": "تم إنشاء الحساب بنجاح.",
+    "errors": {
+      "nameRequired": "الاسم مطلوب.",
+      "emailRequired": "البريد الإلكتروني مطلوب.",
+      "passwordRequired": "كلمة المرور مطلوبة.",
+      "confirmPasswordRequired": "تأكيد كلمة المرور مطلوب.",
+      "emailInvalid": "البريد الإلكتروني غير صالح.",
+      "passwordMinLength": "يجب أن تكون كلمة المرور على الأقل 6 أحرف.",
+      "passwordsNotMatch": "كلمتا المرور غير متطابقتين.",
+      "emailExists": "البريد الإلكتروني مستخدم بالفعل.",
+      "nameMinLength": "يجب أن يحتوي الاسم على 8 أحرف على الأقل.",
+      "nameMaxLength": "يجب ألا يتجاوز الاسم 30 حرفًا.",
+      "passwordStrong": "يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل، وحرف كبير، ورقم، وحرف خاص."
     }
   }
 }
