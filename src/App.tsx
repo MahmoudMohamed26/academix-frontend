@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next"
 import PublicRoute from "./Auth/PublicRoutes"
 import PrivateRoute from "./Auth/PrivateRoutes"
 import Register from "./website/Register"
+import Dashboard from "./Dashboard/Dashboard"
 
 function App() {
   const { i18n } = useTranslation()
@@ -30,7 +31,7 @@ function App() {
 
       {/* Dashboard */}
       <Route element={<PrivateRoute />}>
-        <Route path="/dashboard" element={<div>Dashboard</div>} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Route>
       {/* Dashboard */}
     </Routes>

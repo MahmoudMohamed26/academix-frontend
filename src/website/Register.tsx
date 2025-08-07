@@ -32,10 +32,11 @@ export default function Register() {
     ),
     password: Yup.string()
     .required(t("register.errors.passwordRequired"))
-    .matches(
-      /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>]).{8,}$/,
-      t("register.errors.passwordStrong")
-    ),
+    // .matches(
+    //   /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>]).{8,}$/,
+    //   t("register.errors.passwordStrong")
+    // ),
+    ,
     confirmPassword: Yup.string()
     .required(t("register.errors.confirmPasswordRequired"))
     .oneOf([Yup.ref("password")], t("register.errors.passwordsNotMatch"))
@@ -240,7 +241,7 @@ export default function Register() {
             </p>
           </div>
           <div className="mt-10 pb-2 flex gap-2 items-center">
-            <Language />
+            <Language form={1} />
           </div>
         </div>
         <div

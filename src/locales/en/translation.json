@@ -59,5 +59,21 @@
       "nameMaxLength": "Name must not exceed 30 characters.",
       "passwordStrong": "Password must be at least 8 characters long and include an uppercase letter, a number, and a special character."
     }
+  },
+  "sidebar": {
+    "home": "Home",
+    "browseCourses": "Browse Courses",
+    "myLearning": "My Learning",
+    "certificates": "Certificates",
+    "navigation": "Navigation",
+    "continueLearning": "Continue Learning",
+    "categories": "Categories",
+    "profile": "Profile",
+    "by": "By",
+    "logoutSuccess": "Logged out successfully."
+  },
+  "DashNavbar": {
+    "search": "Search",
+    "searchPlaceholder": "Search courses, instructors..."
   }
 }

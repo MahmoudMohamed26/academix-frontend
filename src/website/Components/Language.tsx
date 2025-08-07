@@ -1,7 +1,7 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTranslation } from "react-i18next";
 
-export default function Language() {
+export default function Language({form}: { form: number }) {
   const { i18n } = useTranslation();
 
   const changeLanguage = (lang: string) => {
@@ -9,8 +9,8 @@ export default function Language() {
   }
 
   return (
-    <Select onValueChange={changeLanguage} defaultValue={i18n.resolvedLanguage}>
-      <SelectTrigger className="w-[120px] text-[var(--main-color)] border-[var(--main-color)] rounded-sm">
+    <Select dir={i18n.language === "en"? "ltr" : "rtl"} onValueChange={changeLanguage} defaultValue={i18n.resolvedLanguage}>
+      <SelectTrigger className={`w-[120px] ${form === 1 ? "text-[var(--main-color)] border-[var(--main-color)]" : form === 2 ? "w-full" : ""} rounded-sm`}>
         <SelectValue />
       </SelectTrigger>
       <SelectContent>

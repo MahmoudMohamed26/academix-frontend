@@ -45,7 +45,7 @@ export default function Login() {
       await axios.post(`/auth/login`, form.values)
       setLoad(false)
       toast.success(t("login.success"))
-      nav("/" , { replace: true })
+      nav("/dashboard" , { replace: true })
     } catch (err) {
       setLoad(false)
       form.setFieldValue("password", "")
@@ -210,7 +210,7 @@ export default function Login() {
             </p>
           </div>
           <div className="mt-10 pb-2 flex gap-2 items-center">
-            <Language />
+            <Language form={1} />
           </div>
         </div>
         <div

@@ -59,5 +59,21 @@
       "nameMaxLength": "يجب ألا يتجاوز الاسم 30 حرفًا.",
       "passwordStrong": "يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل، وحرف كبير، ورقم، وحرف خاص."
     }
+  },
+  "sidebar": {
+    "home": "الرئيسية",
+    "browseCourses": "تصفح الدورات",
+    "myLearning": "دوراتي",
+    "certificates": "الشهادات",
+    "navigation": "التنقل",
+    "continueLearning": "تابع التعلم",
+    "categories": "الفئات",
+    "profile": "الملف الشخصي",
+    "by": "بواسطة",
+    "logoutSuccess": "تم تسجيل الخروج بنجاح."
+  },
+  "DashNavbar": {
+    "search": "بحث",
+    "searchPlaceholder": "ابحث عن الدورات أو المعلمين..."
   }
 }
