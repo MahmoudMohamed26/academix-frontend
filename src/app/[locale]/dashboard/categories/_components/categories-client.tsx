@@ -1,0 +1,73 @@
+"use client"
+
+import { useState } from "react"
+import { useParams } from "next/navigation"
+import { getCategories, useDeleteCategory } from "@/lib/api/Categories"
+import TableData from "../../_components/tables"
+import DeleteDialog from "../../_components/delete-dialog"
+import { useQuery } from "@tanstack/react-query"
+import useAxios from "@/hooks/useAxios"
+import { Category } from "@/lib/types/category"
+import type { TableHeader } from "@/lib/types/table"
+
+interface CategoriesClientProps {
+  initialCategories: Category[]
+  tableHeaders: TableHeader[]
+}
+
+export default function CategoriesClient({
+  initialCategories,
+  tableHeaders,
+}: CategoriesClientProps) {
+  const params = useParams()
+  const currLang = (params?.locale as string) || "en"
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
+    null
+  )
+  const Axios = useAxios()
+  const deleteMutation = useDeleteCategory(Axios)
+
+  const { data: categories = initialCategories, isLoading } = useQuery({
+    queryKey: ["categories"],
+    queryFn: () => getCategories(Axios),
+    initialData: initialCategories,
+  })
+
+  const handleEdit = (category: Category) => {
+    console.log("Edit category:", category)
+  }
+
+  const handleDeleteClick = (categoryId: string) => {
+    setSelectedCategoryId(categoryId)
+    setIsDialogOpen(true)
+  }
+
+  const getCategoryName = (category: Category) => {
+    return (
+      category.translations?.[currLang]?.name ||
+      category.translations?.["en"]?.name ||
+      "N/A"
+    )
+  }
+
+  return (
+    <>
+      <TableData
+        data={categories}
+        isLoading={isLoading}
+        tableHeaders={tableHeaders}
+        type={"categories"}
+        onDelete={handleDeleteClick}
+        getCategoryName={getCategoryName}
+      />
+
+      <DeleteDialog
+        isOpen={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        itemId={selectedCategoryId}
+        deleteMutation={deleteMutation}
+      />
+    </>
+  )
+}
