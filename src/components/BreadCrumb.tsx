@@ -8,7 +8,7 @@ const labels: Record<string, Record<string, string>> = {
   en: {
     home: "Home",
     dashboard: "Dashboard",
-    profile: "Profile",
+    information: "Profile Information",
     settings: "Settings",
     users: "Users",
     posts: "Posts",
@@ -19,7 +19,7 @@ const labels: Record<string, Record<string, string>> = {
   ar: {
     home: "الرئيسية",
     dashboard: "لوحة التحكم",
-    information: "المعلومات الشخصية",
+    information: "معلومات الملف الشخصي",
     settings: "الإعدادات",
     users: "المستخدمون",
     posts: "المنشورات",

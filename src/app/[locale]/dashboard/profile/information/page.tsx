@@ -24,18 +24,18 @@ export default function ProfileForm() {
     <div className="flex-1">
       {userLoading ? (
         <div>
-          <Skeleton height={30} width={250} className="mb-8" />
-          <Skeleton height={30} width={850} className="mb-8" />
-          <Skeleton height={30} width={650} className="mb-8" />
-          <Skeleton height={30} width={950} className="mb-8" />
-          <Skeleton height={30} width={450} className="mb-8" />
-          <Skeleton height={30} width={550} className="mb-8" />
-          <Skeleton height={30} width={750} className="mb-8" />
-          <Skeleton height={30} width={50} className="mb-8" />
-          <Skeleton height={30} width={250} className="mb-8" />
-          <Skeleton height={30} width={850} className="mb-8" />
-          <Skeleton height={30} width={650} className="mb-8" />
-          <Skeleton height={30} width={150} className="mb-8" />
+          <Skeleton height={30} className="mb-8 w-[40%]!" />
+          <Skeleton height={30} className="mb-8 w-[80%]!" />
+          <Skeleton height={30} className="mb-8 w-[60%]!" />
+          <Skeleton height={30} className="mb-8 w-[20%]!" />
+          <Skeleton height={30} className="mb-8 w-[40%]!" />
+          <Skeleton height={30} className="mb-8 w-[30%]!" />
+          <Skeleton height={30} className="mb-8 w-[60%]!" />
+          <Skeleton height={30} className="mb-8 w-[70%]!" />
+          <Skeleton height={30} className="mb-8 w-[40%]!" />
+          <Skeleton height={30} className="mb-8 w-[90%]!" />
+          <Skeleton height={30} className="mb-8 w-[10%]!" />
+          <Skeleton height={30} className="mb-8 w-[50%]!" />
         </div>
       ) : (
         <>

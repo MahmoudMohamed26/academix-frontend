@@ -15,7 +15,7 @@ import { formatDate } from "@/helpers/format-date"
 import { DataTableProps, TableHeader as THeader } from "@/lib/types/table"
 import Link from "next/link"
 
-export default function DataTable<T extends { id: string; createdAt: string;}>({
+export default function DataTable({
   data,
   isLoading,
   tableHeaders,
@@ -23,7 +23,7 @@ export default function DataTable<T extends { id: string; createdAt: string;}>({
   type = "default",
   getCategoryName,
   noDataText,
-}: DataTableProps<T>) {
+}: DataTableProps) {
   const { t } = useTranslation()
 
   const renderCellContent = (header: THeader, item: any) => {
@@ -37,22 +37,22 @@ export default function DataTable<T extends { id: string; createdAt: string;}>({
         return getCategoryName(item)
       }
       return "N/A"
-    } else if (header.key === "createdAt") {
-      return formatDate(item.createdAt)
-    } else if (header.key === "updatedAt") {
-      return formatDate(item.updatedAt)
+    } else if (header.key === "created") {
+      return formatDate(item.created)
+    } else if (header.key === "updated") {
+      return formatDate(item.updated)
     } else if (header.key === "actions") {
       return (
         <div className="flex gap-2">
           <Link
-            href={`/dashboard/${type}/${item.id}`}
+            href={`/dashboard/${type}/edit/${item.slug}`}
             className="p-2 hover:bg-blue-100 cursor-pointer rounded-md transition-colors"
             aria-label="Edit"
           >
             <Pencil className="w-4 h-4 text-blue-600" />
           </Link>
           {onDelete && <button
-            onClick={() => onDelete(item.id)}
+            onClick={() => onDelete(item.slug)}
             className="p-2 hover:bg-red-100 cursor-pointer rounded-md transition-colors"
             aria-label="Delete"
           >
@@ -86,11 +86,11 @@ export default function DataTable<T extends { id: string; createdAt: string;}>({
                 className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}
               >
                 <TableCell>
-                  <Skeleton className="h-5 w-full" />
+                  <Skeleton className="h-8 w-full" />
                 </TableCell>
                 {tableHeaders.map((header) => (
                   <TableCell key={header.key}>
-                    <Skeleton className="h-5 w-full" />
+                    <Skeleton className="h-8 w-full" />
                   </TableCell>
                 ))}
               </TableRow>
@@ -107,7 +107,7 @@ export default function DataTable<T extends { id: string; createdAt: string;}>({
           ) : (
             data.map((item, index) => (
               <TableRow
-                key={item.id}
+                key={item.slug}
                 className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}
               >
                 <TableCell>{index + 1}</TableCell>

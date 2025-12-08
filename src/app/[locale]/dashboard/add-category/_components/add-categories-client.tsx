@@ -10,6 +10,7 @@ import useAxios from "@/hooks/useAxios"
 import Input from "@/components/Input"
 import SlugMaker from "@/helpers/slug-maker"
 import BtnLoad from "@/components/BtnLoad"
+import { CategoryFormData } from "@/lib/types/category"
 
 export default function AddCategory() {
   const { t } = useTranslation()
@@ -17,28 +18,13 @@ export default function AddCategory() {
   const queryClient = useQueryClient()
 
   const validationSchema = Yup.object({
-    slug: Yup.string(),
-    translations: Yup.object({
-      en: Yup.object({
-        name: Yup.string().required(t("Dashboard.addCategory.requiredEnError")),
-      }),
-      ar: Yup.object({
-        name: Yup.string().required(t("Dashboard.addCategory.requiredArError")),
-      }),
-    }),
+    name_en: Yup.string().required(t("Dashboard.addCategory.requiredEnError")),
+    name_ar: Yup.string().required(t("Dashboard.addCategory.requiredArError")),
   })
-
-  type CategoryFormData = {
-    slug: string
-    translations: {
-      en: { name: string }
-      ar: { name: string }
-    }
-  }
 
   const createCategoryMutation = useMutation({
     mutationFn: async (values: CategoryFormData) => {
-      const response = await Axios.post("/categories", values)
+      const response = await Axios.post("/category", values)
       return response.data
     },
     onSuccess: () => {
@@ -55,25 +41,14 @@ export default function AddCategory() {
 
   const form = useFormik({
     initialValues: {
-      slug: "",
-      translations: {
-        en: {
-          name: "" 
-        },
-        ar: { 
-          name: "" 
-        } 
-      },
+      name_en: "",
+      name_ar: "",
     },
     validationSchema,
     onSubmit: async (values) => {
       createCategoryMutation.mutate(values)
     },
   })
-
-  useEffect(() => {
-    form.setFieldValue("slug", SlugMaker(form.values.translations.en.name))
-  }, [form.values.translations.en.name])
 
   return (
     <>
@@ -86,7 +61,7 @@ export default function AddCategory() {
                   formik={form as any}
                   placeholder={t("Dashboard.addCategory.namePlaceholderEn")}
                   label={t("Dashboard.addCategory.nameLabelEn")}
-                  name="translations.en.name"
+                  name="name_en"
                 />
               </div>
               <div className="max-w-[400px] flex-1">
@@ -94,7 +69,7 @@ export default function AddCategory() {
                   formik={form as any}
                   placeholder={t("Dashboard.addCategory.namePlaceholderAr")}
                   label={t("Dashboard.addCategory.nameLabelAr")}
-                  name="translations.ar.name"
+                  name="name_ar"
                 />
               </div>
             </div>

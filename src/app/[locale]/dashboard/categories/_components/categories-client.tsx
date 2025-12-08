@@ -11,12 +11,10 @@ import { Category } from "@/lib/types/category"
 import type { TableHeader } from "@/lib/types/table"
 
 interface CategoriesClientProps {
-  initialCategories: Category[]
   tableHeaders: TableHeader[]
 }
 
 export default function CategoriesClient({
-  initialCategories,
   tableHeaders,
 }: CategoriesClientProps) {
   const params = useParams()
@@ -28,12 +26,10 @@ export default function CategoriesClient({
   const Axios = useAxios()
   const deleteMutation = useDeleteCategory(Axios)
 
-  const { data: categories = initialCategories, isLoading } = useQuery({
+  const { data: categories, isLoading } = useQuery({
     queryKey: ["categories"],
     queryFn: () => getCategories(Axios),
-    initialData: initialCategories,
   })
-
   const handleEdit = (category: Category) => {
     console.log("Edit category:", category)
   }
@@ -44,17 +40,13 @@ export default function CategoriesClient({
   }
 
   const getCategoryName = (category: Category) => {
-    return (
-      category.translations?.[currLang]?.name ||
-      category.translations?.["en"]?.name ||
-      "N/A"
-    )
+    return currLang === "ar" ? category.name_ar : category.name_en
   }
 
   return (
     <>
       <TableData
-        data={categories}
+        data={categories as any}
         isLoading={isLoading}
         tableHeaders={tableHeaders}
         type={"categories"}

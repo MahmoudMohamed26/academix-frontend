@@ -41,13 +41,12 @@ import { useRouter, usePathname } from "next/navigation"
 import { useTranslation } from "react-i18next"
 import { Progress } from "@/components/ui/progress"
 import { toast } from "sonner"
-import { useQuery } from "@tanstack/react-query"
-import { useContext, useState } from "react"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { useState } from "react"
 import Language from "@/components/Language"
 import useAxios from "@/hooks/useAxios"
 import { getCategories } from "@/lib/api/Categories"
 import SidebarSkeleton from "./SidebarSkeleton"
-import { AuthContext } from "@/context/authContext"
 import { Category } from "@/lib/types/category"
 import { getUser } from "@/lib/api/User"
 
@@ -61,12 +60,13 @@ export function AppSidebar() {
 
   const { setOpenMobile } = useSidebar()
   const Axios = useAxios()
+  const queryClient = useQueryClient()
 
-  // const { data: categories = [], isLoading: catsLoading } = useQuery({
-  //   queryKey: ["categories"],
-  //   queryFn: () => getCategories(Axios),
-  //   staleTime: 10 * 60 * 1000,
-  // })
+  const { data: categories = [], isLoading: catsLoading } = useQuery({
+    queryKey: ["categories"],
+    queryFn: () => getCategories(Axios),
+    staleTime: 10 * 60 * 1000,
+  })
 
   const { data: user, isLoading: userLoading } = useQuery({
     queryKey: ["loggedInUser"],
@@ -107,7 +107,7 @@ export function AppSidebar() {
     },
   ]
 
-    const recentCourses = [
+  const recentCourses = [
     { title: "React Fundamentals", progress: 75, instructor: "John Doe" },
     { title: "Python for Beginners", progress: 45, instructor: "Jane Smith" },
     { title: "UI/UX Design", progress: 90, instructor: "Mike Johnson" },
@@ -119,6 +119,7 @@ export function AppSidebar() {
     try {
       await Axios.post("/auth/logout")
       toast.success(t("sidebar.logoutSuccess"))
+      queryClient.removeQueries({ queryKey: ["loggedInUser"] })
       router.replace("/login")
       router.refresh()
     } catch (err) {
@@ -126,8 +127,9 @@ export function AppSidebar() {
       toast.error(t("genericError"))
     }
   }
-
-  console.log(user)
+  const getCategoryName = (category: Category) => {
+    return currLang === "ar" ? category.name_ar : category.name_en
+  }
 
   return (
     <Sidebar
@@ -141,7 +143,7 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
 
-      {false ? (
+      {catsLoading ? (
         <SidebarSkeleton />
       ) : (
         <SidebarContent>
@@ -292,7 +294,7 @@ export function AppSidebar() {
           </SidebarGroup>
 
           {/* Dynamic Categories */}
-          {/* <SidebarGroup>
+          <SidebarGroup>
             <SidebarGroupLabel>{t("sidebar.categories")}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
@@ -307,44 +309,60 @@ export function AppSidebar() {
                         href={`/dashboard/category/${el.slug}`}
                         onClick={handleItemClick}
                       >
-                        <p>{el.translations[currLang].name}</p>
+                        <p>{getCategoryName(el)}</p>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
               </SidebarMenu>
             </SidebarGroupContent>
-          </SidebarGroup> */}
+          </SidebarGroup>
         </SidebarContent>
       )}
 
       {/* Footer */}
       <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive={pathname.includes("/profile")}>
-              <Link href="/dashboard/profile" onClick={handleItemClick}>
-                <UserIcon />
-                <span>{t("sidebar.profile")}</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        {userLoading ? 
+        <div className="flex gap-2">
+          <Skeleton width={32} className="rounded-full!" height={32} />
+          <div className="flex-1">
+            <Skeleton className="w-full" height={20} />
+            <Skeleton className="w-full" height={10} />
+          </div>
+          <div>
+            <Skeleton width={20} height={30} />
+          </div>
+        </div>
+        : <>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname.includes("/profile")}
+              >
+                <Link href="/dashboard/profile" onClick={handleItemClick}>
+                  <UserIcon />
+                  <span>{t("sidebar.profile")}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
 
-        <SidebarMenu className="md:hidden">
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <div>
-                <Language form={2} />
-              </div>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-
-        {!false ? (
+          <SidebarMenu className="md:hidden">
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <div>
+                  <Language form={2} />
+                </div>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
           <div className="flex items-center space-x-3 p-2 bg-gray-50 rounded-lg">
             <Avatar className="h-8 w-8">
-              <AvatarImage src={user?.avatar_url as any} alt={t("Dashboard.avatarUpload.avatarAlt")} />
+              <AvatarImage
+                src={user?.avatar_url as any}
+                alt={t("Dashboard.avatarUpload.avatarAlt")}
+              />
               <AvatarFallback>
                 {user?.name.charAt(0) + secondname.charAt(0)}
               </AvatarFallback>
@@ -364,9 +382,7 @@ export function AppSidebar() {
               />
             </div>
           </div>
-        ) : (
-          <Skeleton height={52} />
-        )}
+        </>}
       </SidebarFooter>
     </Sidebar>
   )

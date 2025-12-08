@@ -3,14 +3,12 @@ export interface TableHeader {
   name: string
 }
 
-export interface DataTableProps<
-  T extends { id: string; createdAt: string; }
-> {
-  data: T[]
+export interface DataTableProps{
+  data: any[]
   isLoading: boolean
   tableHeaders: TableHeader[]
   onDelete?: (itemId: string) => void
   type?: "categories" | "courses" | "payments" | "default"
-  getCategoryName?: (item: T) => string
+  getCategoryName?: (item: any) => string
   noDataText?: string
 }

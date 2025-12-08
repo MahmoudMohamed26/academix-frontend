@@ -3,12 +3,12 @@ import { AxiosInstance } from 'axios';
 import { Category } from '../types/category';
 
 export async function getCategories(axiosInstance: AxiosInstance): Promise<Category[]> {
-  const res = await axiosInstance.get('/categories');
-  return res.data;
+  const res = await axiosInstance.get('/category');
+  return res.data.data.categories;
 }
 
-export async function deleteCategory(axiosInstance: AxiosInstance, categoryId: string): Promise<void> {
-  await axiosInstance.delete(`/categories/${categoryId}`);
+export async function deleteCategory(axiosInstance: AxiosInstance, categorySlug: string): Promise<void> {
+  await axiosInstance.delete(`/category/${categorySlug}`);
 }
 
 export function useDeleteCategory(axiosInstance: AxiosInstance) {

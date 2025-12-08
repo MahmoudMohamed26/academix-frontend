@@ -4,10 +4,14 @@ export interface CategoryTranslation {
 
 export interface Category {
   id: string
-  translations: {
-    [key: string]: CategoryTranslation
-  }
+  name_ar: string
+  name_en: string
   createdAt: string
   updatedAt: string
   slug: string
+}
+
+export interface CategoryFormData {
+  name_ar: string
+  name_en: string
 }
