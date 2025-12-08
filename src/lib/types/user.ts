@@ -3,19 +3,26 @@ export type User = {
   phone: string
   dob: any
   email: string
-  role: string;
+  role: string
   avatar_url: string | null
+  links: {
+    personalSite: string
+    facebook: string
+    github: string
+    linkedin: string
+    instagram: string
+  }
 }
 
 export interface UserActions {
-  setName: (name: string) => void;
-  setPhone: (phone: string) => void;
-  setDob: (dob: string) => void;
-  setEmail: (data: string) => void;
-  setUser: (data: User) => void;
+  setName: (name: string) => void
+  setPhone: (phone: string) => void
+  setDob: (dob: string) => void
+  setEmail: (data: string) => void
+  setUser: (data: User) => void
 }
 
-export type UserStore = User & UserActions;
+export type UserStore = User & UserActions
 
 export type ProfileFormValues = {
   name: string
@@ -29,11 +36,13 @@ export type ChangePasswordFormValues = {
 }
 
 export type Links = {
-  website: string
-  facebook: string
-  github: string
-  linkedin: string
-  instagram: string
+  links: {
+    personalSite: string
+    facebook: string
+    github: string
+    linkedin: string
+    instagram: string
+  }
 }
 
 export type ProfileAvatar = {

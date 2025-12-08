@@ -56,7 +56,14 @@ export default function AddCategory() {
   const form = useFormik({
     initialValues: {
       slug: "",
-      translations: { en: { name: "" }, ar: { name: "" } },
+      translations: {
+        en: {
+          name: "" 
+        },
+        ar: { 
+          name: "" 
+        } 
+      },
     },
     validationSchema,
     onSubmit: async (values) => {

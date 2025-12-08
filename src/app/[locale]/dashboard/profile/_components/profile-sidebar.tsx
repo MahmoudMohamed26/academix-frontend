@@ -11,12 +11,12 @@ export default function ProfileSidebar() {
   
   const linkClasses = (href: string) =>
     pathname === `/${locale}${href}`
-      ? "block font-semibold p-2 bg-(--main-color) text-white rounded-sm"
+      ? "block font-semibold p-2 bg-[#F5F5F5] rounded-sm"
       : "block font-semibold p-2 hover:bg-[#F5F5F5] rounded-sm";
 
   return (
     <>
-      <ul className="mt-3 space-y-2">
+      <ul className="py-3 space-y-2 border-b sm:border-none">
         <li>
           <Link
             href={`/${locale}/dashboard/profile/not-ready`}

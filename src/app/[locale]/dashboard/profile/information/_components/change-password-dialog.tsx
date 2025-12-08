@@ -38,7 +38,7 @@ export default function ChangePasswordDialog({
   const Axios = useAxios()
   const [step, setStep] = useState<"request" | "verify">("request")
   const [isLoading, setIsLoading] = useState(false)
-  const [otpLoading , setOtpLoading] = useState(false)
+  const [otpLoading, setOtpLoading] = useState(false)
   const [otp, setOtp] = useState("")
 
   const requestOTP = async () => {
@@ -134,6 +134,15 @@ export default function ChangePasswordDialog({
                 t("Dashboard.profileForm.requestOtp")
               )}
             </button>
+            <Button
+              type="button"
+              className="rounded-sm cursor-pointer"
+              variant="outline"
+              onClick={handleClose}
+              disabled={isLoading}
+            >
+              {t("Dashboard.profileForm.cancel") || "Cancel"}
+            </Button>
           </div>
         ) : (
           <div className="space-y-4 pt-4">
@@ -158,9 +167,15 @@ export default function ChangePasswordDialog({
 
             <div className="flex flex-col gap-2 justify-end pt-4 text-sm">
               <p className="text-muted-foreground">
-                {t("Dashboard.profileForm.didntReceive")} <button className="cursor-pointer hover:underline text-(--main-color)" onClick={requestOTP}>
-                  {isLoading ? t("Dashboard.profileForm.sending") : t("Dashboard.profileForm.resend")}
-                  </button>
+                {t("Dashboard.profileForm.didntReceive")}{" "}
+                <button
+                  className="cursor-pointer hover:underline text-(--main-color)"
+                  onClick={requestOTP}
+                >
+                  {isLoading
+                    ? t("Dashboard.profileForm.sending")
+                    : t("Dashboard.profileForm.resend")}
+                </button>
               </p>
               <button
                 className={`bg-(--main-color) cursor-pointer flex justify-center text-sm text-white rounded py-2 px-4 hover:bg-(--main-darker-color) transition duration-300`}

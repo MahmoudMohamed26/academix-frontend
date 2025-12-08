@@ -270,6 +270,10 @@
       "instagramLabel": "رابط إنستجرام",
       "instagramPlaceholder": "https://instagram.com/username",
       "saveLinks": "حفظ الروابط",
+      "linksSaved": "تم حفظ الروابط بنجاح!",
+      "linksSaveFailed": "فشل في حفظ الروابط. يرجى المحاولة مرة أخرى.",
+      "profileSaved": "تم حفظ معلومات الملف الشخصي بنجاح!",
+      "profileSaveFailed": "فشل في حفظ معلومات الملف الشخصي. يرجى المحاولة مرة أخرى.",
       "validation": {
         "nameRequired": "الاسم الشخصي مطلوب",
         "nameMinLength": "يجب أن يتكون الاسم من حرفين على الأقل",

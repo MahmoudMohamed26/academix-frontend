@@ -2,6 +2,7 @@ import { AvatarUpload } from "./_components/avatar-upload"
 import SpecialHeader from "@/components/SpecialHeader"
 import { useTranslation } from "@/lib/i18n-server"
 import ProfileSidebar from "./_components/profile-sidebar"
+import Breadcrumb from "@/components/BreadCrumb"
 
 export const metadata = {
   title: "Profile | Dashboard | Academix",
@@ -19,7 +20,8 @@ export default async function ProfileLayout({
 
   return (
     <>
-      <SpecialHeader name={t("Profile")} />
+      <Breadcrumb />
+      <SpecialHeader name={t("sidebar.profile")} />
       <div className="px-2 py-4 mt-10 bg-white rounded-md">
         <div className="flex gap-8 sm:flex-row flex-col">
           <div className="sm:border-e pe-2">

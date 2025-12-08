@@ -42,6 +42,14 @@ export default async function proxy(request: NextRequest) {
 
   const locale = pathname.split("/")[1] || defaultLocale
 
+  // Redirect /dashboard/profile to /dashboard/profile/information
+  const profileMatch = pathname.match(/^\/[^\/]+\/dashboard\/profile\/?$/)
+  if (profileMatch) {
+    const url = request.nextUrl.clone()
+    url.pathname = `/${locale}/dashboard/profile/information`
+    return NextResponse.redirect(url)
+  }
+
   const authPages = ["/login", "/register"]
   const protectedPages = ["/dashboard"]
 

@@ -269,6 +269,10 @@
       "instagramLabel": "Instagram Link",
       "instagramPlaceholder": "https://instagram.com/username",
       "saveLinks": "Save Links",
+      "linksSaved": "Links saved successfully!",
+      "linksSaveFailed": "Failed to save links. Please try again.",
+      "profileSaved": "Profile information saved successfully!",
+      "profileSaveFailed": "Failed to save profile information. Please try again.",
       "validation": {
         "nameRequired": "Personal name is required",
         "nameMinLength": "Name must be at least 2 characters",
