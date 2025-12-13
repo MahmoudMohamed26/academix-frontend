@@ -7,6 +7,11 @@ export async function getCategories(axiosInstance: AxiosInstance): Promise<Categ
   return res.data.data.categories;
 }
 
+export async function getCategory(axiosInstance: AxiosInstance , id: any): Promise<Category> {
+  const res = await axiosInstance.get(`/category/${id}`);
+  return res.data.data.category;
+}
+
 export async function deleteCategory(axiosInstance: AxiosInstance, categorySlug: string): Promise<void> {
   await axiosInstance.delete(`/category/${categorySlug}`);
 }

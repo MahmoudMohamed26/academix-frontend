@@ -62,15 +62,15 @@ export function AppSidebar() {
   const Axios = useAxios()
   const queryClient = useQueryClient()
 
-  const { data: categories = [], isLoading: catsLoading } = useQuery({
-    queryKey: ["categories"],
-    queryFn: () => getCategories(Axios),
-    staleTime: 10 * 60 * 1000,
-  })
-
   const { data: user, isLoading: userLoading } = useQuery({
     queryKey: ["loggedInUser"],
     queryFn: () => getUser(Axios),
+    staleTime: 10 * 60 * 1000,
+  })
+
+  const { data: categories = [], isLoading: catsLoading } = useQuery({
+    queryKey: ["categories"],
+    queryFn: () => getCategories(Axios),
     staleTime: 10 * 60 * 1000,
   })
 

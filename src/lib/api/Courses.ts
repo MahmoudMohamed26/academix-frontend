@@ -3,8 +3,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Course } from "../types/course";
 
 export async function getCourses(axiosInstance: AxiosInstance): Promise<Course[]> {
-  const res = await axiosInstance.get('/courses');
-  return res.data;
+  const res = await axiosInstance.get('/course');
+  return res.data.data.courses;
 }
 
 export async function deleteCourse(axiosInstance: AxiosInstance, courseId: string): Promise<void> {

@@ -134,7 +134,11 @@ export default function LinksForm({ user }: { user?: User }) {
       <button
         type="submit"
         onClick={links.handleSubmit as any}
-        className={`bg-(--main-color) mt-6 cursor-pointer flex justify-center mb-4 text-sm text-white rounded py-2 px-4 hover:bg-(--main-darker-color) transition duration-300`}
+        className={`bg-(--main-color) flex justify-center mb-4 text-sm text-white rounded mt-4 py-2 px-4 hover:bg-(--main-darker-color) transition duration-300 ${
+          linksMutation.isPending
+            ? "cursor-not-allowed opacity-50"
+            : "cursor-pointer"
+        }`}
       >
         {linksMutation.isPending ? (
           <BtnLoad size={20} />

@@ -6,7 +6,11 @@ import { ProfileFormValues, User } from "@/lib/types/user"
 import useAxios from "@/hooks/useAxios"
 import { toast } from "sonner"
 import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import { ChevronDownIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
@@ -14,7 +18,9 @@ import { useFormik } from "formik"
 import PhoneInput from "react-phone-input-2"
 import BtnLoad from "@/components/BtnLoad"
 
-function formatDateToDDMMYYYY(date: Date | undefined | null): string | undefined {
+function formatDateToDDMMYYYY(
+  date: Date | undefined | null
+): string | undefined {
   if (!date) return undefined
   const d = date.getDate().toString().padStart(2, "0")
   const m = (date.getMonth() + 1).toString().padStart(2, "0")
@@ -22,7 +28,9 @@ function formatDateToDDMMYYYY(date: Date | undefined | null): string | undefined
   return `${y}-${m}-${d}`
 }
 
-function parseDobFromBackend(dob: string | number | null | undefined): Date | undefined {
+function parseDobFromBackend(
+  dob: string | number | null | undefined
+): Date | undefined {
   if (!dob) return undefined
 
   if (typeof dob === "number") {
@@ -139,7 +147,10 @@ export default function ProfileInforForm({ user }: { user?: User }) {
                 <ChevronDownIcon />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+            <PopoverContent
+              className="w-auto overflow-hidden p-0"
+              align="start"
+            >
               <Calendar
                 mode="single"
                 selected={form.values.dob as any}
@@ -162,7 +173,11 @@ export default function ProfileInforForm({ user }: { user?: User }) {
       <button
         type="submit"
         onClick={form.handleSubmit as any}
-        className="bg-(--main-color) mt-6 cursor-pointer flex justify-center mb-4 text-sm text-white rounded py-2 px-4 hover:bg-(--main-darker-color) transition duration-300"
+        className={`bg-(--main-color) flex justify-center mb-4 text-sm text-white rounded mt-4 py-2 px-4 hover:bg-(--main-darker-color) transition duration-300 ${
+          profileMutation.isPending
+            ? "cursor-not-allowed opacity-50"
+            : "cursor-pointer"
+        }`}
         disabled={profileMutation.isPending}
       >
         {profileMutation.isPending ? (

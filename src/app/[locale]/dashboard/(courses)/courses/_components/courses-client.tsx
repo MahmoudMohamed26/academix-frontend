@@ -5,9 +5,9 @@ import { useState } from "react"
 import { getCourses, useDeleteCourse } from "@/lib/api/Courses"
 import DataTable from "../../../_components/tables"
 import DeleteDialog from "../../../_components/delete-dialog"
-import { Course } from "@/lib/types/course"
 import { TableHeader } from "@/lib/types/table"
 import { useParams } from "next/navigation"
+import { Category } from "@/lib/types/category"
 
 interface CategoriesClientProps {
   tableHeaders: TableHeader[]
@@ -16,6 +16,7 @@ interface CategoriesClientProps {
 export default function Courses({ tableHeaders }: CategoriesClientProps) {
   const Axios = useAxios()
   const params = useParams()
+  const currLang = (params?.locale as string) || "en"
   const deleteMutation = useDeleteCourse(Axios)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null)
@@ -29,13 +30,9 @@ export default function Courses({ tableHeaders }: CategoriesClientProps) {
     setSelectedCourseId(courseId)
     setIsDialogOpen(true)
   }
-
-  const getCategoryName = (course: Course) => {
-    const currLang = (params?.locale as string) || "en"
-    return (
-      course.category?.translations?.[currLang]?.name ||
-      course.categoryId.toString()
-    )
+  console.log(courses)
+  const getCategoryName = (category: Category) => {
+    return currLang === "ar" ? category.name_ar : category.name_en
   }
 
   return (

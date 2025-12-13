@@ -12,8 +12,12 @@ export interface Course {
 }
 
 export interface CourseFormData {
-    slug: string
     title: string
-    description: string
-    categoryId: number | string
-  }
+    detailed_description: string
+    short_description: string
+    image: string
+    price: number
+    hours: number
+    level: string
+    category_slug: string
+}

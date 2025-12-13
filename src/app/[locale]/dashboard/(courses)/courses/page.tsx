@@ -14,9 +14,12 @@ export default async function CoursesPage({
   const tableHeaders: TableHeader[] = [
     { key: "title", name: t("Dashboard.courses.title") },
     { key: "category", name: t("Dashboard.courses.category") },
-    { key: "description", name: t("Dashboard.courses.description") },
-    { key: "createdAt", name: t("Dashboard.courses.createdAt") },
-    { key: "updatedAt", name: t("Dashboard.courses.updatedAt") },
+    { key: "short_description", name: t("Dashboard.courses.description") },
+    { key: "price", name: t("Dashboard.courses.price") },
+    { key: "hours", name: t("Dashboard.courses.hours") },
+    { key: "rating_avg", name: t("Dashboard.courses.rating") },
+    { key: "created", name: t("Dashboard.courses.createdAt") },
+    { key: "updated", name: t("Dashboard.courses.updatedAt") },
     { key: "actions", name: t("Dashboard.courses.actions") },
   ]
 

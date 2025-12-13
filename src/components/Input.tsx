@@ -23,6 +23,7 @@ type InputProps<FormValues extends FormikValues> = {
   lecture?: boolean;
   quiz?: boolean;
   type?: string;
+  number?: boolean;
 };
 
 export default function Input<FormValues extends FormikValues>({
@@ -35,6 +36,7 @@ export default function Input<FormValues extends FormikValues>({
   emailExist,
   lecture,
   quiz,
+  number,
   type,
 }: InputProps<FormValues>) {
   const [showPass, setShowPass] = useState(false);
@@ -47,7 +49,7 @@ export default function Input<FormValues extends FormikValues>({
         <input
           autoComplete="true"
           disabled={disabled}
-          type={!isPassword ? "text" : showPass ? "text" : "password"}
+          type={number ? "number" : (!isPassword ? "text" : showPass ? "text" : "password")}
           className={`w-full border ${lecture ? `focus:border-blue-500` : quiz ? `focus:border-green-500` : `focus:border-(--main-color)`} text-gray-700 duration-300 text-sm py-2 border-[#e2e6f1] ${type && "text-[#9AA0A8]! font-semibold"} rounded-sm outline-none disabled:cursor-not-allowed p-2 my-2 ${(formik.getFieldMeta(name).touched && formik.getFieldMeta(name).error) || emailExist ? "border-red-500!" : "special_shadow"}`}
           placeholder={placeholder}
           name={name}

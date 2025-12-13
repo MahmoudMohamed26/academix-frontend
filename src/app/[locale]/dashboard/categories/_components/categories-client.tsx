@@ -25,14 +25,10 @@ export default function CategoriesClient({
   )
   const Axios = useAxios()
   const deleteMutation = useDeleteCategory(Axios)
-
   const { data: categories, isLoading } = useQuery({
     queryKey: ["categories"],
     queryFn: () => getCategories(Axios),
   })
-  const handleEdit = (category: Category) => {
-    console.log("Edit category:", category)
-  }
 
   const handleDeleteClick = (categoryId: string) => {
     setSelectedCategoryId(categoryId)

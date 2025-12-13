@@ -2,7 +2,7 @@
 
 import useAxios from "@/hooks/useAxios"
 import { useFormik } from "formik"
-import { useEffect } from "react"
+import { useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import * as Yup from "yup"
@@ -15,13 +15,11 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import Skeleton from "react-loading-skeleton"
-import SlugMaker from "@/helpers/slug-maker"
 import { getCategories } from "@/lib/api/Categories"
 import { Category } from "@/lib/types/category"
 import Input from "@/components/Input"
 import BtnLoad from "@/components/BtnLoad"
 import { CourseFormData } from "@/lib/types/course"
-import { useRouter } from "next/navigation"
 
 interface AddCourseClientProps {
   initialCategories: Category[]
@@ -31,42 +29,78 @@ export default function AddCourseForm({ initialCategories }: AddCourseClientProp
   const { t, i18n } = useTranslation()
   const Axios = useAxios()
   const queryClient = useQueryClient()
-  const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [imagePreview, setImagePreview] = useState<string>("")
+  const [imageFile, setImageFile] = useState<File | null>(null)
+
   const validationSchema = Yup.object({
     title: Yup.string().required(t("Dashboard.addCourse.requiredNameError")),
-    description: Yup.string().required(
-      t("Dashboard.addCourse.requiredDescError")
+    short_description: Yup.string().required(
+      t("Dashboard.addCourse.requiredShortDescError")
     ),
-    categoryId: Yup.number()
-      .transform((value, originalValue) =>
-        originalValue === "none" ? null : value
-      )
-      .required(t("Dashboard.addCourse.requiredCategoryError")),
+    detailed_description: Yup.string().required(
+      t("Dashboard.addCourse.requiredDetailedDescError")
+    ),
+    category_slug: Yup.string().required(t("Dashboard.addCourse.requiredCategoryError")),
+    price: Yup.number()
+      .required(t("Dashboard.addCourse.requiredPriceError"))
+      .min(0, t("Dashboard.addCourse.minPriceError")),
+    hours: Yup.number()
+      .required(t("Dashboard.addCourse.requiredHoursError"))
+      .min(0.1, t("Dashboard.addCourse.minHoursError")),
+    level: Yup.string().required(t("Dashboard.addCourse.requiredLevelError")),
+    image: Yup.mixed(),
   })
 
   const form = useFormik<CourseFormData>({
     initialValues: {
-      slug: "",
       title: "",
-      description: "",
-      categoryId: "none",
+      short_description: "",
+      detailed_description: "",
+      image: "",
+      price: 0,
+      hours: 0,
+      level: "beginner",
+      category_slug: "none",
     },
     validationSchema,
     onSubmit: async (values) => {
+      if (!imageFile) {
+        toast.error(t("Dashboard.addCourse.requiredImageError"))
+        return
+      }
       createCourseMutation.mutate(values)
     },
   })
 
   const createCourseMutation = useMutation({
     mutationFn: async (values: CourseFormData) => {
-      const response = await Axios.post("/courses", values)
+      const formData = new FormData()
+      formData.append("title", values.title)
+      formData.append("short_description", values.short_description)
+      formData.append("detailed_description", values.detailed_description)
+      formData.append("price", values.price.toString())
+      formData.append("hours", values.hours.toString())
+      formData.append("level", values.level)
+      formData.append("category_slug", values.category_slug.toString())
+      
+      if (imageFile) {
+        formData.append("image", imageFile)
+      }
+
+      const response = await Axios.post("/course", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
       return response.data
     },
-    onSuccess: (res) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["courses"] })
       form.resetForm()
+      setImagePreview("")
+      setImageFile(null)
       toast.success(t("Dashboard.addCourse.successMessage"))
-      router.push(`/dashboard/courses/${res.id}`)
     },
     onError: (error) => {
       console.error("Error creating course:", error)
@@ -74,17 +108,51 @@ export default function AddCourseForm({ initialCategories }: AddCourseClientProp
     },
   })
 
-
   const { data: categories, isLoading: categoriesLoading } = useQuery({
     queryKey: ["categories"],
     queryFn: () => getCategories(Axios),
     initialData: initialCategories,
   })
-  console.log(i18n.language);
 
-  useEffect(() => {
-    form.setFieldValue("slug", SlugMaker(form.values.title))
-  }, [form.values.title])
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (!file.type.startsWith("image/")) {
+      toast.error(t("Dashboard.addCourse.invalidImageError"))
+      return
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error(t("Dashboard.addCourse.imageSizeError"))
+      return
+    }
+
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string)
+    }
+    reader.readAsDataURL(file)
+
+    setImageFile(file)
+    form.setFieldValue("image", file.name)
+    form.setFieldTouched("image", true)
+  }
+
+  const handleRemoveImage = () => {
+    setImagePreview("")
+    setImageFile(null)
+    form.setFieldValue("image", "")
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""
+    }
+  }
+
+  const handleImageClick = () => {
+    if (!imagePreview) {
+      fileInputRef.current?.click()
+    }
+  }
 
   return (
     <>
@@ -121,21 +189,21 @@ export default function AddCourseForm({ initialCategories }: AddCourseClientProp
                   </label>
                   <Select
                     dir={i18n.language === "en" ? "ltr" : "rtl"}
-                    value={form.values.categoryId?.toString() || "none"}
+                    value={form.values.category_slug?.toString() || "none"}
                     onValueChange={(val) => {
-                      form.setFieldValue("categoryId", Number(val))
-                      form.setFieldTouched("categoryId", true)
+                      form.setFieldValue("category_slug", val)
+                      form.setFieldTouched("category_slug", true)
                     }}
                     onOpenChange={(open) => {
                       if (!open) {
-                        form.setFieldTouched("categoryId", true)
+                        form.setFieldTouched("category_slug", true)
                       }
                     }}
                   >
                     <SelectTrigger
                       className={`w-full my-2 rounded-sm border text-sm 
                         ${
-                          form.touched.categoryId && form.errors.categoryId
+                          form.touched.category_slug && form.errors.category_slug
                             ? "border-red-500!"
                             : "border-[#e2e6f1] focus-visible:border-(--main-color) data-[state=open]:border-(--main-color)"
                         }
@@ -154,44 +222,225 @@ export default function AddCourseForm({ initialCategories }: AddCourseClientProp
                       {categories.map((category: any) => (
                         <SelectItem
                           key={category.id}
-                          value={category.id.toString()}
+                          value={category.id}
                         >
                           {i18n.language === "en"
-                            ? category.translations.en.name
-                            : category.translations.ar.name}
+                            ? category.name_en
+                            : category.name_ar}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                  {form.touched.categoryId && form.errors.categoryId && (
+                  {form.touched.category_slug && form.errors.category_slug && (
                     <p className="text-red-500 text-xs">
-                      {form.errors.categoryId}
+                      {form.errors.category_slug}
                     </p>
                   )}
                 </div>
               </div>
 
+              <div className="flex md:gap-4 flex-col md:flex-row">
+                <div className="max-w-[400px] flex-1">
+                  <Input
+                    formik={form as any}
+                    placeholder={t("Dashboard.addCourse.pricePlaceholder")}
+                    label={t("Dashboard.addCourse.priceLabel")}
+                    name="price"
+                    number={true}
+                  />
+                </div>
+
+                <div className="max-w-[400px] flex-1">
+                  <Input
+                    formik={form as any}
+                    placeholder={t("Dashboard.addCourse.hoursPlaceholder")}
+                    label={t("Dashboard.addCourse.hoursLabel")}
+                    name="hours"
+                    number={true}
+                  />
+                </div>
+              </div>
+
+              <div className="max-w-[400px] flex-1 mb-4">
+                <label className="text-sm text-gray-700 font-[501]">
+                  {t("Dashboard.addCourse.levelLabel")}
+                </label>
+                <Select
+                  dir={i18n.language === "en" ? "ltr" : "rtl"}
+                  value={form.values.level || "none"}
+                  onValueChange={(val) => {
+                    form.setFieldValue("level", val)
+                    form.setFieldTouched("level", true)
+                  }}
+                  onOpenChange={(open) => {
+                    if (!open) {
+                      form.setFieldTouched("level", true)
+                    }
+                  }}
+                >
+                  <SelectTrigger
+                    className={`w-full my-2 rounded-sm border text-sm 
+                      ${
+                        form.touched.level && form.errors.level
+                          ? "border-red-500!"
+                          : "border-[#e2e6f1] focus-visible:border-(--main-color) data-[state=open]:border-(--main-color)"
+                      }
+                    `}
+                  >
+                    <SelectValue
+                      placeholder={t("Dashboard.addCourse.levelPlaceholder")}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem disabled value="none">
+                      {t("Dashboard.addCourse.levelPlaceholder")}
+                    </SelectItem>
+                    <SelectItem value="beginner">
+                      {t("Dashboard.addCourse.levelBeginner")}
+                    </SelectItem>
+                    <SelectItem value="intermediate">
+                      {t("Dashboard.addCourse.levelIntermediate")}
+                    </SelectItem>
+                    <SelectItem value="advanced">
+                      {t("Dashboard.addCourse.levelAdvanced")}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                {form.touched.level && form.errors.level && (
+                  <p className="text-red-500 text-xs">{form.errors.level}</p>
+                )}
+              </div>
+
+              <div className="mb-4">
+                <label className="text-sm text-gray-700 font-[501]">
+                  {t("Dashboard.addCourse.imageLabel")}
+                </label>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+                <div className="relative">
+                  <div
+                    onClick={handleImageClick}
+                    className={`w-full h-48 my-2 border-2 rounded-sm overflow-hidden ${
+                      imagePreview ? "border-[#e2e6f1]" : "border-dashed cursor-pointer hover:border-(--main-color)"
+                    } ${
+                      form.touched.image && form.errors.image
+                        ? "border-red-500"
+                        : "border-[#e2e6f1]"
+                    }`}
+                  >
+                    {imagePreview ? (
+                      <img
+                        src={imagePreview}
+                        alt="Course preview"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-12 w-12 mb-2"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          />
+                        </svg>
+                        <p className="text-sm">
+                          {t("Dashboard.addCourse.imageUploadPlaceholder")}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                  {imagePreview && (
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="absolute top-4 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition duration-200"
+                      title={t("Dashboard.addCourse.removeImage")}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+                {form.touched.image && form.errors.image && (
+                  <p className="text-red-500 text-xs">{form.errors.image}</p>
+                )}
+              </div>
+
               <label className="text-sm text-gray-700 font-[501]">
-                {t("Dashboard.addCourse.descriptionLabel")}
+                {t("Dashboard.addCourse.shortDescriptionLabel")}
               </label>
               <textarea
                 className={`w-full text-sm outline-none my-2 border rounded-sm duration-200 p-2 focus:border-(--main-color) ${
-                  form.touched.description && form.errors.description
+                  form.touched.short_description &&
+                  form.errors.short_description
                     ? "border-red-500!"
                     : "border-[#e2e6f1] special_shadow"
                 }`}
-                name="description"
-                rows={4}
-                placeholder={t("Dashboard.addCourse.descriptionPlaceholder")}
-                value={form.values.description}
+                name="short_description"
+                rows={3}
+                placeholder={t(
+                  "Dashboard.addCourse.shortDescriptionPlaceholder"
+                )}
+                value={form.values.short_description}
                 onChange={form.handleChange}
                 onBlur={form.handleBlur}
               />
-              {form.touched.description && form.errors.description && (
-                <p className="text-red-500 text-xs">
-                  {form.errors.description}
-                </p>
-              )}
+              {form.touched.short_description &&
+                form.errors.short_description && (
+                  <p className="text-red-500 text-xs">
+                    {form.errors.short_description}
+                  </p>
+                )}
+
+              <label className="text-sm text-gray-700 font-[501]">
+                {t("Dashboard.addCourse.detailedDescriptionLabel")}
+              </label>
+              <textarea
+                className={`w-full text-sm outline-none my-2 border rounded-sm duration-200 p-2 focus:border-(--main-color) ${
+                  form.touched.detailed_description &&
+                  form.errors.detailed_description
+                    ? "border-red-500!"
+                    : "border-[#e2e6f1] special_shadow"
+                }`}
+                name="detailed_description"
+                rows={6}
+                placeholder={t(
+                  "Dashboard.addCourse.detailedDescriptionPlaceholder"
+                )}
+                value={form.values.detailed_description}
+                onChange={form.handleChange}
+                onBlur={form.handleBlur}
+              />
+              {form.touched.detailed_description &&
+                form.errors.detailed_description && (
+                  <p className="text-red-500 text-xs">
+                    {form.errors.detailed_description}
+                  </p>
+                )}
 
               <button
                 type="submit"

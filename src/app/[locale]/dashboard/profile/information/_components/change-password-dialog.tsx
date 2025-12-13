@@ -124,7 +124,7 @@ export default function ChangePasswordDialog({
         {step === "request" ? (
           <div className="flex flex-col gap-4 pt-4">
             <button
-              className={`bg-(--main-color) cursor-pointer flex justify-center text-sm text-white rounded py-2 px-4 hover:bg-(--main-darker-color) transition duration-300`}
+              className={`bg-(--main-color) flex justify-center text-sm text-white rounded py-2 px-4 hover:bg-(--main-darker-color) transition duration-300 ${isLoading ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
               onClick={requestOTP}
               disabled={isLoading}
             >
@@ -178,7 +178,7 @@ export default function ChangePasswordDialog({
                 </button>
               </p>
               <button
-                className={`bg-(--main-color) cursor-pointer flex justify-center text-sm text-white rounded py-2 px-4 hover:bg-(--main-darker-color) transition duration-300`}
+                className={`bg-(--main-color) flex justify-center text-sm text-white rounded py-2 px-4 hover:bg-(--main-darker-color) transition duration-300 ${otpLoading ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
                 type="button"
                 onClick={handleSubmit}
                 disabled={otpLoading}

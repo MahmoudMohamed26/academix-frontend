@@ -45,14 +45,14 @@ export default function DataTable({
       return (
         <div className="flex gap-2">
           <Link
-            href={`/dashboard/${type}/edit/${item.slug}`}
+            href={`/dashboard/${type}/edit/${item.id}`}
             className="p-2 hover:bg-blue-100 cursor-pointer rounded-md transition-colors"
             aria-label="Edit"
           >
             <Pencil className="w-4 h-4 text-blue-600" />
           </Link>
           {onDelete && <button
-            onClick={() => onDelete(item.slug)}
+            onClick={() => onDelete(item.id)}
             className="p-2 hover:bg-red-100 cursor-pointer rounded-md transition-colors"
             aria-label="Delete"
           >
@@ -107,7 +107,7 @@ export default function DataTable({
           ) : (
             data.map((item, index) => (
               <TableRow
-                key={item.slug}
+                key={item.id}
                 className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}
               >
                 <TableCell>{index + 1}</TableCell>
