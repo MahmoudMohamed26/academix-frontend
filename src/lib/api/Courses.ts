@@ -7,6 +7,11 @@ export async function getCourses(axiosInstance: AxiosInstance): Promise<Course[]
   return res.data.data.courses;
 }
 
+export async function getCourse(axiosInstance: AxiosInstance , id: any): Promise<Course> {
+  const res = await axiosInstance.get(`/course/${id}`);
+  return res.data.data.course;
+}
+
 export async function deleteCourse(axiosInstance: AxiosInstance, courseId: string): Promise<void> {
   await axiosInstance.delete(`/course/${courseId}`);
 }

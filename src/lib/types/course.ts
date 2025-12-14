@@ -9,8 +9,8 @@ export interface Course {
   detailed_description: string
   instructor: string
   level: "beginner" | "intermediate" | "advanced"
-  hours: string
-  price: string
+  hours: number
+  price: number
   image: string
   published: boolean
   rating_avg: number
