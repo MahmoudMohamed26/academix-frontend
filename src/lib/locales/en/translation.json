@@ -111,6 +111,7 @@
     },
     "courses": {
       "pageTitle": "Courses",
+      "image": "Image",
       "title": "Title",
       "createdAt": "Created At",
       "updatedAt": "Updated At",

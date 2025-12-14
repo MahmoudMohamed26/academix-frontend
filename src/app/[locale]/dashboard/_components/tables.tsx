@@ -15,6 +15,7 @@ import { formatDate } from "@/helpers/format-date"
 import { DataTableProps, TableHeader as THeader } from "@/lib/types/table"
 import Link from "next/link"
 import { truncateText } from "@/helpers/word-cut"
+import Image from "next/image"
 
 export default function DataTable({
   data,
@@ -44,7 +45,11 @@ export default function DataTable({
       return truncateText(item.short_description , 15)
     } else if (header.key === "updated") {
       return formatDate(item.updated)
-    } else if (header.key === "actions") {
+    } else if (header.key === "image") {
+      return(
+        <Image unoptimized src={item.image} alt="course image" width={32} height={32} />
+      )
+    }else if (header.key === "actions") {
       return (
         <div className="flex gap-2">
           <Link

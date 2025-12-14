@@ -12,6 +12,7 @@ export default async function CoursesPage({
   const { t } = await useTranslation(locale)
 
   const tableHeaders: TableHeader[] = [
+    { key: "image", name: t("Dashboard.courses.image") },
     { key: "title", name: t("Dashboard.courses.title") },
     { key: "category", name: t("Dashboard.courses.category") },
     { key: "short_description", name: t("Dashboard.courses.description") },

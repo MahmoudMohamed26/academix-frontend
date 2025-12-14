@@ -112,6 +112,7 @@
     },
     "courses": {
       "pageTitle": "الدورات",
+      "image": "الصورة",
       "title": "العنوان",
       "createdAt": "تاريخ الإنشاء",
       "updatedAt": "تاريخ التحديث",

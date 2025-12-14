@@ -8,7 +8,7 @@ export async function getCourses(axiosInstance: AxiosInstance): Promise<Course[]
 }
 
 export async function deleteCourse(axiosInstance: AxiosInstance, courseId: string): Promise<void> {
-  await axiosInstance.delete(`/courses/${courseId}`);
+  await axiosInstance.delete(`/course/${courseId}`);
 }
 
 export function useDeleteCourse(axiosInstance: AxiosInstance) {
