@@ -20,12 +20,16 @@ import { Category } from "@/lib/types/category"
 import Input from "@/components/Input"
 import BtnLoad from "@/components/BtnLoad"
 import { CourseFormData } from "@/lib/types/course"
+import { Button } from "@/components/ui/button"
+import { X } from "lucide-react"
 
 interface AddCourseClientProps {
   initialCategories: Category[]
 }
 
-export default function AddCourseForm({ initialCategories }: AddCourseClientProps) {
+export default function AddCourseForm({
+  initialCategories,
+}: AddCourseClientProps) {
   const { t, i18n } = useTranslation()
   const Axios = useAxios()
   const queryClient = useQueryClient()
@@ -41,7 +45,9 @@ export default function AddCourseForm({ initialCategories }: AddCourseClientProp
     detailed_description: Yup.string().required(
       t("Dashboard.addCourse.requiredDetailedDescError")
     ),
-    category_slug: Yup.string().required(t("Dashboard.addCourse.requiredCategoryError")),
+    category_slug: Yup.string().required(
+      t("Dashboard.addCourse.requiredCategoryError")
+    ),
     price: Yup.number()
       .required(t("Dashboard.addCourse.requiredPriceError"))
       .min(0, t("Dashboard.addCourse.minPriceError")),
@@ -83,7 +89,7 @@ export default function AddCourseForm({ initialCategories }: AddCourseClientProp
       formData.append("hours", values.hours.toString())
       formData.append("level", values.level)
       formData.append("category_slug", values.category_slug.toString())
-      
+
       if (imageFile) {
         formData.append("image", imageFile)
       }
@@ -173,221 +179,217 @@ export default function AddCourseForm({ initialCategories }: AddCourseClientProp
             </div>
           ) : (
             <form className="mt-2" onSubmit={form.handleSubmit}>
-              <div className="flex md:gap-4 flex-col md:flex-row">
-                <div className="max-w-[400px] flex-1">
-                  <Input
-                    formik={form as any}
-                    placeholder={t("Dashboard.addCourse.namePlaceholder")}
-                    label={t("Dashboard.addCourse.nameLabel")}
-                    name="title"
-                  />
-                </div>
-
-                <div className="max-w-[400px] flex-1">
+              <div className="lg:flex gap-10">
+                <div className="mb-4 w-full sm:w-1/2 lg:w-1/3">
                   <label className="text-sm text-gray-700 font-[501]">
-                    {t("Dashboard.addCourse.categoryLabel")}
+                    {t("Dashboard.addCourse.imageLabel")}
                   </label>
-                  <Select
-                    dir={i18n.language === "en" ? "ltr" : "rtl"}
-                    value={form.values.category_slug?.toString() || "none"}
-                    onValueChange={(val) => {
-                      form.setFieldValue("category_slug", val)
-                      form.setFieldTouched("category_slug", true)
-                    }}
-                    onOpenChange={(open) => {
-                      if (!open) {
-                        form.setFieldTouched("category_slug", true)
-                      }
-                    }}
-                  >
-                    <SelectTrigger
-                      className={`w-full my-2 rounded-sm border text-sm 
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
+                  <div className="relative">
+                    <div
+                      onClick={handleImageClick}
+                      className={`w-full h-48 my-2 border-2 rounded-sm overflow-hidden ${
+                        imagePreview
+                          ? "border-[#e2e6f1]"
+                          : "border-dashed cursor-pointer hover:border-(--main-color)"
+                      } ${
+                        form.touched.image && form.errors.image
+                          ? "border-red-500"
+                          : "border-[#e2e6f1]"
+                      }`}
+                    >
+                      {imagePreview ? (
+                        <img
+                          src={imagePreview}
+                          alt="Course preview"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-12 w-12 mb-2"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                            />
+                          </svg>
+                          <p className="text-sm">
+                            {t("Dashboard.addCourse.imageUploadPlaceholder")}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                    {imagePreview && (
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        onClick={handleRemoveImage}
+                        className="size-6 absolute -end-2 -top-2 rounded-full"
+                        aria-label={t("Dashboard.avatarUpload.removeAvatar")}
+                      >
+                        <X className="size-3.5" />
+                      </Button>
+                    )}
+                  </div>
+                  {form.touched.image && form.errors.image && (
+                    <p className="text-red-500 text-xs">{form.errors.image}</p>
+                  )}
+                </div>
+                <div className="flex-1">
+                  <div className="flex md:gap-4 flex-col md:flex-row">
+                    <div className="max-w-[400px] flex-1">
+                      <Input
+                        formik={form as any}
+                        placeholder={t("Dashboard.addCourse.namePlaceholder")}
+                        label={t("Dashboard.addCourse.nameLabel")}
+                        name="title"
+                      />
+                    </div>
+
+                    <div className="max-w-[400px] flex-1">
+                      <label className="text-sm text-gray-700 font-[501]">
+                        {t("Dashboard.addCourse.categoryLabel")}
+                      </label>
+                      <Select
+                        dir={i18n.language === "en" ? "ltr" : "rtl"}
+                        value={form.values.category_slug?.toString() || "none"}
+                        onValueChange={(val) => {
+                          form.setFieldValue("category_slug", val)
+                          form.setFieldTouched("category_slug", true)
+                        }}
+                        onOpenChange={(open) => {
+                          if (!open) {
+                            form.setFieldTouched("category_slug", true)
+                          }
+                        }}
+                      >
+                        <SelectTrigger
+                          className={`w-full my-2 rounded-sm border text-sm 
                         ${
-                          form.touched.category_slug && form.errors.category_slug
+                          form.touched.category_slug &&
+                          form.errors.category_slug
                             ? "border-red-500!"
                             : "border-[#e2e6f1] focus-visible:border-(--main-color) data-[state=open]:border-(--main-color)"
                         }
                       `}
-                    >
-                      <SelectValue
-                        placeholder={t(
-                          "Dashboard.addCourse.categoryPlaceholder"
-                        )}
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem disabled value="none">
-                        {t("Dashboard.addCourse.categoryPlaceholder")}
-                      </SelectItem>
-                      {categories.map((category: any) => (
-                        <SelectItem
-                          key={category.id}
-                          value={category.id}
                         >
-                          {i18n.language === "en"
-                            ? category.name_en
-                            : category.name_ar}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {form.touched.category_slug && form.errors.category_slug && (
-                    <p className="text-red-500 text-xs">
-                      {form.errors.category_slug}
-                    </p>
-                  )}
-                </div>
-              </div>
+                          <SelectValue
+                            placeholder={t(
+                              "Dashboard.addCourse.categoryPlaceholder"
+                            )}
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem disabled value="none">
+                            {t("Dashboard.addCourse.categoryPlaceholder")}
+                          </SelectItem>
+                          {categories.map((category: any) => (
+                            <SelectItem key={category.id} value={category.id}>
+                              {i18n.language === "en"
+                                ? category.name_en
+                                : category.name_ar}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {form.touched.category_slug &&
+                        form.errors.category_slug && (
+                          <p className="text-red-500 text-xs">
+                            {form.errors.category_slug}
+                          </p>
+                        )}
+                    </div>
+                  </div>
 
-              <div className="flex md:gap-4 flex-col md:flex-row">
-                <div className="max-w-[400px] flex-1">
-                  <Input
-                    formik={form as any}
-                    placeholder={t("Dashboard.addCourse.pricePlaceholder")}
-                    label={t("Dashboard.addCourse.priceLabel")}
-                    name="price"
-                    number={true}
-                  />
-                </div>
+                  <div className="flex md:gap-4 flex-col md:flex-row">
+                    <div className="max-w-[400px] flex-1">
+                      <Input
+                        formik={form as any}
+                        placeholder={t("Dashboard.addCourse.pricePlaceholder")}
+                        label={t("Dashboard.addCourse.priceLabel")}
+                        name="price"
+                        number={true}
+                      />
+                    </div>
 
-                <div className="max-w-[400px] flex-1">
-                  <Input
-                    formik={form as any}
-                    placeholder={t("Dashboard.addCourse.hoursPlaceholder")}
-                    label={t("Dashboard.addCourse.hoursLabel")}
-                    name="hours"
-                    number={true}
-                  />
-                </div>
-              </div>
+                    <div className="max-w-[400px] flex-1">
+                      <Input
+                        formik={form as any}
+                        placeholder={t("Dashboard.addCourse.hoursPlaceholder")}
+                        label={t("Dashboard.addCourse.hoursLabel")}
+                        name="hours"
+                        number={true}
+                      />
+                    </div>
+                  </div>
 
-              <div className="max-w-[400px] flex-1 mb-4">
-                <label className="text-sm text-gray-700 font-[501]">
-                  {t("Dashboard.addCourse.levelLabel")}
-                </label>
-                <Select
-                  dir={i18n.language === "en" ? "ltr" : "rtl"}
-                  value={form.values.level || "none"}
-                  onValueChange={(val) => {
-                    form.setFieldValue("level", val)
-                    form.setFieldTouched("level", true)
-                  }}
-                  onOpenChange={(open) => {
-                    if (!open) {
-                      form.setFieldTouched("level", true)
-                    }
-                  }}
-                >
-                  <SelectTrigger
-                    className={`w-full my-2 rounded-sm border text-sm 
+                  <div className="max-w-[400px] flex-1 mb-4">
+                    <label className="text-sm text-gray-700 font-[501]">
+                      {t("Dashboard.addCourse.levelLabel")}
+                    </label>
+                    <Select
+                      dir={i18n.language === "en" ? "ltr" : "rtl"}
+                      value={form.values.level || "none"}
+                      onValueChange={(val) => {
+                        form.setFieldValue("level", val)
+                        form.setFieldTouched("level", true)
+                      }}
+                      onOpenChange={(open) => {
+                        if (!open) {
+                          form.setFieldTouched("level", true)
+                        }
+                      }}
+                    >
+                      <SelectTrigger
+                        className={`w-full my-2 rounded-sm border text-sm 
                       ${
                         form.touched.level && form.errors.level
                           ? "border-red-500!"
                           : "border-[#e2e6f1] focus-visible:border-(--main-color) data-[state=open]:border-(--main-color)"
                       }
                     `}
-                  >
-                    <SelectValue
-                      placeholder={t("Dashboard.addCourse.levelPlaceholder")}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem disabled value="none">
-                      {t("Dashboard.addCourse.levelPlaceholder")}
-                    </SelectItem>
-                    <SelectItem value="beginner">
-                      {t("Dashboard.addCourse.levelBeginner")}
-                    </SelectItem>
-                    <SelectItem value="intermediate">
-                      {t("Dashboard.addCourse.levelIntermediate")}
-                    </SelectItem>
-                    <SelectItem value="advanced">
-                      {t("Dashboard.addCourse.levelAdvanced")}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-                {form.touched.level && form.errors.level && (
-                  <p className="text-red-500 text-xs">{form.errors.level}</p>
-                )}
-              </div>
-
-              <div className="mb-4">
-                <label className="text-sm text-gray-700 font-[501]">
-                  {t("Dashboard.addCourse.imageLabel")}
-                </label>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                />
-                <div className="relative">
-                  <div
-                    onClick={handleImageClick}
-                    className={`w-full h-48 my-2 border-2 rounded-sm overflow-hidden ${
-                      imagePreview ? "border-[#e2e6f1]" : "border-dashed cursor-pointer hover:border-(--main-color)"
-                    } ${
-                      form.touched.image && form.errors.image
-                        ? "border-red-500"
-                        : "border-[#e2e6f1]"
-                    }`}
-                  >
-                    {imagePreview ? (
-                      <img
-                        src={imagePreview}
-                        alt="Course preview"
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-12 w-12 mb-2"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                          />
-                        </svg>
-                        <p className="text-sm">
-                          {t("Dashboard.addCourse.imageUploadPlaceholder")}
-                        </p>
-                      </div>
+                      >
+                        <SelectValue
+                          placeholder={t(
+                            "Dashboard.addCourse.levelPlaceholder"
+                          )}
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem disabled value="none">
+                          {t("Dashboard.addCourse.levelPlaceholder")}
+                        </SelectItem>
+                        <SelectItem value="beginner">
+                          {t("Dashboard.addCourse.levelBeginner")}
+                        </SelectItem>
+                        <SelectItem value="intermediate">
+                          {t("Dashboard.addCourse.levelIntermediate")}
+                        </SelectItem>
+                        <SelectItem value="advanced">
+                          {t("Dashboard.addCourse.levelAdvanced")}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {form.touched.level && form.errors.level && (
+                      <p className="text-red-500 text-xs">
+                        {form.errors.level}
+                      </p>
                     )}
                   </div>
-                  {imagePreview && (
-                    <button
-                      type="button"
-                      onClick={handleRemoveImage}
-                      className="absolute top-4 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition duration-200"
-                      title={t("Dashboard.addCourse.removeImage")}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-4 w-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </button>
-                  )}
                 </div>
-                {form.touched.image && form.errors.image && (
-                  <p className="text-red-500 text-xs">{form.errors.image}</p>
-                )}
               </div>
 
               <label className="text-sm text-gray-700 font-[501]">

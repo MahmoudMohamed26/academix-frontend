@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next"
 import { formatDate } from "@/helpers/format-date"
 import { DataTableProps, TableHeader as THeader } from "@/lib/types/table"
 import Link from "next/link"
+import { truncateText } from "@/helpers/word-cut"
 
 export default function DataTable({
   data,
@@ -39,6 +40,8 @@ export default function DataTable({
       return "N/A"
     } else if (header.key === "created") {
       return formatDate(item.created)
+    } else if (header.key === "short_description") {
+      return truncateText(item.short_description , 15)
     } else if (header.key === "updated") {
       return formatDate(item.updated)
     } else if (header.key === "actions") {
@@ -51,13 +54,15 @@ export default function DataTable({
           >
             <Pencil className="w-4 h-4 text-blue-600" />
           </Link>
-          {onDelete && <button
-            onClick={() => onDelete(item.id)}
-            className="p-2 hover:bg-red-100 cursor-pointer rounded-md transition-colors"
-            aria-label="Delete"
-          >
-            <Trash2 className="w-4 h-4 text-red-600" />
-          </button>}
+          {onDelete && (
+            <button
+              onClick={() => onDelete(item.id)}
+              className="p-2 hover:bg-red-100 cursor-pointer rounded-md transition-colors"
+              aria-label="Delete"
+            >
+              <Trash2 className="w-4 h-4 text-red-600" />
+            </button>
+          )}
         </div>
       )
     } else {

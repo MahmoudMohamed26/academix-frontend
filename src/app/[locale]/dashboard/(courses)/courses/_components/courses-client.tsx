@@ -8,6 +8,7 @@ import DeleteDialog from "../../../_components/delete-dialog"
 import { TableHeader } from "@/lib/types/table"
 import { useParams } from "next/navigation"
 import { Category } from "@/lib/types/category"
+import { Course } from "@/lib/types/course"
 
 interface CategoriesClientProps {
   tableHeaders: TableHeader[]
@@ -31,8 +32,8 @@ export default function Courses({ tableHeaders }: CategoriesClientProps) {
     setIsDialogOpen(true)
   }
   console.log(courses)
-  const getCategoryName = (category: Category) => {
-    return currLang === "ar" ? category.name_ar : category.name_en
+  const getCategoryName = (category: Course) => {
+    return currLang === "ar" ? category.category_ar : category.category_en
   }
 
   return (

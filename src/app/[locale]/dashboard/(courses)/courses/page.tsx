@@ -26,7 +26,7 @@ export default async function CoursesPage({
   return (
     <div>
       <SpecialHeader name={t("Dashboard.courses.pageTitle")} />
-        <CoursesClient tableHeaders={tableHeaders} />
+      <CoursesClient tableHeaders={tableHeaders} />
     </div>
   )
 }
