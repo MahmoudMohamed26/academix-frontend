@@ -119,7 +119,7 @@ export default function AddCourseForm({
       if (imageFile) {
         formData.append("image", imageFile)
       }
-      const response = await Axios.post(`/course/${id}`, formData)
+      const response = await Axios.post(`/courses/${id}`, formData)
       return response.data
     },
     onSuccess: () => {

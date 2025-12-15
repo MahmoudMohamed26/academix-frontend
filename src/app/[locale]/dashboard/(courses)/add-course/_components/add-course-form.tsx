@@ -94,7 +94,7 @@ export default function AddCourseForm({
         formData.append("image", imageFile)
       }
 
-      const response = await Axios.post("/course", formData, {
+      const response = await Axios.post("/courses", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
