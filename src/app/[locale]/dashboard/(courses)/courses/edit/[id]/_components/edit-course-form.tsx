@@ -23,7 +23,7 @@ import { CourseFormData } from "@/lib/types/course"
 import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
 import { getCourse } from "@/lib/api/Courses"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 
 interface AddCourseClientProps {
   initialCategories: Category[]
@@ -34,17 +34,13 @@ export default function AddCourseForm({
 }: AddCourseClientProps) {
   const { t, i18n } = useTranslation()
   const Axios = useAxios()
-  const { id } = useParams();
+  const { id } = useParams()
   const queryClient = useQueryClient()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [imagePreview, setImagePreview] = useState<string>("")
   const [imageFile, setImageFile] = useState<File | null>(null)
-
-  const { data: course , isLoading } = useQuery({
-    queryKey: [id],
-    queryFn: () => getCourse(Axios , id),
-    staleTime: 10 * 60 * 1000,
-  })
+  const [isFormReady, setIsFormReady] = useState(false)
+  const router = useRouter()
 
   const { data: categories, isLoading: categoriesLoading } = useQuery({
     queryKey: ["categories"],
@@ -52,7 +48,13 @@ export default function AddCourseForm({
     initialData: initialCategories,
   })
 
-  // Set image preview when course data loads
+  const { data: course, isLoading } = useQuery({
+    queryKey: ["courses", id],
+    queryFn: () => getCourse(Axios, id),
+    staleTime: 10 * 60 * 1000,
+    enabled: !!categories,
+  })
+
   useEffect(() => {
     if (course?.image) {
       setImagePreview(course.image)
@@ -80,18 +82,6 @@ export default function AddCourseForm({
     image: Yup.mixed(),
   })
 
-  // Find the category slug from categories based on the course's category name
-  const getCategorySlug = () => {
-    if (!course || !categories) return "none"
-    
-    const matchedCategory = categories.find(
-      (cat: any) =>
-        cat.name_en === course.category_en || cat.name_ar === course.category_ar
-    )
-    
-    return matchedCategory?.id || "none"
-  }
-
   const form = useFormik<CourseFormData>({
     initialValues: {
       title: course?.title || "",
@@ -101,7 +91,7 @@ export default function AddCourseForm({
       price: course?.price || 0,
       hours: course?.hours || 0,
       level: course?.level || "beginner",
-      category_slug: getCategorySlug(),
+      category_slug: course?.category?.id || "none",
     },
     enableReinitialize: true,
     validationSchema,
@@ -124,20 +114,17 @@ export default function AddCourseForm({
       formData.append("hours", values.hours.toString())
       formData.append("level", values.level)
       formData.append("category_slug", values.category_slug.toString())
+      formData.append("_method", "PATCH")
 
       if (imageFile) {
         formData.append("image", imageFile)
       }
-
-      const response = await Axios.patch(`/course/${id}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
+      const response = await Axios.post(`/course/${id}`, formData)
       return response.data
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["courses"] })
+      router.push("/dashboard/courses")
       toast.success(t("Dashboard.addCourse.editSuccessMessage"))
     },
     onError: (error) => {
@@ -179,6 +166,12 @@ export default function AddCourseForm({
       fileInputRef.current.value = ""
     }
   }
+
+  useEffect(() => {
+    if (course) {
+      setTimeout(() => setIsFormReady(true), 0)
+    }
+  }, [course])
 
   const handleImageClick = () => {
     if (!imagePreview) {
@@ -291,10 +284,12 @@ export default function AddCourseForm({
                       </label>
                       <Select
                         dir={i18n.language === "en" ? "ltr" : "rtl"}
-                        value={form.values.category_slug?.toString() || "none"}
+                        value={form.values.category_slug || "none"}
                         onValueChange={(val) => {
-                          form.setFieldValue("category_slug", val)
-                          form.setFieldTouched("category_slug", true)
+                          if (isFormReady) {
+                            form.setFieldValue("category_slug", val)
+                            form.setFieldTouched("category_slug", true)
+                          }
                         }}
                         onOpenChange={(open) => {
                           if (!open) {
@@ -370,8 +365,10 @@ export default function AddCourseForm({
                       dir={i18n.language === "en" ? "ltr" : "rtl"}
                       value={form.values.level || "none"}
                       onValueChange={(val) => {
-                        form.setFieldValue("level", val)
-                        form.setFieldTouched("level", true)
+                        if (isFormReady) {
+                          form.setFieldValue("level", val)
+                          form.setFieldTouched("level", true)
+                        }
                       }}
                       onOpenChange={(open) => {
                         if (!open) {

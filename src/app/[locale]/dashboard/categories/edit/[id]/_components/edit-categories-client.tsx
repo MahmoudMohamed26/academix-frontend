@@ -10,7 +10,6 @@ import Input from "@/components/Input"
 import BtnLoad from "@/components/BtnLoad"
 import { CategoryFormData } from "@/lib/types/category"
 import { useParams, useRouter } from "next/navigation"
-import { getCategory } from "@/lib/api/Categories"
 import Skeleton from "react-loading-skeleton"
 import { useEffect, useState } from "react"
 

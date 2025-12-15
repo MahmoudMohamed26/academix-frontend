@@ -31,9 +31,8 @@ export default function Courses({ tableHeaders }: CategoriesClientProps) {
     setSelectedCourseId(courseId)
     setIsDialogOpen(true)
   }
-  console.log(courses)
-  const getCategoryName = (category: Course) => {
-    return currLang === "ar" ? category.category_ar : category.category_en
+  const getCategoryName = (course: Course) => {
+    return currLang === "ar" ? course.category.name_ar : course.category.name_en
   }
 
   return (

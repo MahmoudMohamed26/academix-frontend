@@ -47,7 +47,7 @@ export default function DataTable({
       return formatDate(item.updated)
     } else if (header.key === "image") {
       return(
-        <Image unoptimized src={item.image} alt="course image" width={32} height={32} />
+        <Image unoptimized src={item.image} alt="course image" width={64} height={64} />
       )
     }else if (header.key === "actions") {
       return (

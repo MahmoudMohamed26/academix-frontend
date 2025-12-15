@@ -1,5 +1,3 @@
-import { Category } from "./category"
-
 export interface Course {
   id: string
   title: string
@@ -17,6 +15,11 @@ export interface Course {
   rating_counts: number
   created: string
   updated: string
+  category: {
+    id: string
+    name_ar: string
+    name_en: string
+  }
 }
 
 export interface CourseFormData {
