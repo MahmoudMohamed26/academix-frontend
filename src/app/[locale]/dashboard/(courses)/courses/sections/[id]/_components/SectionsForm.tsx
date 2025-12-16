@@ -1,0 +1,159 @@
+"use client"
+import { Section } from "@/lib/types/section"
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core"
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable"
+import { useEffect, useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Plus } from "lucide-react"
+import SectionItem from "./section-item"
+import { useQuery } from "@tanstack/react-query"
+import { useParams } from "next/navigation"
+import { getSections } from "@/lib/api/Sections"
+import useAxios from "@/hooks/useAxios"
+import Skeleton from "react-loading-skeleton"
+
+export default function SectionsForm() {
+  const [sections, setSections] = useState<Section[]>([])
+  const { id } = useParams()
+  const Axios = useAxios()
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["sections", id],
+    queryFn: () => getSections(Axios, id),
+  })
+
+  useEffect(() => {
+    if (data) {
+      setSections(data)
+    }
+  }, [data])
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  )
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+    if (over && active.id !== over.id) {
+      setSections((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id)
+        const newIndex = items.findIndex((item) => item.id === over.id)
+        const reordered = arrayMove(items, oldIndex, newIndex)
+        return reordered.map((item, index) => ({
+          ...item,
+          position: index,
+        }))
+      })
+    }
+  }
+
+  const handleCreateSection = () => {
+    const newSection: Section = {
+      id: `temp-section-${Date.now()}`,
+      title: `Section ${sections.length + 1}`,
+      description: "",
+      position: sections.length,
+      lectures: [],
+      quizzes: [],
+    }
+    setSections([...sections, newSection])
+  }
+
+  const handleUpdateSection = (id: string, data: Partial<Section>) => {
+    setSections(
+      sections.map((section) =>
+        section.id === id ? { ...section, ...data } : section
+      )
+    )
+  }
+
+  const handleDeleteSection = (id: string) => {
+    setSections(sections.filter((section) => section.id !== id))
+  }
+
+  if (isLoading) {
+    return (
+      <div className="px-2 py-4 mt-6 bg-[#ffff] rounded-md">
+        <div className="flex items-center justify-between mb-4">
+          <Skeleton className="h-7! w-40!" />
+          <Skeleton className="h-10! w-36!" />
+        </div>
+        <div>
+          <Skeleton height={50} className="w-full! mb-5" />
+          <Skeleton height={50} className="w-full! mb-5" />
+          <Skeleton height={50} className="w-full! mb-5" />
+          <Skeleton height={50} className="w-full! mb-5" />
+          <Skeleton height={50} className="w-full! mb-5" />
+          <Skeleton height={50} className="w-full! mb-5" />
+          <Skeleton height={50} className="w-full! mb-5" />
+          <Skeleton height={50} className="w-full! mb-5" />
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <>
+      {/* Sections Section - Outside Form */}
+      <div className="px-2 py-4 mt-6 bg-[#ffff] rounded-md">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-gray-800">
+            Course Sections
+          </h3>
+          <Button
+            type="button"
+            onClick={handleCreateSection}
+            className="bg-(--main-color) hover:bg-(--main-darker-color) gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            Create Section
+          </Button>
+        </div>
+        {sections.length === 0 ? (
+          <div className="text-center py-12 text-gray-400">
+            <p className="text-sm">
+              No sections yet. Click "Create Section" to add a new section.
+            </p>
+          </div>
+        ) : (
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={sections.map((s) => s.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              {sections.map((section) => (
+                <SectionItem
+                  key={section.id}
+                  section={section as any}
+                  onUpdate={handleUpdateSection}
+                  onDelete={handleDeleteSection}
+                  courseId={id as string}
+                />
+              ))}
+            </SortableContext>
+          </DndContext>
+        )}
+      </div>
+    </>
+  )
+}

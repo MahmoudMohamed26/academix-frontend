@@ -23,6 +23,7 @@ import { CourseFormData } from "@/lib/types/course"
 import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
 
+
 interface AddCourseClientProps {
   initialCategories: Category[]
 }
@@ -69,12 +70,13 @@ export default function AddCourseForm({
       level: "beginner",
       category_slug: "none",
     },
-    validationSchema,
+    // validationSchema,
     onSubmit: async (values) => {
       if (!imageFile) {
         toast.error(t("Dashboard.addCourse.requiredImageError"))
         return
       }
+
       createCourseMutation.mutate(values)
     },
   })

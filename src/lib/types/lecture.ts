@@ -1,9 +1,9 @@
 export type Lecture = {
-  id: string
   title: string
-  video: {
-    url: string
-  }
+  content: string
+  position: number
+  duration: number
+  video_url: string
 }
 
 export type LocalLecture = {

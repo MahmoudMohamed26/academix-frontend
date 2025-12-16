@@ -1,12 +1,15 @@
+import { Lecture } from "./lecture"
+
 export type SectionFormData = {
   title: string
   description: string
 }
 
-export type Section = {
-  id: number
+export interface Section {
+  id: string
   title: string
   description: string
-  courseId: number
-  order: number
+  position: number
+  lectures: Lecture[]
+  quizzes?: any
 }
