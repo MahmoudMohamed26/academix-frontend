@@ -155,12 +155,18 @@ function Sidebar({
   variant = "sidebar",
   collapsible = "offcanvas",
   className,
+  forceMobile = false,
+  open, // Add this
+  onOpenChange, // Add this
   children,
   ...props
 }: React.ComponentProps<"div"> & {
   side?: "left" | "right"
-  variant?: "sidebar" | "floating" | "inset"
+  variant?: "sidebar" | "floating" | "inset" | "mobile"
   collapsible?: "offcanvas" | "icon" | "none"
+  forceMobile?: boolean
+  open?: boolean // Add this type
+  onOpenChange?: (open: boolean) => void // Add this type
 }) {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
 
@@ -179,9 +185,13 @@ function Sidebar({
     )
   }
 
-  if (isMobile) {
+  if (forceMobile || isMobile) {
+    // Use custom open/onOpenChange if provided, otherwise use context
+    const isOpen = forceMobile && open !== undefined ? open : openMobile
+    const setIsOpen = forceMobile && onOpenChange !== undefined ? onOpenChange : setOpenMobile
+
     return (
-      <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
+      <Sheet open={isOpen} onOpenChange={setIsOpen} {...props}>
         <SheetContent
           data-sidebar="sidebar"
           data-slot="sidebar"

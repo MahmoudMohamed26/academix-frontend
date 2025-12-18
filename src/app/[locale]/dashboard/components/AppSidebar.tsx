@@ -49,6 +49,8 @@ import { getCategories } from "@/lib/api/Categories"
 import SidebarSkeleton from "./SidebarSkeleton"
 import { Category } from "@/lib/types/category"
 import { getUser } from "@/lib/api/User"
+import Image from "next/image"
+import avatarFallbackImage from "@/assets/avatar.webp"
 
 export function AppSidebar() {
   const { i18n, t } = useTranslation()
@@ -322,67 +324,73 @@ export function AppSidebar() {
 
       {/* Footer */}
       <SidebarFooter>
-        {userLoading ? 
-        <div className="flex gap-2">
-          <Skeleton width={32} className="rounded-full!" height={32} />
-          <div className="flex-1">
-            <Skeleton className="w-full" height={20} />
-            <Skeleton className="w-full" height={10} />
+        {userLoading ? (
+          <div className="flex gap-2">
+            <Skeleton width={32} className="rounded-full!" height={32} />
+            <div className="flex-1">
+              <Skeleton className="w-full" height={20} />
+              <Skeleton className="w-full" height={10} />
+            </div>
+            <div>
+              <Skeleton width={20} height={30} />
+            </div>
           </div>
-          <div>
-            <Skeleton width={20} height={30} />
-          </div>
-        </div>
-        : <>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname.includes("/profile")}
-              >
-                <Link href="/dashboard/profile" onClick={handleItemClick}>
-                  <UserIcon />
-                  <span>{t("sidebar.profile")}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
+        ) : (
+          <>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname.includes("/profile")}
+                >
+                  <Link href="/dashboard/profile" onClick={handleItemClick}>
+                    <UserIcon />
+                    <span>{t("sidebar.profile")}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
 
-          <SidebarMenu className="md:hidden">
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <div>
-                  <Language form={2} />
-                </div>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-          <div className="flex items-center space-x-3 p-2 bg-gray-50 rounded-lg">
-            <Avatar className="h-8 w-8">
-              <AvatarImage
-                src={user?.avatar_url as any}
-                alt={t("Dashboard.avatarUpload.avatarAlt")}
-              />
-              <AvatarFallback>
-                {user?.name.charAt(0) + secondname.charAt(0)}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">
-                {user?.name}
-              </p>
-              <p className="text-xs text-gray-600 truncate">{user?.email}</p>
+            <SidebarMenu className="md:hidden">
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <div>
+                    <Language form={2} />
+                  </div>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+            <div className="flex items-center space-x-3 p-2 bg-gray-50 rounded-lg">
+              <Avatar className="h-8 w-8">
+                <AvatarImage
+                  src={user?.avatar_url as any}
+                  alt={t("Dashboard.avatarUpload.avatarAlt")}
+                />
+                <AvatarFallback>
+                  <Image
+                    className="rounded-full"
+                    src={avatarFallbackImage}
+                    alt="avatar fall back image"
+                  />
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-900 truncate">
+                  {user?.name}
+                </p>
+                <p className="text-xs text-gray-600 truncate">{user?.email}</p>
+              </div>
+              <div title="Logout" onClick={logout}>
+                <LogOut
+                  className={`text-red-400 cursor-pointer ${
+                    i18n.language === "ar" && "rotate-180"
+                  } duration-300 hover:text-red-700`}
+                  size={20}
+                />
+              </div>
             </div>
-            <div title="Logout" onClick={logout}>
-              <LogOut
-                className={`text-red-400 cursor-pointer ${
-                  i18n.language === "ar" && "rotate-180"
-                } duration-300 hover:text-red-700`}
-                size={20}
-              />
-            </div>
-          </div>
-        </>}
+          </>
+        )}
       </SidebarFooter>
     </Sidebar>
   )

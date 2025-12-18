@@ -33,7 +33,7 @@ export default function AppNavbar() {
           </div>
         </div>
         <div className="md:block hidden">
-          <Language form={3} />
+          <Language form={1} />
         </div>
       </div>
     </nav>

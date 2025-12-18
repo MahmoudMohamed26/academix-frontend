@@ -1,8 +1,8 @@
-export default function HomePage() {
+export default async function HomePage() {
 
   return (
-    <div className="container mx-auto p-8">
-      home
-    </div>
-  );
+    <>
+    home
+    </>
+  )
 }

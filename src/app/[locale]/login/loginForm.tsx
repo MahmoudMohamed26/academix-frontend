@@ -50,7 +50,7 @@ export default function LoginForm() {
       setLoad(true)
       await Axios.post(`/auth/login`, form.values)
       toast.success(t("login.success"))
-      router.replace("/dashboard")
+      router.replace("/")
     } catch (err) {
       if (isAxiosError(err)) {
         if (err.response?.status === 422)

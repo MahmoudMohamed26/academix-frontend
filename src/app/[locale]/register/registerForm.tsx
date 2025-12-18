@@ -64,7 +64,7 @@ export default function RegisterForm() {
       setLoad(false)
       setUsedEmail(false)
       toast.success(t("register.success"))
-      router.replace("/dashboard")
+      router.replace("/")
     } catch (err) {
       setLoad(false)
       if (isAxiosError(err)) {
