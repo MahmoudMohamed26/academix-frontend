@@ -32,8 +32,7 @@ export default async function middleware(request: NextRequest) {
   )
 
   if (!hasLocale) {
-    const locale =
-      request.cookies.get("NEXT_LOCALE")?.value || defaultLocale
+    const locale = request.cookies.get("NEXT_LOCALE")?.value || defaultLocale
     const url = request.nextUrl.clone()
     url.pathname = `/${locale}${pathname}`
     return NextResponse.redirect(url)
@@ -47,6 +46,21 @@ export default async function middleware(request: NextRequest) {
 
   const isAuthPage = path.startsWith("/login") || path.startsWith("/register")
   const isDashboard = path.startsWith("/dashboard")
+
+  if (path === "/dashboard/profile") {
+    const url = request.nextUrl.clone()
+    url.pathname = `/${locale}/dashboard/profile/information`
+    return NextResponse.redirect(url)
+  }
+
+  if (
+    path === "/dashboard/courses/edit" ||
+    path === "/dashboard/courses/sections"
+  ) {
+    const url = request.nextUrl.clone()
+    url.pathname = `/${locale}/dashboard/courses`
+    return NextResponse.redirect(url)
+  }
 
   if (isLoggedIn && isAuthPage) {
     const url = request.nextUrl.clone()
