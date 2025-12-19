@@ -62,6 +62,8 @@
   },
   "sidebar": {
     "dashboard": "لوحة التحكم",
+    "login": "تسجيل دخول",
+    "register": "انشاء حساب",
     "instructors": "المعلمين",
     "aboutus": "نبذه عننا",
     "logout": "تسجيل خروج",

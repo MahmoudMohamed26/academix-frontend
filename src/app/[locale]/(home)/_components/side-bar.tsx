@@ -37,7 +37,11 @@ type WebsiteSidebarProps = {
   logout?: any
 }
 
-export default function WebsiteSidebar({ image, name, logout }: WebsiteSidebarProps) {
+export default function WebsiteSidebar({
+  image,
+  name,
+  logout,
+}: WebsiteSidebarProps) {
   const { t, i18n } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
   const navigationItems = [
@@ -113,7 +117,9 @@ export default function WebsiteSidebar({ image, name, logout }: WebsiteSidebarPr
             </Avatar>
             <div>
               <p className="font-bold text-2xl">{t("welcome")},</p>
-              <p>{truncateText(name?.split(" ")[0] as any, 10)}</p>
+              <p>
+                {name ? truncateText(name?.split(" ")[0] as any, 10) : "Guest"}
+              </p>
             </div>
           </div>
         </SidebarHeader>
@@ -138,35 +144,55 @@ export default function WebsiteSidebar({ image, name, logout }: WebsiteSidebarPr
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
-          <SidebarGroup>
-            <SidebarGroupLabel>{t("sidebar.account")}</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {profileNavigation.map((item) => (
+          {name ? (
+            <SidebarGroup>
+              <SidebarGroupLabel>{t("sidebar.account")}</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {profileNavigation.map((item) => (
+                    <SidebarMenuItem
+                      key={item.title}
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <SidebarMenuButton asChild>
+                        <Link className="py-5" href={item.url}>
+                          <item.icon />
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
                   <SidebarMenuItem
-                    key={item.title}
+                    className="py-1"
                     onClick={() => setIsOpen(false)}
                   >
-                    <SidebarMenuButton asChild>
-                      <Link className="py-5" href={item.url}>
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </Link>
+                    <SidebarMenuButton
+                      onClick={logout}
+                      className="text-red-500 hover:text-red-500 cursor-pointer"
+                    >
+                      <LogOut />
+                      {t("sidebar.logout")}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
-                ))}
-                <SidebarMenuItem
-                  className="py-1"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <SidebarMenuButton onClick={logout} className="text-red-500">
-                    <LogOut />
-                    {t("sidebar.logout")}
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          ) : (
+            <div className="p-2">
+              <Link
+                className="py-2 text-center block px-8 bg-(--main-color) duration-300 border border-(--main-color) text-sm font-semibold text-white rounded-sm hover:bg-(--main-darker-color)"
+                href={"/login"}
+              >
+                {t("sidebar.login")}
+              </Link>
+              <Link
+                className="py-2 text-center mt-2 block px-8 hover:bg-(--main-color) duration-300 hover:text-white font-semibold text-sm border border-(--main-color) rounded-sm"
+                href={"/login"}
+              >
+                {t("sidebar.register")}
+              </Link>
+            </div>
+          )}
         </SidebarContent>
       </Sidebar>
     </>

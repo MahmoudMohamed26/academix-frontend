@@ -216,11 +216,11 @@ export default function NavBar() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   dir={i18n.language === "ar" ? "rtl" : "ltr"}
-                  className="cursor-pointer p-1.5!"
+                  className="cursor-pointer p-1.5! text-red-500 hover:text-red-500!"
                   onClick={logout}
                 >
                   <LogOut
-                    className={`${i18n.language === "ar" && "rotate-180"}`}
+                    className={`${i18n.language === "ar" && "rotate-180"} text-red-500`}
                     size={20}
                   />
                   {t("sidebar.logout")}
@@ -234,13 +234,13 @@ export default function NavBar() {
               className="py-2 px-8 bg-(--main-color) duration-300 border border-(--main-color) text-sm font-semibold text-white rounded-sm hover:bg-(--main-darker-color)"
               href={"/login"}
             >
-              Login
+              {t("sidebar.login")}
             </Link>
             <Link
               className="py-2 px-8 hover:bg-(--main-color) duration-300 hover:text-white font-semibold text-sm border border-(--main-color) rounded-sm"
               href={"/login"}
             >
-              Sign up
+              {t("sidebar.register")}
             </Link>
           </div>
         )}

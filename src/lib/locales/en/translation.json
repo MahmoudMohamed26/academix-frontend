@@ -63,6 +63,8 @@
   "sidebar": {
     "dashboard": "Dashboard",
     "instructors": "Instructors",
+    "login": "Login",
+    "register": "Sign up",
     "aboutus": "About us",
     "logout": "Logout",
     "home": "Home",
