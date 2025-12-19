@@ -1,24 +1,22 @@
-// middleware.ts
 import { NextRequest, NextResponse } from "next/server"
 import { jwtVerify } from "jose"
 
 const locales = ["en", "ar"]
 const defaultLocale = "en"
 
-const secret = new TextEncoder().encode(process.env.JWT_SECRET)
+const secret = new TextEncoder().encode(process.env.JWT_SECRET!)
 
-async function isValidToken(token: string | undefined) {
-  if (!token || !secret) return false
-
+async function isValidToken(token?: string) {
+  if (!token) return false
   try {
     await jwtVerify(token, secret)
     return true
-  } catch (error) {
+  } catch {
     return false
   }
 }
 
-export default async function proxy(request: NextRequest) {
+export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   if (
@@ -29,69 +27,46 @@ export default async function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
-  const pathnameHasLocale = locales.some(
-    (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`,
+  const hasLocale = locales.some(
+    (l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`)
   )
 
-  if (!pathnameHasLocale) {
-    const locale = request.cookies.get("NEXT_LOCALE")?.value || defaultLocale
+  if (!hasLocale) {
+    const locale =
+      request.cookies.get("NEXT_LOCALE")?.value || defaultLocale
     const url = request.nextUrl.clone()
     url.pathname = `/${locale}${pathname}`
     return NextResponse.redirect(url)
   }
 
-  const locale = pathname.split("/")[1] || defaultLocale
+  const locale = pathname.split("/")[1]
+  const path = pathname.replace(`/${locale}`, "") || "/"
 
-  // Redirect /dashboard/profile to /dashboard/profile/information
-  const profileMatch = pathname.match(/^\/[^\/]+\/dashboard\/profile\/?$/)
-  if (profileMatch) {
-    const url = request.nextUrl.clone()
-    url.pathname = `/${locale}/dashboard/profile/information`
-    return NextResponse.redirect(url)
-  }
+  const token = request.cookies.get("access_token")?.value
+  const isLoggedIn = await isValidToken(token)
 
-  const authPages = ["/login", "/register"]
-  const protectedPages = ["/dashboard"]
+  const isAuthPage = path.startsWith("/login") || path.startsWith("/register")
+  const isDashboard = path.startsWith("/dashboard")
 
-  const pathWithoutLocale = pathname.replace(`/${locale}`, "") || "/"
-
-  const isAuthPage = authPages.some((page) =>
-    pathWithoutLocale.startsWith(page),
-  )
-  const isProtectedPage = protectedPages.some((page) =>
-    pathWithoutLocale.startsWith(page),
-  )
-
-  const tokenCookie = request.cookies.get("access_token")
-  const token = tokenCookie?.value
-
-  const tokenIsValid = await isValidToken(token)
-
-  if (token && !tokenIsValid) {
-    const url = request.nextUrl.clone()
-    url.pathname = `/${locale}/login`
-
-    const res = NextResponse.redirect(url)
-    res.cookies.set({
-      name: "access_token",
-      value: "",
-      maxAge: 0,
-      path: "/",
-    })
-
-    return res
-  }
-
-  if (tokenIsValid && isAuthPage) {
+  if (isLoggedIn && isAuthPage) {
     const url = request.nextUrl.clone()
     url.pathname = `/${locale}`
     return NextResponse.redirect(url)
   }
 
-  if (!tokenIsValid && isProtectedPage) {
+  if (!isLoggedIn && isDashboard) {
     const url = request.nextUrl.clone()
     url.pathname = `/${locale}/login`
     return NextResponse.redirect(url)
+  }
+
+  if (token && !isLoggedIn) {
+    const url = request.nextUrl.clone()
+    url.pathname = `/${locale}/login`
+
+    const res = NextResponse.redirect(url)
+    res.cookies.set("access_token", "", { maxAge: 0, path: "/" })
+    return res
   }
 
   return NextResponse.next()
