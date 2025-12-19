@@ -139,7 +139,7 @@ export function AppSidebar() {
       className="border-e"
     >
       <SidebarHeader>
-        <div className="flex items-center space-x-2 px-2">
+        <div className="flex items-center justify-center space-x-2 px-2">
           <p className="text-3xl font-bold">Academix</p>
           <Logo w={80} h={80} />
         </div>

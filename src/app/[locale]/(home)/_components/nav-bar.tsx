@@ -23,7 +23,6 @@ import {
   ChartNoAxesColumn,
   Heart,
   LogOut,
-  Menu,
   Search,
   ShoppingCart,
   User,
@@ -34,7 +33,6 @@ import Image from "next/image"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { truncateText } from "@/helpers/word-cut"
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import WebsiteSidebar from "./side-bar"
 
 export default function NavBar() {
@@ -118,7 +116,7 @@ export default function NavBar() {
                 className="hover:bg-orange-100 text-sm hover:text-(--main-color) rounded-sm py-2 px-4"
                 href="/"
               >
-                Home
+                {t("sidebar.home")}
               </a>
             </li>
             <li>
@@ -126,7 +124,7 @@ export default function NavBar() {
                 className="hover:bg-orange-100 text-sm hover:text-(--main-color) rounded-sm py-2 px-4"
                 href="/"
               >
-                Courses
+                {t("sidebar.courses")}
               </a>
             </li>
             <li>
@@ -134,7 +132,7 @@ export default function NavBar() {
                 className="hover:bg-orange-100 text-sm hover:text-(--main-color) rounded-sm py-2 px-4"
                 href="/"
               >
-                Instructors
+                {t("sidebar.instructors")}
               </a>
             </li>
             <li>
@@ -142,7 +140,7 @@ export default function NavBar() {
                 className="hover:bg-orange-100 text-sm hover:text-(--main-color) rounded-sm py-2 px-4"
                 href="/"
               >
-                About us
+                {t("sidebar.aboutus")}
               </a>
             </li>
           </ul>
@@ -182,41 +180,42 @@ export default function NavBar() {
                 className="min-w-[200px]"
                 align={i18n.language === "en" ? "end" : "start"}
               >
-                <DropdownMenuLabel>
-                  Welcome, {truncateText(user?.name.split(" ")[0], 10)}
+                <DropdownMenuLabel dir={i18n.language === "ar" ? "rtl" : "ltr"}>
+                  {t("welcome")}, {truncateText(user?.name.split(" ")[0], 10)}
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem dir={i18n.language === "ar" ? "rtl" : "ltr"}>
                   <Link className="flex gap-2 w-full p-1.5" href="/dashboard">
-                    <ChartNoAxesColumn /> Dashboard
+                    <ChartNoAxesColumn /> {t("sidebar.dashboard")}
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem dir={i18n.language === "ar" ? "rtl" : "ltr"}>
                   <Link
                     className="flex gap-2 w-full p-1.5"
                     href="/dashboard/profile"
                   >
-                    <User /> Profile
+                    <User /> {t("sidebar.profile")}
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem dir={i18n.language === "ar" ? "rtl" : "ltr"}>
                   <Link
                     className="flex gap-2 w-full p-1.5"
                     href="/dashboard/my-learning"
                   >
-                    <BookOpenText /> My Learning
+                    <BookOpenText /> {t("sidebar.myLearning")}
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem dir={i18n.language === "ar" ? "rtl" : "ltr"}>
                   <Link
                     className="flex gap-2 w-full p-1.5"
                     href="/dashboard/certificates"
                   >
-                    <Award /> Certificates
+                    <Award /> {t("sidebar.certificates")}
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
+                  dir={i18n.language === "ar" ? "rtl" : "ltr"}
                   className="cursor-pointer p-1.5!"
                   onClick={logout}
                 >
@@ -224,7 +223,7 @@ export default function NavBar() {
                     className={`${i18n.language === "ar" && "rotate-180"}`}
                     size={20}
                   />
-                  Logout
+                  {t("sidebar.logout")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -246,7 +245,11 @@ export default function NavBar() {
           </div>
         )}
         <div className="lg:hidden">
-            <WebsiteSidebar />
+          <WebsiteSidebar
+            image={user?.avatar_url}
+            name={user?.name}
+            logout={logout}
+          />
         </div>
       </div>
       <div className="container">

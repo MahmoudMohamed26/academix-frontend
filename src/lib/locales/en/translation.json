@@ -61,7 +61,12 @@
     }
   },
   "sidebar": {
+    "dashboard": "Dashboard",
+    "instructors": "Instructors",
+    "aboutus": "About us",
+    "logout": "Logout",
     "home": "Home",
+    "account": "Account",
     "browseCourses": "Browse Courses",
     "myLearning": "My Learning",
     "certificates": "Certificates",

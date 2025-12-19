@@ -61,7 +61,12 @@
     }
   },
   "sidebar": {
+    "dashboard": "لوحة التحكم",
+    "instructors": "المعلمين",
+    "aboutus": "نبذه عننا",
+    "logout": "تسجيل خروج",
     "home": "الرئيسية",
+    "account": "الحساب الشخصي",
     "browseCourses": "تصفح الدورات",
     "myLearning": "دوراتي",
     "certificates": "الشهادات",
