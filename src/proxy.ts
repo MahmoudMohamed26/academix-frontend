@@ -19,6 +19,7 @@ async function isValidToken(token?: string) {
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
+  // Ignore static & api
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
@@ -27,6 +28,7 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
+  // Locale handling
   const hasLocale = locales.some(
     (l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`)
   )
@@ -41,12 +43,12 @@ export default async function middleware(request: NextRequest) {
   const locale = pathname.split("/")[1]
   const path = pathname.replace(`/${locale}`, "") || "/"
 
-  const token = request.cookies.get("access_token")?.value
-  const isLoggedIn = await isValidToken(token)
-
-  const isAuthPage = path.startsWith("/login") || path.startsWith("/register")
   const isDashboard = path.startsWith("/dashboard")
+  const isAuthPage = path.startsWith("/login") || path.startsWith("/register")
 
+  /* ----------------------------------------
+    Dashboard-only redirects (no auth needed)
+  ----------------------------------------- */
   if (path === "/dashboard/profile") {
     const url = request.nextUrl.clone()
     url.pathname = `/${locale}/dashboard/profile/information`
@@ -62,25 +64,35 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  if (isLoggedIn && isAuthPage) {
-    const url = request.nextUrl.clone()
-    url.pathname = `/${locale}`
-    return NextResponse.redirect(url)
+  /* ----------------------------------------
+     🚀 NOT dashboard → skip token logic
+  ----------------------------------------- */
+  if (!isDashboard) {
+    return NextResponse.next()
   }
 
-  if (!isLoggedIn && isDashboard) {
-    const url = request.nextUrl.clone()
-    url.pathname = `/${locale}/login`
-    return NextResponse.redirect(url)
-  }
+  /* ----------------------------------------
+     Dashboard → auth required
+  ----------------------------------------- */
+  const token = request.cookies.get("access_token")?.value
+  const isLoggedIn = await isValidToken(token)
 
-  if (token && !isLoggedIn) {
+  if (!isLoggedIn) {
     const url = request.nextUrl.clone()
     url.pathname = `/${locale}/login`
 
     const res = NextResponse.redirect(url)
-    res.cookies.set("access_token", "", { maxAge: 0, path: "/" })
+    if (token) {
+      res.cookies.set("access_token", "", { maxAge: 0, path: "/" })
+    }
     return res
+  }
+
+  // Logged in user trying to access auth pages
+  if (isAuthPage) {
+    const url = request.nextUrl.clone()
+    url.pathname = `/${locale}`
+    return NextResponse.redirect(url)
   }
 
   return NextResponse.next()
