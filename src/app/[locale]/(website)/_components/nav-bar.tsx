@@ -86,13 +86,7 @@ export default function NavBar() {
   }
 
   return (
-    <div>
-      <div className="bg-[#333]">
-        <div className="flex justify-between container items-center">
-          <p className="text-xs font-semibold text-white">CURRENCY: US</p>
-          <Language form={3} />
-        </div>
-      </div>
+    <div className="shadow-md mb-5">
       <div className="flex items-center justify-between container py-1!">
         <div className="flex items-center gap-3">
           <Logo h={64} w={64} />
@@ -112,36 +106,36 @@ export default function NavBar() {
           </div>
           <ul className="gap-2 hidden lg:flex">
             <li>
-              <a
+              <Link
                 className="hover:bg-orange-100 text-sm hover:text-(--main-color) rounded-sm py-2 px-4"
                 href="/"
               >
                 {t("sidebar.home")}
-              </a>
+              </Link>
             </li>
             <li>
-              <a
+              <Link
                 className="hover:bg-orange-100 text-sm hover:text-(--main-color) rounded-sm py-2 px-4"
-                href="/"
+                href="/courses"
               >
                 {t("sidebar.courses")}
-              </a>
+              </Link>
             </li>
             <li>
-              <a
+              <Link
                 className="hover:bg-orange-100 text-sm hover:text-(--main-color) rounded-sm py-2 px-4"
                 href="/"
               >
                 {t("sidebar.instructors")}
-              </a>
+              </Link>
             </li>
             <li>
-              <a
+              <Link
                 className="hover:bg-orange-100 text-sm hover:text-(--main-color) rounded-sm py-2 px-4"
                 href="/"
               >
                 {t("sidebar.aboutus")}
-              </a>
+              </Link>
             </li>
           </ul>
         </div>
@@ -168,9 +162,9 @@ export default function NavBar() {
                     src={user?.avatar_url as any}
                   />
                   <AvatarFallback>
-                    <Image
+                    <img
                       className="rounded-full"
-                      src={avatarFallbackImage}
+                      src={avatarFallbackImage.src}
                       alt="avatar fall back image"
                     />
                   </AvatarFallback>
@@ -227,6 +221,7 @@ export default function NavBar() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            <Language form={3} />
           </div>
         ) : (
           <div className="lg:flex hidden gap-2">
@@ -242,6 +237,7 @@ export default function NavBar() {
             >
               {t("sidebar.register")}
             </Link>
+            <Language form={3} />
           </div>
         )}
         <div className="lg:hidden">

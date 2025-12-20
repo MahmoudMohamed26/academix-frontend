@@ -30,6 +30,7 @@ import Link from "next/link"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { truncateText } from "@/helpers/word-cut"
+import Language from "@/components/Language"
 
 type WebsiteSidebarProps = {
   image?: string | null
@@ -193,6 +194,9 @@ export default function WebsiteSidebar({
               </Link>
             </div>
           )}
+          <SidebarMenuItem className="p-2">
+              <Language form={2} />
+          </SidebarMenuItem>
         </SidebarContent>
       </Sidebar>
     </>

@@ -367,9 +367,9 @@ export function AppSidebar() {
                   alt={t("Dashboard.avatarUpload.avatarAlt")}
                 />
                 <AvatarFallback>
-                  <Image
+                  <img
                     className="rounded-full"
-                    src={avatarFallbackImage}
+                    src={avatarFallbackImage.src}
                     alt="avatar fall back image"
                   />
                 </AvatarFallback>
