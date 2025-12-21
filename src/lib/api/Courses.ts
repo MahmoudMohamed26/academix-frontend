@@ -7,6 +7,11 @@ export async function getCourses(axiosInstance: AxiosInstance): Promise<Course[]
   return res.data.data.courses;
 }
 
+export async function getFilterdCourses(axiosInstance: AxiosInstance , url: string): Promise<Course[]> {
+  const res = await axiosInstance.get(url);
+  return res.data.data.courses;
+}
+
 export async function getCourse(axiosInstance: AxiosInstance , id: any): Promise<Course> {
   const res = await axiosInstance.get(`/courses/${id}`);
   return res.data.data.course;

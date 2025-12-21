@@ -1,61 +1,101 @@
+"use client"
+
 import Image from "next/image"
-import courseImage from "@/assets/courseImage.webp"
 import Link from "next/link"
 import { Star } from "lucide-react"
+import { useTranslation } from "react-i18next"
+import courseImage from '@/assets/courseImage.webp'
 
-export default function SingleCourse({ grid }: { grid: boolean }) {
+interface Category {
+  id: string
+  name_en: string
+  name_ar: string
+  courses: string[]
+  courses_count: number
+  created: string
+  updated: string
+}
+
+interface Course {
+  id: string
+  title: string
+  short_description: string
+  detailed_description: string
+  image: string
+  price: number
+  hours: number
+  rating_avg: number
+  rating_counts: number
+  level: string
+  published: boolean
+  instructor: string
+  category: Category
+  lectures_count?: number
+}
+
+interface SingleCourseProps {
+  grid: boolean
+  course: Course
+}
+
+export default function SingleCourse({ grid, course }: SingleCourseProps) {
+  const { i18n } = useTranslation()
   return (
-    <Link href={"/course"} className="border block hover:bg-gray-50 rounded-md">
-      <div className={`p-4 ${!grid && "flex"} gap-10`}>
+    <Link href={"/course"} className="border flex flex-col relative hover:bg-gray-50 rounded-md">
+      <div className={`p-4 ${!grid ? "lg:flex lg:flex-row lg:gap-10" : ""} flex-1 flex flex-col`}>
         <div
           className={`rounded-md overflow-hidden ${
-            !grid && "w-full lg:w-[500px]"
+            !grid ? "w-full lg:w-[500px]" : ""
           } relative h-[250px]`}
         >
           <Image
-            src={courseImage}
+            src={course.image}
             fill
             alt="Course preview"
             className="object-cover"
             sizes="(max-width: 768px) 100vw, 400px"
             loading="eager"
+            unoptimized
           />
         </div>
-        <div className="flex-1">
-          <h3 className="font-semibold mt-2 text-xl">
-            The complete Fullstack course
-          </h3>
-          <p className="text-sm text-[#666] mt-2">
-            Become a Full-Stack Web Developer with just ONE course. HTML, CSS,
-            Javascript, Node, React, PostgreSQL, Web3 and DApps Bestseller
-          </p>
-          <p className="text-xs mt-2 text-[#666]">Jonas Schmedtmann</p>
-          <div className="flex gap-2 flex-wrap mt-8 text-[#333]">
-            <span className="border rounded-sm py-1 px-2 flex gap-1 items-center text-xs">
-              Web Development
-            </span>
-            <span className="border rounded-sm py-1 px-2 flex gap-1 items-center text-xs">
-              <Star fill="#C67514" color="#C67514" size={12} />
-              4.8
-            </span>
-            <span className="border rounded-sm py-1 px-2 flex gap-1 items-center text-xs">
-              Reviews (117,88)
-            </span>
-            <span className="border rounded-sm py-1 px-2 flex gap-1 items-center text-xs">
-              Total hours 120
-            </span>
-            <span className="border rounded-sm py-1 px-2 flex gap-1 items-center text-xs">
-              331 Lectures
-            </span>
-            <span className="border rounded-sm py-1 px-2 flex gap-1 items-center text-xs">
-              Advanced
-            </span>
+        <div className="flex-1 flex flex-col">
+          <div>
+            <h3 className="font-semibold mt-2 text-xl">{course.title}</h3>
+            <p className="text-sm text-[#666] mt-2">
+              {course.short_description}
+            </p>
+            <p className="text-xs mt-2 text-[#666]">{course.instructor}</p>
           </div>
-          <div className="mt-4 flex justify-between items-center">
-            <p className="text-3xl font-bold">$120</p>
-            <button className="bg-(--main-color) py-2 px-4 text-white text-sm rounded-md cursor-pointer duration-300 hover:bg-transparent border border-(--main-color) hover:text-(--main-color)">
-              Enroll now
-            </button>
+          <div className={`${grid ? "mt-auto" : "mt-auto"}`}>
+            <div className="flex gap-2 flex-wrap mt-8 text-[#333]">
+              <span className="border rounded-sm py-1 px-2 flex gap-1 items-center text-xs">
+                {i18n.language === "en"
+                  ? course.category.name_en
+                  : course.category.name_ar}
+              </span>
+              <span className="border rounded-sm py-1 px-2 flex gap-1 items-center text-xs">
+                <Star fill="#C67514" color="#C67514" size={12} />
+                {course.rating_avg}
+              </span>
+              <span className="border rounded-sm py-1 px-2 flex gap-1 items-center text-xs">
+                Reviews ({course.rating_counts})
+              </span>
+              <span className="border rounded-sm py-1 px-2 flex gap-1 items-center text-xs">
+                Total hours {course.hours}
+              </span>
+              <span className="border rounded-sm py-1 px-2 flex gap-1 items-center text-xs">
+                Lectures
+              </span>
+              <span className="border rounded-sm py-1 px-2 flex gap-1 items-center text-xs">
+                {course.level}
+              </span>
+            </div>
+            <div className="mt-4 flex justify-between items-center">
+              <p className="text-3xl font-bold">${course.price}</p>
+              <button className="bg-(--main-color) py-2 px-4 text-white text-sm rounded-md cursor-pointer duration-300 hover:bg-transparent border border-(--main-color) hover:text-(--main-color)">
+                Enroll now
+              </button>
+            </div>
           </div>
         </div>
       </div>

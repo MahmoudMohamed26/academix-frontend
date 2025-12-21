@@ -44,6 +44,7 @@ export default function EditCategory() {
     name_ar: Yup.string().required(t("Dashboard.addCategory.requiredArError")),
   })
 
+
   const updateCategoryMutation = useMutation({
     mutationFn: async (values: CategoryFormData) => {
       const response = await Axios.patch(`/category/${id}`, values)

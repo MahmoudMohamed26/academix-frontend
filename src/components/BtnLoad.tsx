@@ -1,7 +1,7 @@
-export default function BtnLoad({ size }: { size?: number }) {
+export default function BtnLoad({ size , color }: { size?: number , color?: "main" }) {
   return (
     <svg
-      fill="#FFFFFFFF"
+      fill={`${color === "main" ? "var(--main-color)" : "#FFFFFFFF"}`}
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
       width={size}

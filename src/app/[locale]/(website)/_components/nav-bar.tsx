@@ -29,7 +29,6 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { useTranslation } from "react-i18next"
-import Image from "next/image"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { truncateText } from "@/helpers/word-cut"
@@ -60,8 +59,8 @@ export default function NavBar() {
     return (
       <li key={index}>
         <Link
-          className="hover:bg-orange-100 text-sm hover:text-(--main-color) rounded-sm py-2 px-4"
-          href={`/courses/${el.id}`}
+          className="hover:bg-orange-100 text-sm hover:text-(--main-color) py-2 px-4"
+          href={`/courses?category_slug=${el.id}`}
         >
           {getCategoryName(el)}
         </Link>
@@ -251,11 +250,11 @@ export default function NavBar() {
       <div className="container">
         <hr />
       </div>
-      <ul className="flex flex-wrap gap-5 container py-4!">
+      <ul className="flex gap-y-3 flex-wrap container py-4!">
         {showCategories}
         <li>
           <Link
-            className="hover:bg-orange-100 hover:text-(--main-color) rounded-sm py-2 px-4"
+            className="bg-orange-100 text-sm text-(--main-color) py-2 px-4"
             href="/categories"
           >
             Show all...

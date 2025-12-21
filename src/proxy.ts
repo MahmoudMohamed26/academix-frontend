@@ -47,6 +47,13 @@ export default async function middleware(request: NextRequest) {
   const isAuthPage = path.startsWith("/login") || path.startsWith("/register")
 
   /* ----------------------------------------
+    🚀 NOT dashboard → skip token logic
+  ----------------------------------------- */
+  if (!isDashboard) {
+    return NextResponse.next()
+  }
+
+  /* ----------------------------------------
     Dashboard-only redirects (no auth needed)
   ----------------------------------------- */
   if (path === "/dashboard/profile") {
@@ -65,14 +72,7 @@ export default async function middleware(request: NextRequest) {
   }
 
   /* ----------------------------------------
-     🚀 NOT dashboard → skip token logic
-  ----------------------------------------- */
-  if (!isDashboard) {
-    return NextResponse.next()
-  }
-
-  /* ----------------------------------------
-     Dashboard → auth required
+    Dashboard → auth required
   ----------------------------------------- */
   const token = request.cookies.get("access_token")?.value
   const isLoggedIn = await isValidToken(token)

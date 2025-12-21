@@ -27,11 +27,11 @@ export default function Language({ form }: { form?: number }) {
       onValueChange={changeLanguage} 
       value={currentLanguage}
     >
-      <SelectTrigger className={`${form === 1 ? "w-[150px]" : form === 2 ? "w-full" : form === 3 ? "border-none shadow-none outline-none p-0 focus:outline-none focus:ring-0 focus-visible:ring-0" : ""} rounded-sm`}>
-        <SelectValue />
+      <SelectTrigger className={`${form === 1 ? "w-[150px]" : form === 2 ? "w-full" : form === 3 ? "border-none text-[#666] shadow-none outline-none p-0 focus:outline-none focus:ring-0 focus-visible:ring-0" : ""} rounded-sm`}>
+        <SelectValue className="gap-0" />
       </SelectTrigger>
       <SelectContent className="w-fit">
-        <SelectItem value="en">
+        <SelectItem value="en" className="text-[#666]! gap-0">
           <svg
             version="1.1"
             id="Layer_1"
@@ -41,7 +41,7 @@ export default function Language({ form }: { form?: number }) {
             y="0px"
             viewBox="0 0 55.2 38.4"
             xmlSpace="preserve"
-            className="w-5 h-5 inline-block mr-2"
+            className="w-5 h-5 inline-block"
           >
             <style
               type="text/css"
@@ -209,9 +209,9 @@ export default function Language({ form }: { form?: number }) {
               />
             </g>
           </svg>
-          {form !== 3 && "English"}
+          {form === 3 ? "EN" : "English"}
         </SelectItem>
-        <SelectItem value="ar">
+        <SelectItem value="ar" className="text-[#666] hover:text-[#666]!">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             shapeRendering="geometricPrecision"
@@ -220,7 +220,7 @@ export default function Language({ form }: { form?: number }) {
             fillRule="evenodd"
             clipRule="evenodd"
             viewBox="0 0 512 356.18"
-            className="w-5 h-5 inline-block mr-2"
+            className="w-5 h-5 inline-block"
           >
             <path
               fill="#005430"
@@ -233,7 +233,7 @@ export default function Language({ form }: { form?: number }) {
               d="M389.57 141.476c-.037-6.257-2.465-23.111-3.081-28.765-.615-5.654-1.234-10.784-1.085-11.985.147-1.159 1.93 1.612 2.874 1.836.487-.098.27-1.848-.617-3.342-.6-1.015-2.645-4.809-3.886-7.033-.584-1.052-.714-1.662-.995-1.792-.28-.129-2.539 4.428-2.291 4.933.616.926 1.039 1.368 1.135 3.003.098 1.636.943 13.314 2.021 22.166.811 6.678 2.592 21.065 2.655 30.01.019 2.918-.305 5.699-.694 6.861-.997 1.825-2.554 3.471-8.356 6.866-6.522 3.817-15.223 6.993-18.963 9.119-2.325 1.326-1.555 1.503.47.923 2.019-.58 12.462-2.44 17.535-4.583 4.763-2.018 7.854-5.393 10.2-10.317 2.898-6.087 3.119-11.252 3.078-17.9zm0 0z"
             />
           </svg>
-          {form !== 3 && "العربية"}
+          {form === 3 ? "AR" : "العربية"}
         </SelectItem>
       </SelectContent>
     </Select>

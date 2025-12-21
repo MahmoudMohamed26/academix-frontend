@@ -1,39 +1,55 @@
-"use client"
-
+import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query"
 import Breadcrumb from "@/components/BreadCrumb"
-import SingleCourse from "@/components/SingleCourse"
 import SpecialHeader from "@/components/SpecialHeader"
-import { LayoutGrid, List } from "lucide-react"
-import { useState } from "react"
+import CoursesList from "./_components/courses-list"
+import { getFilterdCourses } from "@/lib/api/Courses"
+import { getServerAxios } from "@/lib/axios-server"
+import { useTranslation } from "@/lib/i18n-server"
 
-export default function courses() {
-  const [grid, setGrid] = useState<boolean>(true)
+interface CoursesPageProps {
+  searchParams: Promise<{
+    category_slug?: string
+    level?: string
+    min_price?: string
+    max_price?: string
+    min_hours?: string
+    max_hours?: string
+    min_rating?: string
+    sortBy?: string
+    orderedBy?: string
+    user_id?: string
+    search?: string
+  }>
+  params: Promise<{ locale: string }>
+}
+
+export default async function CoursesPage({ searchParams, params }: CoursesPageProps) {
+  const queryClient = new QueryClient()
+  const {locale} = await params 
+  const { t } = await useTranslation(locale)
+  
+  const resolvedParams = await searchParams
+  const axiosInstance = await getServerAxios()
+  
+  const paramsSearch = new URLSearchParams()
+  Object.entries(resolvedParams).forEach(([key, value]) => {
+    if (value) paramsSearch.append(key, value)
+  })
+  
+  const url = `/courses/filter${paramsSearch.toString() ? `?${paramsSearch.toString()}` : ''}`
+  
+  await queryClient.prefetchQuery({
+    queryKey: ["filtered-courses", resolvedParams],
+    queryFn: () => getFilterdCourses(axiosInstance, url)
+  })
+
   return (
-    <div className="container">
-      <Breadcrumb />
-      <SpecialHeader name="Courses" size="big" />
-      <div className="border rounded-sm flex items-center mb-5 p-1">
-        <button onClick={() => setGrid((prev) => !prev)}>
-          {grid ? (
-            <LayoutGrid
-              className="text-(--main-color) hover:bg-gray-50 cursor-pointer p-2 rounded-sm"
-              size={35}
-            />
-          ) : (
-            <List
-              className="text-(--main-color) hover:bg-gray-50 cursor-pointer p-2 rounded-sm"
-              size={35}
-            />
-          )}
-        </button>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <div className="container">
+        <Breadcrumb />
+        <SpecialHeader name={t("coursesPage.title")} size="big" />
+        <CoursesList searchParams={resolvedParams} />
       </div>
-      <div className={`${grid ? "special-grid" : "block space-y-5"}`}>
-        <SingleCourse grid={grid} />
-        <SingleCourse grid={grid} />
-        <SingleCourse grid={grid} />
-        <SingleCourse grid={grid} />
-        <SingleCourse grid={grid} />
-      </div>
-    </div>
+    </HydrationBoundary>
   )
 }
