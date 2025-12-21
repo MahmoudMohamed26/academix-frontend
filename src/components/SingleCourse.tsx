@@ -51,7 +51,7 @@ export default function SingleCourse({ grid, course }: SingleCourseProps) {
           <Image
             src={course.image}
             fill
-            alt="Course preview"
+            alt={course.title}
             className="object-cover"
             sizes="(max-width: 768px) 100vw, 400px"
             loading="eager"

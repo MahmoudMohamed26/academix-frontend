@@ -48,6 +48,7 @@ export default async function CoursesPage({ searchParams, params }: CoursesPageP
       <div className="container">
         <Breadcrumb />
         <SpecialHeader name={t("coursesPage.title")} size="big" />
+        <p className="text-[#666] mb-5">{t("coursesPage.description")}</p>
         <CoursesList searchParams={resolvedParams} />
       </div>
     </HydrationBoundary>

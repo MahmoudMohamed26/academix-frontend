@@ -23,7 +23,6 @@ import {
   ChartNoAxesColumn,
   Heart,
   LogOut,
-  Search,
   ShoppingCart,
   User,
 } from "lucide-react"
@@ -33,6 +32,8 @@ import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { truncateText } from "@/helpers/word-cut"
 import WebsiteSidebar from "./side-bar"
+import SearchInput from "@/components/Search"
+import { useState } from "react"
 
 export default function NavBar() {
   const { t, i18n } = useTranslation()
@@ -83,26 +84,12 @@ export default function NavBar() {
       toast.error(t("genericError"))
     }
   }
-
   return (
     <div className="shadow-md mb-5">
       <div className="flex items-center justify-between container py-1!">
         <div className="flex items-center gap-3">
           <Logo h={64} w={64} />
-          <div className="relative w-fit overflow-hidden flex-1 rounded-sm">
-            <input
-              type="text"
-              name="search"
-              placeholder={t("DashNavbar.searchPlaceholder")}
-              className="border focus:border-(--main-color) text-gray-700 duration-300 text-sm py-2 border-[#e2e6f1] my-0 pe-[63px] xl:pe-[115px] rounded-sm outline-none p-2 xl:w-[500px] md:w-[250px] w-full"
-            />
-            <button className="hover:bg-(--main-darker-color) border-(--main-darker-color) duration-300 text-white font-semibold cursor-pointer h-full bg-(--main-color) px-5 absolute end-0 translate-y-half top-1/2">
-              <div className="flex gap-1 items-center">
-                <p className="hidden xl:block">{t("DashNavbar.search")}</p>
-                <Search size={15} />
-              </div>
-            </button>
-          </div>
+          <SearchInput />
           <ul className="gap-2 hidden lg:flex">
             <li>
               <Link
@@ -154,7 +141,7 @@ export default function NavBar() {
               <ShoppingCart className="text-[#666]" />
             </Link>
             <DropdownMenu>
-              <DropdownMenuTrigger className="h-8 w-8 cursor-pointer">
+              <DropdownMenuTrigger suppressHydrationWarning className="h-8 w-8 cursor-pointer">
                 <Avatar className="outline-none!">
                   <AvatarImage
                     className="rounded-full outline-none!"

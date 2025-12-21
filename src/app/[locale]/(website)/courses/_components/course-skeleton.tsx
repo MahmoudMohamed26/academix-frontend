@@ -1,7 +1,5 @@
-import Image from "next/image"
 import Skeleton from "react-loading-skeleton"
 import "react-loading-skeleton/dist/skeleton.css"
-import courseImage from '@/assets/courseImage.webp'
 
 export default function CourseSkeleton({ grid }: { grid: boolean }) {
   return (
