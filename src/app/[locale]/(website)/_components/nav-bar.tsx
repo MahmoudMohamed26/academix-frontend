@@ -142,15 +142,15 @@ export default function NavBar() {
               <ShoppingCart className="text-[#666]" />
             </Link>
             <DropdownMenu>
-              <DropdownMenuTrigger suppressHydrationWarning className="h-8 w-8 cursor-pointer">
+              <DropdownMenuTrigger suppressHydrationWarning className="cursor-pointer">
                 <Avatar className="outline-none!">
                   <AvatarImage
-                    className="rounded-full outline-none!"
+                    className="rounded-full h-8 w-8 outline-none!"
                     src={user?.avatar_url as any}
                   />
                   <AvatarFallback>
                     <img
-                      className="rounded-full"
+                      className="rounded-full h-8 w-8"
                       src={avatarFallbackImage.src}
                       alt="avatar fall back image"
                     />

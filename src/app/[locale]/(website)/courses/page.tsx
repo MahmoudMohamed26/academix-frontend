@@ -8,29 +8,13 @@ import SpecialHeader from "@/components/SpecialHeader"
 import CoursesList from "./_components/courses-list"
 import { getFilterdCourses } from "@/lib/api/Courses"
 import { getServerAxios } from "@/lib/axios-server"
+import { CoursePageProps } from "@/lib/types/course"
 import { useTranslation } from "@/lib/i18n-server"
-
-interface CoursesPageProps {
-  searchParams: Promise<{
-    category_slug?: string
-    level?: string
-    min_price?: string
-    max_price?: string
-    min_hours?: string
-    max_hours?: string
-    min_rating?: string
-    sortBy?: string
-    orderedBy?: string
-    user_id?: string
-    search?: string
-  }>
-  params: Promise<{ locale: string }>
-}
 
 export default async function CoursesPage({
   searchParams,
   params,
-}: CoursesPageProps) {
+}: CoursePageProps) {
   const queryClient = new QueryClient()
   const { locale } = await params
   const { t } = await useTranslation(locale)

@@ -27,22 +27,8 @@ import {
 import useAxios from "@/hooks/useAxios"
 import { getCategories } from "@/lib/api/Categories"
 import { useTranslation } from "react-i18next"
+import { FilterDialogProps } from "@/lib/types/course"
 
-interface FilterDialogProps {
-  currentFilters: {
-    category_slug?: string
-    level?: string
-    min_price?: string
-    max_price?: string
-    min_hours?: string
-    max_hours?: string
-    min_rating?: string
-    sortBy?: string
-    orderedBy?: string
-    user_id?: string
-    search?: string
-  }
-}
 
 export default function FilterDialog({ currentFilters }: FilterDialogProps) {
   const [open, setOpen] = useState(false)

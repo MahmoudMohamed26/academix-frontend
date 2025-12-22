@@ -22,6 +22,11 @@ export interface Course {
   }
 }
 
+export interface SingleCourseProps {
+  grid: boolean
+  course: Course
+}
+
 export interface CourseFormData {
   title: string
   detailed_description: string
@@ -31,4 +36,43 @@ export interface CourseFormData {
   hours: number
   level: string
   category_slug: string
+}
+
+export interface CourseSearchParams {
+  category_slug?: string
+  level?: string
+  min_price?: string
+  max_price?: string
+  min_hours?: string
+  max_hours?: string
+  min_rating?: string
+  sortBy?: string
+  orderedBy?: string
+  user_id?: string
+  search?: string
+}
+
+export interface CoursesListProps {
+  searchParams: CourseSearchParams
+}
+
+export interface CoursePageProps{
+  params: { locale: string }
+  searchParams: Promise<CourseSearchParams>
+}
+
+export interface FilterDialogProps {
+  currentFilters: {
+    category_slug?: string
+    level?: string
+    min_price?: string
+    max_price?: string
+    min_hours?: string
+    max_hours?: string
+    min_rating?: string
+    sortBy?: string
+    orderedBy?: string
+    user_id?: string
+    search?: string
+  }
 }

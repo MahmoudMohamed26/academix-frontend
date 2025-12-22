@@ -40,9 +40,9 @@ export default function ProfileForm() {
       ) : (
         <>
           <ProfileInforForm user={user} />
-          <hr className="my-10" />
+          <hr className="my-5" />
           <ChangePasswordForm />
-          <hr className="my-10" />
+          <hr className="my-5" />
           <LinksForm user={user} />
         </>
       )}

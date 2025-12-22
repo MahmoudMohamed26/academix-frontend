@@ -4,39 +4,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { Star } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import courseImage from '@/assets/courseImage.webp'
-
-interface Category {
-  id: string
-  name_en: string
-  name_ar: string
-  courses: string[]
-  courses_count: number
-  created: string
-  updated: string
-}
-
-interface Course {
-  id: string
-  title: string
-  short_description: string
-  detailed_description: string
-  image: string
-  price: number
-  hours: number
-  rating_avg: number
-  rating_counts: number
-  level: string
-  published: boolean
-  instructor: string
-  category: Category
-  lectures_count?: number
-}
-
-interface SingleCourseProps {
-  grid: boolean
-  course: Course
-}
+import { SingleCourseProps } from "@/lib/types/course"
 
 export default function SingleCourse({ grid, course }: SingleCourseProps) {
   const { i18n } = useTranslation()

@@ -9,22 +9,7 @@ import { useState } from "react"
 import FilterDialog from "./filter-dialog"
 import CourseSkeleton from "./course-skeleton"
 import { useTranslation } from "react-i18next"
-
-interface CoursesListProps {
-  searchParams: {
-    category_slug?: string
-    level?: string
-    min_price?: string
-    max_price?: string
-    min_hours?: string
-    max_hours?: string
-    min_rating?: string
-    sortBy?: string
-    orderedBy?: string
-    user_id?: string
-    search?: string
-  }
-}
+import { CoursesListProps } from "@/lib/types/course"
 
 export default function CoursesList({ searchParams }: CoursesListProps) {
   const [grid, setGrid] = useState<boolean>(true)
@@ -44,6 +29,8 @@ export default function CoursesList({ searchParams }: CoursesListProps) {
     queryKey: ["filtered-courses", searchParams],
     queryFn: () => getFilterdCourses(Axios, url),
   })
+
+  console.log("Filtered Courses:", filteredCourses)
 
   return (
     <>
