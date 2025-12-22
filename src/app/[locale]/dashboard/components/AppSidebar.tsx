@@ -85,7 +85,7 @@ export function AppSidebar() {
   const navigationItems = [
     {
       title: t("sidebar.home"),
-      url: "/dashboard",
+      url: "/",
       icon: Home,
       isActive: pathname === "/dashboard",
     },
@@ -122,7 +122,7 @@ export function AppSidebar() {
       await Axios.post("/auth/logout")
       toast.success(t("sidebar.logoutSuccess"))
       queryClient.removeQueries({ queryKey: ["loggedInUser"] })
-      router.replace("/login")
+      router.replace("/")
       router.refresh()
     } catch (err) {
       console.log(err)

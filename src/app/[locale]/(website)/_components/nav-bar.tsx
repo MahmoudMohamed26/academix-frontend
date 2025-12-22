@@ -78,8 +78,7 @@ export default function NavBar() {
       await Axios.post("/auth/logout")
       toast.success(t("sidebar.logoutSuccess"))
       queryClient.removeQueries({ queryKey: ["loggedInUser"] })
-      router.replace("/login")
-      router.refresh()
+      window.location.href = "/";
     } catch (err) {
       console.log(err)
       toast.error(t("genericError"))
@@ -87,8 +86,8 @@ export default function NavBar() {
   }
   return (
     <div className={`shadow-md mb-5 z-10 bg-white ${open ? "sticky top-0" : ""}`}>
-      <div className="flex items-center justify-between container py-1!">
-        <div className="flex items-center gap-3">
+      <div className="flex items-center gap-5 justify-between container py-1!">
+        <div className="flex items-center flex-1 gap-3">
           <Logo h={64} w={64} />
           <SearchInput open={open} setOpen={setOpen} />
           <ul className="gap-2 hidden lg:flex">

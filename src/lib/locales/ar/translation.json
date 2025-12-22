@@ -133,7 +133,10 @@
   "search": {
     "search": "بحث",
     "searchPlaceholder": "ابحث عن الدورات أو المعلمين...",
-    "seeAllResults": "عرض جميع النتائج"
+    "seeAllResults": "عرض جميع النتائج",
+    "noResults": "لم يتم العثور على نتائج",
+    "hours": "الساعات",
+    "reviews": "التقييمات"
   },
   "Dashboard": {
     "categories": {

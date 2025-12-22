@@ -27,6 +27,29 @@ export default function SearchInput({
   const [selectedIndex, setSelectedIndex] = useState(-1)
   const Axios = useAxios()
 
+  function useWordLimit() {
+    const [limit, setLimit] = useState(30)
+
+    useEffect(() => {
+      const updateLimit = () => {
+        const width = window.innerWidth
+
+        if (width >= 1024) setLimit(100)
+        else if (width >= 768) setLimit(50)
+        else setLimit(30)
+      }
+
+      updateLimit()
+      window.addEventListener("resize", updateLimit)
+
+      return () => window.removeEventListener("resize", updateLimit)
+    }, [])
+
+    return limit
+  }
+
+  const wordLimit = useWordLimit()
+
   const inputRef = useRef<HTMLInputElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const resultsRef = useRef<HTMLAnchorElement[]>([])
@@ -64,7 +87,6 @@ export default function SearchInput({
     return () => clearTimeout(debounce)
   }, [search])
 
-  // Handle click outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -83,7 +105,6 @@ export default function SearchInput({
     }
   }, [open, setOpen])
 
-  // Handle keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (!open || searchResults.length === 0) {
       if (e.key === "Enter" && search.trim()) {
@@ -128,7 +149,6 @@ export default function SearchInput({
     }
   }
 
-  // Scroll selected item into view
   useEffect(() => {
     if (selectedIndex >= 0 && resultsRef.current[selectedIndex]) {
       resultsRef.current[selectedIndex]?.scrollIntoView({
@@ -148,6 +168,7 @@ export default function SearchInput({
     <Link
       href={`/course/${el.id}`}
       key={el.id}
+      tabIndex={0}
       ref={(el) => {
         if (el) resultsRef.current[index] = el
       }}
@@ -156,17 +177,14 @@ export default function SearchInput({
         handleResultClick(el.id)
       }}
       onMouseEnter={() => setSelectedIndex(index)}
-      className={`flex gap-6 rounded-sm justify-between py-2 px-4 cursor-pointer transition-colors ${
-        selectedIndex === index
-          ? "bg-blue-100"
-          : "hover:bg-gray-100"
+      className={`flex gap-6 bg-white border-b justify-between py-2 px-4 cursor-pointer ${
+        selectedIndex === index ? "bg-gray-100!" : "hover:bg-gray-100"
       }`}
       role="option"
       aria-selected={selectedIndex === index}
-      tabIndex={-1}
     >
       <div className="flex gap-2">
-        <div className="rounded-sm overflow-hidden w-[150px] relative h-[75px]">
+        <div className="rounded-sm overflow-hidden w-20 h-10 lg:w-[150px] relative lg:h-[75px]">
           <Image
             src={el.image}
             fill
@@ -178,9 +196,9 @@ export default function SearchInput({
           />
         </div>
         <div className="flex-1">
-          <h6 className="font-semibold">{el.title}</h6>
+          <h6 className="font-semibold">{truncateText(el.title, wordLimit)}</h6>
           <p className="text-sm text-[#666]">
-            {truncateText(el.short_description, 100)}
+            {truncateText(el.short_description, wordLimit)}
           </p>
         </div>
       </div>
@@ -190,10 +208,10 @@ export default function SearchInput({
           <span className="text-sm text-[#666]">{el.rating_avg}</span>
         </div>
         <p className="text-sm text-[#666]">
-          {t("search.reviews", { count: el.rating_counts })}
+          {t("search.reviews")} {el.rating_counts}
         </p>
         <p className="text-sm text-[#666]">
-          {t("search.hours", { hours: el.hours })}
+          {t("search.hours")} {el.hours}
         </p>
       </div>
     </Link>
@@ -225,7 +243,7 @@ export default function SearchInput({
           }}
           onKeyDown={handleKeyDown}
           placeholder={t("search.searchPlaceholder")}
-          className="border focus:border-(--main-color) text-gray-700 duration-300 text-sm py-2 border-[#e2e6f1] my-0 pe-[63px] xl:pe-[115px] rounded-sm outline-none p-2 xl:w-[500px] md:w-[250px] w-full"
+          className="border focus:border-(--main-color) text-gray-700 duration-300 text-sm py-2 border-[#e2e6f1] my-0 pe-[63px] xl:pe-[115px] rounded-sm outline-none p-2 w-full"
           role="combobox"
           aria-expanded={open}
           aria-controls="search-results"
@@ -238,10 +256,10 @@ export default function SearchInput({
           href={`/courses?search=${encodeURIComponent(search)}`}
           className="flex px-5 absolute rounded-e-md duration-300 end-0 -translate-y-1/2 top-1/2 h-full bg-(--main-color) hover:bg-(--main-darker-color) text-white"
           aria-label={t("search.search")}
-          tabIndex={-1}
+          tabIndex={0}
         >
           <div className="flex gap-1 items-center justify-center">
-            <p className="hidden xl:block">{t("search.search")}</p>
+            <p className="hidden sm:block">{t("search.search")}</p>
             <Search size={15} aria-hidden="true" />
           </div>
         </Link>
@@ -251,7 +269,7 @@ export default function SearchInput({
         <div
           ref={dropdownRef}
           id="search-results"
-          className="shadow-lg bg-gray-50 w-[800px] absolute top-[54px] z-999 start-0 rounded-sm max-h-[500px] overflow-y-auto"
+          className={`shadow-lg border overflow-hidden bg-gray-50 w-full fixed top-[70px] start-0 xl:absolute xl:top-[54px] z-999  rounded-sm`}
           role="listbox"
           aria-label={t("search.searchResults")}
         >
@@ -282,14 +300,14 @@ export default function SearchInput({
                 setOpen(false)
               }}
               onMouseEnter={() => setSelectedIndex(searchResults.length)}
-              className={`block text-center text-sm font-semibold text-white py-2 duration-300 rounded-sm cursor-pointer ${
+              className={`block text-center text-sm font-semibold text-white py-2 duration-300 rounded-b-sm cursor-pointer ${
                 selectedIndex === searchResults.length
                   ? "bg-(--main-darker-color)"
                   : "bg-(--main-color) hover:bg-(--main-darker-color)"
               }`}
               role="option"
               aria-selected={selectedIndex === searchResults.length}
-              tabIndex={-1}
+              tabIndex={0}
             >
               {t("search.seeAllResults")}
             </Link>

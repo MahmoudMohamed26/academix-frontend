@@ -16,7 +16,6 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import {
   Select,
   SelectContent,
@@ -35,7 +34,6 @@ export default function FilterDialog({ currentFilters }: FilterDialogProps) {
   const Axios = useAxios()
   const { i18n, t } = useTranslation()
 
-  // Fetch categories
   const { data: categories = [], isLoading: categoriesLoading } = useQuery({
     queryKey: ["categories"],
     queryFn: () => getCategories(Axios),
@@ -56,12 +54,10 @@ export default function FilterDialog({ currentFilters }: FilterDialogProps) {
     user_id: currentFilters.user_id || "",
   })
 
-  // Calculate active filters count (excluding search)
   const activeFiltersCount = Object.entries(currentFilters).filter(
     ([key, value]) => key !== "search" && value && value.trim() !== ""
   ).length
 
-  // Sync filters with currentFilters whenever URL changes
   useEffect(() => {
     setFilters({
       min_price: currentFilters.min_price || "",
@@ -244,91 +240,56 @@ export default function FilterDialog({ currentFilters }: FilterDialogProps) {
             </div>
           </div>
 
-          <div className="flex justify-between">
-            <div className="space-y-3">
-              <Label className="text-base font-semibold">
+          {/* Category and Level */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="category" className="text-base font-semibold">
                 {t("filters.category")}
               </Label>
-              <RadioGroup
-                value={filters.category_slug}
+              <Select
+                value={filters.category_slug || "all"}
+                dir={i18n.language === "en" ? "ltr" : "rtl"}
                 onValueChange={(value) =>
-                  setFilters({ ...filters, category_slug: value })
+                  setFilters({ ...filters, category_slug: value === "all" ? "" : value })
                 }
               >
-                <div className="flex rtl:flex-row-reverse items-center space-x-2">
-                  <RadioGroupItem value="" id="any-category" />
-                  <Label
-                    htmlFor="any-category"
-                    className="cursor-pointer font-normal"
-                  >
-                    {t("filters.allCategories")}
-                  </Label>
-                </div>
-                {categories.map((category: any) => (
-                  <div
-                    key={category.id}
-                    className="flex rtl:flex-row-reverse items-center space-x-2"
-                  >
-                    <RadioGroupItem value={category.id} id={category.id} />
-                    <Label
-                      htmlFor={category.id}
-                      className="cursor-pointer font-normal"
-                    >
+                <SelectTrigger className="w-full" id="category">
+                  <SelectValue placeholder={t("filters.allCategories")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t("filters.allCategories")}</SelectItem>
+                  {categories.map((category: any) => (
+                    <SelectItem key={category.id} value={category.id}>
                       {i18n.language === "en"
                         ? category.name_en
                         : category.name_ar}
-                    </Label>
-                  </div>
-                ))}
-              </RadioGroup>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-            <div className="space-y-3">
-              <Label className="text-base font-semibold">
+
+            <div className="space-y-2">
+              <Label htmlFor="level" className="text-base font-semibold">
                 {t("filters.courseLevel")}
               </Label>
-              <RadioGroup
-                value={filters.level}
+              <Select
+                value={filters.level || "all"}
+                dir={i18n.language === "en" ? "ltr" : "rtl"}
                 onValueChange={(value) =>
-                  setFilters({ ...filters, level: value })
+                  setFilters({ ...filters, level: value === "all" ? "" : value })
                 }
               >
-                <div className="flex rtl:flex-row-reverse items-center space-x-2">
-                  <RadioGroupItem value="" id="any-level" />
-                  <Label
-                    htmlFor="any-level"
-                    className="cursor-pointer font-normal"
-                  >
-                    {t("filters.allLevels")}
-                  </Label>
-                </div>
-                <div className="flex rtl:flex-row-reverse items-center space-x-2">
-                  <RadioGroupItem value="beginner" id="beginner" />
-                  <Label
-                    htmlFor="beginner"
-                    className="cursor-pointer font-normal"
-                  >
-                    {t("filters.beginner")}
-                  </Label>
-                </div>
-                <div className="flex rtl:flex-row-reverse items-center space-x-2">
-                  <RadioGroupItem value="intermediate" id="intermediate" />
-                  <Label
-                    htmlFor="intermediate"
-                    className="cursor-pointer font-normal"
-                  >
-                    {t("filters.intermediate")}
-                  </Label>
-                </div>
-                <div className="flex rtl:flex-row-reverse items-center space-x-2">
-                  <RadioGroupItem value="advanced" id="advanced" />
-                  <Label
-                    htmlFor="advanced"
-                    className="cursor-pointer font-normal"
-                  >
-                    {t("filters.advanced")}
-                  </Label>
-                </div>
-              </RadioGroup>
+                <SelectTrigger className="w-full" id="level">
+                  <SelectValue placeholder={t("filters.allLevels")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t("filters.allLevels")}</SelectItem>
+                  <SelectItem value="beginner">{t("filters.beginner")}</SelectItem>
+                  <SelectItem value="intermediate">{t("filters.intermediate")}</SelectItem>
+                  <SelectItem value="advanced">{t("filters.advanced")}</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
@@ -380,7 +341,6 @@ export default function FilterDialog({ currentFilters }: FilterDialogProps) {
             </div>
           </div>
 
-          {/* Instructor ID (optional) */}
           <div className="space-y-2">
             <Label htmlFor="user_id" className="text-base font-semibold">
               {t("filters.instructorId")}

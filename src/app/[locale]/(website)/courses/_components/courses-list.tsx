@@ -30,8 +30,6 @@ export default function CoursesList({ searchParams }: CoursesListProps) {
     queryFn: () => getFilterdCourses(Axios, url),
   })
 
-  console.log("Filtered Courses:", filteredCourses)
-
   return (
     <>
       <div className="rounded-sm flex gap-7 items-center mb-5">

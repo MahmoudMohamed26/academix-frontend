@@ -133,7 +133,10 @@
   "search": {
     "search": "Search",
     "searchPlaceholder": "Search courses, instructors...",
-    "seeAllResults": "See all results"
+    "seeAllResults": "See all results",
+    "noResults": "No results found",
+    "hours": "Hours",
+    "reviews": "Reviews"
   },
   "Dashboard": {
     "categories": {
