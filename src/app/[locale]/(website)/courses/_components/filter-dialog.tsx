@@ -55,7 +55,7 @@ export default function FilterDialog({ currentFilters }: FilterDialogProps) {
   })
 
   const activeFiltersCount = Object.entries(currentFilters).filter(
-    ([key, value]) => key !== "search" && value && value.trim() !== ""
+    ([key, value]) => key !== "search" && key !== "page" && value && value.trim() !== ""
   ).length
 
   useEffect(() => {
@@ -76,14 +76,12 @@ export default function FilterDialog({ currentFilters }: FilterDialogProps) {
   const buildFilterUrl = () => {
     const params = new URLSearchParams()
 
-    // Add all non-empty filters to params
     Object.entries(filters).forEach(([key, value]) => {
       if (value && value.trim() !== "") {
         params.append(key, value)
       }
     })
 
-    // Preserve search parameter if it exists
     if (currentFilters.search) {
       params.append("search", currentFilters.search)
     }

@@ -22,6 +22,12 @@ export interface Course {
   }
 }
 
+export interface CourseLinks {
+  next_cursor: string | null
+  per_page: number
+  prev_cursor: string | null
+}
+
 export interface SingleCourseProps {
   grid: boolean
   course: Course
@@ -50,6 +56,7 @@ export interface CourseSearchParams {
   orderedBy?: string
   user_id?: string
   search?: string
+  page?: string
 }
 
 export interface CoursesListProps {

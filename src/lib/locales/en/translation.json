@@ -60,6 +60,10 @@
       "passwordStrong": "Password must be at least 8 characters long and include an uppercase letter, a number, and a special character."
     }
   },
+  "pagination": {
+    "prev": "Previous",
+    "next": "Next"
+  },
   "sidebar": {
     "dashboard": "Dashboard",
     "instructors": "Instructors",

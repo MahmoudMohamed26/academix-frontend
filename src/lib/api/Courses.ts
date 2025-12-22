@@ -4,12 +4,17 @@ import { Course } from "../types/course";
 
 export async function getCourses(axiosInstance: AxiosInstance): Promise<Course[]> {
   const res = await axiosInstance.get('/courses');
+  console.log(res.data.data)
   return res.data.data.courses;
 }
 
-export async function getFilterdCourses(axiosInstance: AxiosInstance , url: string): Promise<Course[]> {
-  const res = await axiosInstance.get(url);
-  return res.data.data.courses;
+export async function getFilterdCourses(axiosInstance: AxiosInstance , url: string) {
+  const res = await axiosInstance.get(url, {
+    headers: {
+      published: 'true'
+    },
+  });
+  return res.data.data;
 }
 
 export async function getCourse(axiosInstance: AxiosInstance , id: any): Promise<Course> {

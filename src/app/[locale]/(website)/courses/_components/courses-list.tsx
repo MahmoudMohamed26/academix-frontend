@@ -9,7 +9,8 @@ import { useState } from "react"
 import FilterDialog from "./filter-dialog"
 import CourseSkeleton from "./course-skeleton"
 import { useTranslation } from "react-i18next"
-import { CoursesListProps } from "@/lib/types/course"
+import { Course, CourseLinks, CoursesListProps } from "@/lib/types/course"
+import Pagination from "./pagination"
 
 export default function CoursesList({ searchParams }: CoursesListProps) {
   const [grid, setGrid] = useState<boolean>(true)
@@ -25,10 +26,13 @@ export default function CoursesList({ searchParams }: CoursesListProps) {
     params.toString() ? `?${params.toString()}` : ""
   }`
 
-  const { data: filteredCourses, isLoading } = useQuery({
+  const { data: courseData, isLoading } = useQuery({
     queryKey: ["filtered-courses", searchParams],
     queryFn: () => getFilterdCourses(Axios, url),
   })
+
+  const filteredCourses: Course[] = courseData?.courses
+  const paginationLinks: CourseLinks = courseData?.meta
 
   return (
     <>
@@ -72,6 +76,7 @@ export default function CoursesList({ searchParams }: CoursesListProps) {
           {t("coursesPage.noCourses")}
         </div>
       )}
+      <Pagination paginationLinks={paginationLinks} />
     </>
   )
 }
