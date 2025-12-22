@@ -67,6 +67,7 @@
     "register": "Sign up",
     "aboutus": "About us",
     "logout": "Logout",
+    "showall": "Show All",
     "home": "Home",
     "account": "Account",
     "browseCourses": "Browse Courses",
@@ -123,14 +124,16 @@
   "coursesPage": {
     "noCourses": "No courses found",
     "gridView": "Grid view",
+    "resultsFor": "Search Results for",
     "listView": "List view",
     "title": "Browse Courses",
     "description": "Explore our wide range of courses and start learning today",
     "enroll": "Enroll Now"
   },
-  "DashNavbar": {
+  "search": {
     "search": "Search",
-    "searchPlaceholder": "Search courses, instructors..."
+    "searchPlaceholder": "Search courses, instructors...",
+    "seeAllResults": "See all results"
   },
   "Dashboard": {
     "categories": {

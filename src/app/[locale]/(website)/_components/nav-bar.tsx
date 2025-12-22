@@ -38,6 +38,7 @@ import { useState } from "react"
 export default function NavBar() {
   const { t, i18n } = useTranslation()
   const Axios = useAxios()
+  const [open , setOpen] = useState(false);
 
   const { data: user, isLoading: userLoading } = useQuery({
     queryKey: ["loggedInUser"],
@@ -85,11 +86,11 @@ export default function NavBar() {
     }
   }
   return (
-    <div className="shadow-md mb-5">
+    <div className={`shadow-md mb-5 z-10 bg-white ${open ? "sticky top-0" : ""}`}>
       <div className="flex items-center justify-between container py-1!">
         <div className="flex items-center gap-3">
           <Logo h={64} w={64} />
-          <SearchInput />
+          <SearchInput open={open} setOpen={setOpen} />
           <ul className="gap-2 hidden lg:flex">
             <li>
               <Link
@@ -244,7 +245,7 @@ export default function NavBar() {
             className="bg-orange-100 text-sm text-(--main-color) py-2 px-4"
             href="/categories"
           >
-            Show all...
+            {t("sidebar.showall")}...
           </Link>
         </li>
       </ul>
