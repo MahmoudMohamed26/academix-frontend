@@ -64,7 +64,7 @@ export default async function CoursesPage({
   }`
 
   await queryClient.prefetchQuery({
-    queryKey: ["filtered-courses", sanitizedParams],
+    queryKey: ["courses", sanitizedParams],
     queryFn: () => getFilterdCourses(axiosInstance, url),
   })
 

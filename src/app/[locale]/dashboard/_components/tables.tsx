@@ -41,13 +41,27 @@ export default function DataTable({
       return "N/A"
     } else if (header.key === "created") {
       return formatDate(item.created)
-    } else if (header.key === "short_description") {
+    } else if (header.key === "title") {
+      return truncateText(item.title, 10)
+    }else if (header.key === "short_description") {
       return truncateText(item.short_description , 15)
     } else if (header.key === "updated") {
       return formatDate(item.updated)
     } else if (header.key === "image") {
       return(
-        <Image unoptimized src={item.image} alt="course image" width={64} height={64} />
+        <div
+          className={`rounded-md overflow-hidden relative w-[140px] h-[70px]`}
+        >
+          <Image
+            src={item.image}
+            fill
+            alt={item.title}
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 400px"
+            loading="eager"
+            unoptimized
+          />
+        </div>
       )
     }else if (header.key === "actions") {
       return (

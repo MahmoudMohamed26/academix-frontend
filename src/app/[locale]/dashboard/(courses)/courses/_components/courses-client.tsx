@@ -75,7 +75,7 @@ export default function Courses({
   }`
 
   const { data: courseData, isLoading } = useQuery({
-    queryKey: ["filtered-courses", sanitizedParams],
+    queryKey: ["courses", sanitizedParams],
     queryFn: () => getFilterdCourses(Axios, url),
   })
 

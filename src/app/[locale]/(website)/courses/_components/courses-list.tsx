@@ -27,7 +27,7 @@ export default function CoursesList({ searchParams }: CoursesListProps) {
   }`
 
   const { data: courseData, isLoading } = useQuery({
-    queryKey: ["filtered-courses", searchParams],
+    queryKey: ["courses", searchParams],
     queryFn: () => getFilterdCourses(Axios, url),
   })
 

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { ListFilter, Loader2, Star } from "lucide-react"
 import { useQuery } from "@tanstack/react-query"
 import {
@@ -36,6 +37,7 @@ export default function FilterDialog({ currentFilters }: FilterDialogProps) {
   const [open, setOpen] = useState(false)
   const Axios = useAxios()
   const { i18n, t } = useTranslation()
+  const pathname = usePathname()
 
   const { data: categories = [], isLoading: categoriesLoading } = useQuery({
     queryKey: ["categories"],
@@ -134,8 +136,8 @@ export default function FilterDialog({ currentFilters }: FilterDialogProps) {
       params.append("search", currentFilters.search)
     }
 
-    // Build the URL path - use current pathname if available, otherwise default to current location
-    const basePath = window.location.pathname
+    // Build the URL path using Next.js pathname
+    const basePath = pathname
     return `${basePath}${params.toString() ? `?${params.toString()}` : ""}`
   }
 
