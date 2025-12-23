@@ -3,12 +3,17 @@ import { useTranslation } from "@/lib/i18n-server"
 import CoursesClient from "./_components/courses-client"
 import { TableHeader } from "@/lib/types/table"
 
-export default async function CoursesPage({
-  params,
-}: {
+type CoursePageProps = {
+  searchParams: Record<string, string | undefined>
   params: Promise<{ locale: string }>
-}) {
+}
+
+export default async function CoursesPage({
+  searchParams,
+  params,
+}: CoursePageProps) {
   const { locale } = await params
+  const resolvedParams = await searchParams
   const { t } = await useTranslation(locale)
 
   const tableHeaders: TableHeader[] = [
@@ -27,7 +32,7 @@ export default async function CoursesPage({
   return (
     <div>
       <SpecialHeader name={t("Dashboard.courses.pageTitle")} />
-      <CoursesClient tableHeaders={tableHeaders} />
+      <CoursesClient tableHeaders={tableHeaders} searchParams={resolvedParams} />
     </div>
   )
 }

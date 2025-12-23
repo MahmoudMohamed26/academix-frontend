@@ -8,15 +8,15 @@ import { useTranslation } from "react-i18next"
 export default function Pagination({
   paginationLinks,
 }: {
-  paginationLinks: CourseLinks
+  paginationLinks: CourseLinks | undefined
 }) {
   const { t, i18n } = useTranslation()
   return (
     <div className="my-10 flex gap-2 justify-end">
-      {paginationLinks.prev_cursor ? (
+      {paginationLinks?.prev_cursor ? (
         <Link
           scroll={true}
-          href={`courses?page=${paginationLinks.prev_cursor}`}
+          href={`?page=${paginationLinks.prev_cursor}`}
           className="flex items-center hover:underline"
         >
           <ChevronLeft
@@ -37,10 +37,10 @@ export default function Pagination({
           <span>{t("pagination.prev")}</span>
         </button>
       )}
-      {paginationLinks.next_cursor ? (
+      {paginationLinks?.next_cursor ? (
         <Link
           scroll={true}
-          href={`courses?page=${paginationLinks.next_cursor}`}
+          href={`?page=${paginationLinks.next_cursor}`}
           className="flex items-center hover:underline"
         >
           <span className="ms-2">{t("pagination.next")}</span>{" "}

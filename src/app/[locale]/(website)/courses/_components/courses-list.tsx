@@ -6,11 +6,11 @@ import { getFilterdCourses } from "@/lib/api/Courses"
 import { useQuery } from "@tanstack/react-query"
 import { LayoutGrid, List } from "lucide-react"
 import { useState } from "react"
-import FilterDialog from "./filter-dialog"
+import FilterDialog from "../../../../../components/filter-dialog"
 import CourseSkeleton from "./course-skeleton"
 import { useTranslation } from "react-i18next"
 import { Course, CourseLinks, CoursesListProps } from "@/lib/types/course"
-import Pagination from "./pagination"
+import Pagination from "../../../../../components/pagination"
 
 export default function CoursesList({ searchParams }: CoursesListProps) {
   const [grid, setGrid] = useState<boolean>(true)
@@ -31,8 +31,8 @@ export default function CoursesList({ searchParams }: CoursesListProps) {
     queryFn: () => getFilterdCourses(Axios, url),
   })
 
-  const filteredCourses: Course[] = courseData?.courses
-  const paginationLinks: CourseLinks = courseData?.meta
+  const filteredCourses: Course[] = courseData?.courses ?? []
+  const paginationLinks: CourseLinks | undefined = courseData?.meta
 
   return (
     <>
@@ -76,7 +76,7 @@ export default function CoursesList({ searchParams }: CoursesListProps) {
           {t("coursesPage.noCourses")}
         </div>
       )}
-      <Pagination paginationLinks={paginationLinks} />
+      <Pagination paginationLinks={paginationLinks || undefined} />
     </>
   )
 }

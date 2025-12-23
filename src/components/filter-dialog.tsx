@@ -86,7 +86,7 @@ export default function FilterDialog({ currentFilters }: FilterDialogProps) {
       params.append("search", currentFilters.search)
     }
 
-    return `/courses${params.toString() ? `?${params.toString()}` : ""}`
+    return `${params.toString() ? `?${params.toString()}` : ""}`
   }
 
   const handleResetFilters = () => {

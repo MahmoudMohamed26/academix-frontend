@@ -1,6 +1,6 @@
 import { AxiosInstance } from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Course } from "../types/course";
+import { Course, CourseRes } from "../types/course";
 
 export async function getCourses(axiosInstance: AxiosInstance): Promise<Course[]> {
   const res = await axiosInstance.get('/courses');
@@ -8,7 +8,7 @@ export async function getCourses(axiosInstance: AxiosInstance): Promise<Course[]
   return res.data.data.courses;
 }
 
-export async function getFilterdCourses(axiosInstance: AxiosInstance , url: string) {
+export async function getFilterdCourses(axiosInstance: AxiosInstance , url: string): Promise<CourseRes> {
   const res = await axiosInstance.get(url, {
     headers: {
       published: 'true'

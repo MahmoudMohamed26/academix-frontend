@@ -28,6 +28,12 @@ export interface CourseLinks {
   prev_cursor: string | null
 }
 
+export interface CourseRes {
+  courses: Course[]
+  links: {}
+  meta: CourseLinks
+}
+
 export interface SingleCourseProps {
   grid: boolean
   course: Course
