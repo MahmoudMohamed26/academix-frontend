@@ -132,7 +132,11 @@
     "listView": "List view",
     "title": "Browse Courses",
     "description": "Explore our wide range of courses and start learning today",
-    "enroll": "Enroll Now"
+    "enroll": "Enroll Now",
+    "hours": "Hours",
+    "free": "Free",
+    "reviews": "Reviews",
+    "lectures": "Lectures"
   },
   "search": {
     "search": "Search",

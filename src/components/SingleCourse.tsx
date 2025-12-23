@@ -7,9 +7,9 @@ import { useTranslation } from "react-i18next"
 import { SingleCourseProps } from "@/lib/types/course"
 
 export default function SingleCourse({ grid, course }: SingleCourseProps) {
-  const { i18n } = useTranslation()
+  const { t, i18n } = useTranslation()
   return (
-    <Link href={"/course"} className="border flex flex-col relative hover:bg-gray-50 rounded-md">
+    <Link href={`/courses/course-details/${course.id}`} className="border flex flex-col relative hover:bg-gray-50 rounded-md">
       <div className={`p-4 ${!grid ? "lg:flex lg:flex-row lg:gap-10" : ""} flex-1 flex flex-col`}>
         <div
           className={`rounded-md overflow-hidden ${
@@ -46,13 +46,13 @@ export default function SingleCourse({ grid, course }: SingleCourseProps) {
                 {course.rating_avg}
               </span>
               <span className="border rounded-sm py-1 px-2 flex gap-1 items-center text-xs">
-                Reviews ({course.rating_counts})
+                {t("coursesPage.reviews")} ({course.rating_counts})
               </span>
               <span className="border rounded-sm py-1 px-2 flex gap-1 items-center text-xs">
-                Total hours {course.hours}
+                {t("coursesPage.hours")} {course.hours}
               </span>
               <span className="border rounded-sm py-1 px-2 flex gap-1 items-center text-xs">
-                Lectures
+                {t("coursesPage.lectures")} 40
               </span>
               <span className="border rounded-sm py-1 px-2 flex gap-1 items-center text-xs">
                 {course.level}
@@ -61,7 +61,7 @@ export default function SingleCourse({ grid, course }: SingleCourseProps) {
             <div className="mt-4 flex justify-between items-center">
               <p className="text-3xl font-bold">${course.price}</p>
               <button className="bg-(--main-color) py-2 px-4 text-white text-sm rounded-md cursor-pointer duration-300 hover:bg-transparent border border-(--main-color) hover:text-(--main-color)">
-                Enroll now
+                {t("coursesPage.enroll")}
               </button>
             </div>
           </div>

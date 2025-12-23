@@ -30,18 +30,18 @@ export default function SwipperSlider() {
           loop={true}
         >
           <SwiperSlide>
-            <Link href={"/shop"}>
-              <img src={swiper1.src} alt="img1" />
+            <Link href={"/courses"}>
+              <img src={swiper1.src} alt="academix master new skill" loading="lazy" />
             </Link>
           </SwiperSlide>
           <SwiperSlide>
-            <Link href={"/shop"}>
-              <img src={swiper2.src} alt="img2" />
+            <Link href={"/courses"}>
+              <img src={swiper2.src} alt="academix unlock your potential" loading="lazy" />
             </Link>
           </SwiperSlide>
           <SwiperSlide>
-            <Link href={"/shop"}>
-              <img src={swiper3.src} alt="img3" />
+            <Link href={"/courses"}>
+              <img src={swiper3.src} alt="academix master community" loading="lazy" />
             </Link>
           </SwiperSlide>
         </Swiper>

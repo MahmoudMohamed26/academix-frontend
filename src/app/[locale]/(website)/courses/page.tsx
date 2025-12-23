@@ -70,7 +70,7 @@ export default async function CoursesPage({
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <div className="container">
+      <div className="container mt-5!">
         <Breadcrumb />
         <SpecialHeader name={t("coursesPage.title")} size="big" />
         <div className="text-[#666] mb-5">

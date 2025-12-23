@@ -85,7 +85,7 @@ export default function NavBar() {
     }
   }
   return (
-    <div className={`shadow-md mb-5 z-10 bg-white ${open ? "sticky top-0" : ""}`}>
+    <div className={`shadow-md z-10 bg-white ${open ? "sticky top-0" : ""}`}>
       <div className="flex items-center gap-5 justify-between container py-1!">
         <div className="flex items-center flex-1 gap-3">
           <Logo h={64} w={64} />

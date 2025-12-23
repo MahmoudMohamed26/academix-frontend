@@ -15,7 +15,6 @@ export default function Pagination({
     <div className="my-10 flex gap-2 justify-end">
       {paginationLinks?.prev_cursor ? (
         <Link
-          scroll={true}
           href={`?page=${paginationLinks.prev_cursor}`}
           className="flex items-center hover:underline"
         >
@@ -39,7 +38,6 @@ export default function Pagination({
       )}
       {paginationLinks?.next_cursor ? (
         <Link
-          scroll={true}
           href={`?page=${paginationLinks.next_cursor}`}
           className="flex items-center hover:underline"
         >

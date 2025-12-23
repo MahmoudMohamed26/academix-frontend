@@ -31,7 +31,7 @@ const labels: Record<string, Record<string, string>> = {
   },
 }
 
-export default function Breadcrumb() {
+export default function Breadcrumb({textColor}: {textColor?: "main" | "black"}) {
   const pathname = usePathname()
 
   const segments = pathname.split("/").filter(Boolean)
@@ -72,11 +72,11 @@ export default function Breadcrumb() {
 
   return (
     <nav aria-label="Breadcrumb" className="mb-4">
-      <ol className={`flex items-center gap-2 text-sm`}>
+      <ol className={`flex items-center gap-2 text-sm ${textColor === "main" ? "text-(--main-color)" : "text-gray-600" }`}>
         <li>
           <Link
             href={`/${locale}`}
-            className="flex items-center gap-1 text-gray-600 hover:text-gray-900 transition-colors"
+            className={`flex items-center gap-1 transition-colors ${textColor === "main" ? "hover:text-(--main-darker-color)" : "hover:text-gray-900" }`}
           >
             <Home className="w-4 h-4" />
             <span>{homeLabel}</span>
@@ -85,7 +85,7 @@ export default function Breadcrumb() {
 
         {breadcrumbItems.map((item) => (
           <li key={item.href} className="flex items-center gap-2">
-            <span className="text-gray-400">
+            <span>
               <ChevronRight className={`w-4 h-4 ${isRtl ? "rotate-180" : ""}`} />
             </span>
             {item.isLast ? (
@@ -95,7 +95,7 @@ export default function Breadcrumb() {
             ) : (
               <Link
                 href={item.href}
-                className="text-gray-600 hover:text-gray-900 transition-colors"
+                className={`transition-colors ${textColor === "main" ? "hover:text-(--main-darker-color)" : "hover:text-gray-900" }`}
               >
                 {item.label}
               </Link>
