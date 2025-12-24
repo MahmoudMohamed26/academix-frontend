@@ -50,6 +50,7 @@ export default function CategoriesClient() {
               opts={{
                 direction: i18n.language === "ar" ? "rtl" : "ltr",
                 slidesToScroll: 'auto',
+                
               }}
             >
               <CarouselContent className="-ml-2 md:-ml-4">

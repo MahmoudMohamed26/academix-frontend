@@ -300,15 +300,12 @@ export function AppSidebar() {
             <SidebarGroupLabel>{t("sidebar.categories")}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {categories?.map((el: Category, index: number) => (
+                {categories?.slice(0, 4).map((el: Category, index: number) => (
                   <SidebarMenuItem key={index}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname.includes(`/category/${el.slug}`)}
-                    >
+                    <SidebarMenuButton asChild>
                       <Link
                         className="flex justify-between"
-                        href={`/dashboard/category/${el.slug}`}
+                        href={`/courses?category_slug=${el.id}`}
                         onClick={handleItemClick}
                       >
                         <p>{getCategoryName(el)}</p>
@@ -316,6 +313,16 @@ export function AppSidebar() {
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <Link
+                      className="flex bg-orange-100 text-(--main-color) hover:bg-orange-100! hover:text-(--main-color)! justify-between"
+                      href={`/categories`}
+                    >
+                      Show All
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>

@@ -9,7 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Pencil, Trash2 } from "lucide-react"
+import { Pencil, Section, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { formatDate } from "@/helpers/format-date"
 import { DataTableProps, TableHeader as THeader } from "@/lib/types/table"
@@ -43,12 +43,12 @@ export default function DataTable({
       return formatDate(item.created)
     } else if (header.key === "title") {
       return truncateText(item.title, 10)
-    }else if (header.key === "short_description") {
-      return truncateText(item.short_description , 15)
+    } else if (header.key === "short_description") {
+      return truncateText(item.short_description, 15)
     } else if (header.key === "updated") {
       return formatDate(item.updated)
     } else if (header.key === "image") {
-      return(
+      return (
         <div
           className={`rounded-md overflow-hidden relative w-[140px] h-[70px]`}
         >
@@ -63,13 +63,23 @@ export default function DataTable({
           />
         </div>
       )
-    }else if (header.key === "actions") {
+    } else if (header.key === "actions") {
       return (
         <div className="flex gap-2">
+          {type === "courses" && (
+            <Link
+              className="p-2 hover:bg-orange-100 cursor-pointer rounded-md transition-colors"
+              href={`/dashboard/courses/sections/${item.id}`}
+              title="sections"
+            >
+              <Section className="w-4 h-4 text-(--main-color)" />
+            </Link>
+          )}
           <Link
             href={`/dashboard/${type}/edit/${item.id}`}
             className="p-2 hover:bg-blue-100 cursor-pointer rounded-md transition-colors"
             aria-label="Edit"
+            title="edit"
           >
             <Pencil className="w-4 h-4 text-blue-600" />
           </Link>
@@ -78,6 +88,7 @@ export default function DataTable({
               onClick={() => onDelete(item.id)}
               className="p-2 hover:bg-red-100 cursor-pointer rounded-md transition-colors"
               aria-label="Delete"
+              title="delete"
             >
               <Trash2 className="w-4 h-4 text-red-600" />
             </button>

@@ -30,8 +30,6 @@ export default function CourseDetailsClient() {
     staleTime: 5 * 60 * 1000,
   })
 
-  console.log(course)
-
   useEffect(() => {
     course?.rating_avg || 0 - Math.floor(course?.rating_avg || 0) >= 0.5
       ? setHalfStar(true)
