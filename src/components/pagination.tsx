@@ -12,7 +12,7 @@ export default function Pagination({
 }) {
   const { t, i18n } = useTranslation()
   return (
-    <div className="my-10 flex gap-2 justify-end">
+    <div className="mt-5 flex gap-2 justify-end">
       {paginationLinks?.prev_cursor ? (
         <Link
           href={`?page=${paginationLinks.prev_cursor}`}

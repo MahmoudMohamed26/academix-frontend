@@ -9,7 +9,7 @@ import { SingleCourseProps } from "@/lib/types/course"
 export default function SingleCourse({ grid, course }: SingleCourseProps) {
   const { t, i18n } = useTranslation()
   return (
-    <Link href={`/courses/course-details/${course.id}`} className="border flex flex-col relative hover:bg-gray-50 rounded-md">
+    <Link href={`/courses/course-details/${course.id}`} className="border h-full flex flex-col relative hover:bg-gray-50 rounded-md">
       <div className={`p-4 ${!grid ? "lg:flex lg:flex-row lg:gap-10" : ""} flex-1 flex flex-col`}>
         <div
           className={`rounded-md overflow-hidden ${

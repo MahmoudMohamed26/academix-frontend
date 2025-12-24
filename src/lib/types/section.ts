@@ -1,3 +1,4 @@
+import test from "node:test"
 import { Lecture } from "./lecture"
 
 export type SectionFormData = {

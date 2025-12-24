@@ -146,6 +146,11 @@
     "hours": "Hours",
     "reviews": "Reviews"
   },
+  "categories": {
+    "showall": "Show All",
+    "title": "Explore top rated Categories",
+    "description": "Discover the most popular categories, curated based on quality, ratings, and learner interest."
+  },
   "Dashboard": {
     "categories": {
       "title": "Categories",

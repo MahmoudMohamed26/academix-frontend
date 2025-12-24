@@ -161,12 +161,12 @@ export default function SearchInput({
   const handleResultClick = (courseId: string) => {
     setOpen(false)
     setSelectedIndex(-1)
-    router.push(`/course/${courseId}`)
+    router.push(`/courses/course-details/${courseId}`)
   }
 
   const showSearchResults = searchResults.map((el: Course, index: number) => (
     <Link
-      href={`/course/${el.id}`}
+      href={`/courses/course-details/${el.id}`}
       key={el.id}
       tabIndex={0}
       ref={(el) => {
