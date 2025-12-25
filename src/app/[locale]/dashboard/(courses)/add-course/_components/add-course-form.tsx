@@ -70,7 +70,7 @@ export default function AddCourseForm({
       level: "beginner",
       category_slug: "none",
     },
-    // validationSchema,
+    validationSchema,
     onSubmit: async (values) => {
       if (!imageFile) {
         toast.error(t("Dashboard.addCourse.requiredImageError"))
@@ -182,7 +182,7 @@ export default function AddCourseForm({
           ) : (
             <form className="mt-2" onSubmit={form.handleSubmit}>
               <div className="lg:flex gap-10">
-                <div className="mb-4 w-full sm:w-1/2 lg:w-1/3">
+                <div className="mb-4 max-w-[400px] flex-1/4">
                   <label className="text-sm text-gray-700 font-[501]">
                     {t("Dashboard.addCourse.imageLabel")}
                   </label>
@@ -196,7 +196,7 @@ export default function AddCourseForm({
                   <div className="relative">
                     <div
                       onClick={handleImageClick}
-                      className={`w-full h-48 my-2 border-2 rounded-sm overflow-hidden ${
+                      className={`w-full h-50 my-2 border-2 rounded-sm overflow-hidden ${
                         imagePreview
                           ? "border-[#e2e6f1]"
                           : "border-dashed cursor-pointer hover:border-(--main-color)"
@@ -211,6 +211,7 @@ export default function AddCourseForm({
                           src={imagePreview}
                           alt="Course preview"
                           className="w-full h-full object-cover"
+                          loading="lazy"
                         />
                       ) : (
                         <div className="flex flex-col items-center justify-center h-full text-gray-400">
@@ -431,7 +432,7 @@ export default function AddCourseForm({
                     : "border-[#e2e6f1] special_shadow"
                 }`}
                 name="detailed_description"
-                rows={6}
+                rows={20}
                 placeholder={t(
                   "Dashboard.addCourse.detailedDescriptionPlaceholder"
                 )}
