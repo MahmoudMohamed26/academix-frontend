@@ -18,6 +18,7 @@ import { toast } from "sonner"
 import { Quiz, QuizQuestion } from "@/lib/types/quiz"
 import * as Yup from "yup"
 import BtnLoad from "@/components/BtnLoad"
+import { getQuestions } from "@/lib/api/Quizes"
 
 interface QuizMakerProps {
   onSave: (quiz: Quiz) => void
@@ -110,17 +111,14 @@ export default function QuizMaker({
     queryKey: ["quiz-questions", courseId, sectionId, initialData?.id],
     queryFn: async () => {
       if (!isEditMode) return null
-      const response = await Axios.get(
-        `/courses/${courseId}/sections/${sectionId}/quizzes/${initialData?.id}/questions`
-      )
-      return response.data
+      return getQuestions(Axios, courseId, sectionId, initialData?.id)
     },
     enabled: isOpen && isEditMode,
   })
 
   useEffect(() => {
-    if (quizData?.data?.Questions && Array.isArray(quizData.data.Questions)) {
-      const fetchedQuestions = quizData.data.Questions.map((q: any) => ({
+    if (quizData && Array.isArray(quizData)) {
+      const fetchedQuestions = quizData.map((q: any) => ({
         id: q.id?.toString() || generateId(),
         question: q.question || "",
         answers: Array.isArray(q.answers)
