@@ -188,7 +188,7 @@ export default function WebsiteSidebar({
               </Link>
               <Link
                 className="py-2 text-center mt-2 block px-8 hover:bg-(--main-color) duration-300 hover:text-white font-semibold text-sm border border-(--main-color) rounded-sm"
-                href={"/login"}
+                href={"/register"}
               >
                 {t("sidebar.register")}
               </Link>

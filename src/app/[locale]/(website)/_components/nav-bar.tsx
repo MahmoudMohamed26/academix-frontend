@@ -219,7 +219,7 @@ export default function NavBar() {
             </Link>
             <Link
               className="py-2 px-8 hover:bg-(--main-color) duration-300 hover:text-white font-semibold text-sm border border-(--main-color) rounded-sm"
-              href={"/login"}
+              href={"/register"}
             >
               {t("sidebar.register")}
             </Link>

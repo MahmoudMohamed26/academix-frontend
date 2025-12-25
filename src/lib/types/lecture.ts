@@ -1,4 +1,6 @@
-export type Lecture = {
+export interface Lecture {
+  id: string
+  type: "lecture"
   title: string
   content: string
   position: number

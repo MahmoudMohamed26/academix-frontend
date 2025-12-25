@@ -5,7 +5,7 @@ import * as Yup from "yup"
 import { useFormik } from "formik"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
-import { isAxiosError } from "axios"
+import axios, { isAxiosError } from "axios"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import useAxios from "@/hooks/useAxios"
@@ -66,11 +66,14 @@ export default function RegisterForm() {
       toast.success(t("register.success"))
       router.replace("/")
     } catch (err) {
+      console.log(err);
       setLoad(false)
-      if (isAxiosError(err)) {
-        if (err.response?.data.message === "This email is already in use") {
+      if (axios.isAxiosError(err)) {
+        if (err.response?.data.message === "The email has already been taken.") {
           setUsedEmail(true)
           toast.error(t("register.errors.emailExists"))
+        }else{
+          toast.error(err.response?.data.message)
         }
       }
     }

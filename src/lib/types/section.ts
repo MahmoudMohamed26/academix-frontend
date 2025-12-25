@@ -1,5 +1,5 @@
-import test from "node:test"
 import { Lecture } from "./lecture"
+import { Quiz } from "./quiz"
 
 export type SectionFormData = {
   title: string
@@ -14,3 +14,5 @@ export interface Section {
   lectures: Lecture[]
   quizzes?: any
 }
+
+export type ContentItem = Lecture | Quiz

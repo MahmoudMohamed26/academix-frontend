@@ -7,12 +7,20 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
 import { Button } from "@/components/ui/button"
-import { ChevronRight, GripVertical, Trash2, Video, FileQuestion } from "lucide-react"
+import {
+  ChevronRight,
+  GripVertical,
+  Trash2,
+  Video,
+  FileQuestion,
+} from "lucide-react"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -21,39 +29,8 @@ import QuizMaker from "./quiz-maker"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import useAxios from "@/hooks/useAxios"
 import { toast } from "sonner"
-
-interface Lecture {
-  id: string
-  type: "lecture"
-  title: string
-  content: string
-  position: number
-  duration: number
-  video_url: string
-}
-
-interface Quiz {
-  id: string
-  type: "quiz"
-  title: string
-  description: string
-  position: number
-  questions: QuizQuestion[]
-}
-
-interface QuizQuestion {
-  id: string
-  question: string
-  answers: QuizAnswer[]
-}
-
-interface QuizAnswer {
-  id: string
-  text: string
-  isCorrect: boolean
-}
-
-type ContentItem = Lecture | Quiz
+import { ContentItem } from "@/lib/types/section"
+import { Quiz } from "@/lib/types/quiz"
 
 interface ContentSubFormProps {
   content: ContentItem
@@ -75,6 +52,7 @@ export default function ContentSubForm({
     content.type
   )
   const [isQuizDialogOpen, setIsQuizDialogOpen] = useState(false)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const Axios = useAxios()
   const queryClient = useQueryClient()
 
@@ -85,7 +63,7 @@ export default function ContentSubForm({
     transform,
     transition,
     isDragging,
-  } = useSortable({ 
+  } = useSortable({
     id: content.id,
     disabled: isOpen,
   })
@@ -121,33 +99,33 @@ export default function ContentSubForm({
     },
   })
 
-  // Save lecture mutation
   const saveLectureMutation = useMutation({
     mutationFn: async (values: any) => {
-      const isNewLecture = content.id.startsWith('temp-')
+      const isNewLecture = content.id.startsWith("temp-")
       const endpoint = `/courses/${courseId}/sections/${sectionId}/lectures`
-      
+
       if (isNewLecture) {
         return await Axios.post(endpoint, {
           ...values,
-          position: content.position
+          position: content.position,
+          section_id: sectionId,
         })
       } else {
-        return await Axios.put(`${endpoint}/${content.id}`, {
+        return await Axios.patch(`${endpoint}/${content.id}`, {
           ...values,
-          position: content.position
+          position: content.position,
         })
       }
     },
     onSuccess: (response) => {
       toast.success("Lecture saved successfully")
       queryClient.invalidateQueries({ queryKey: ["sections", courseId] })
-      if (content.id.startsWith('temp-') && response.data?.id) {
-        onUpdate(content.id, { 
-          ...lectureFormik.values, 
+      if (content.id.startsWith("temp-") && response.data?.id) {
+        onUpdate(content.id, {
+          ...lectureFormik.values,
           id: response.data.id,
           type: "lecture",
-          position: content.position 
+          position: content.position,
         })
       } else {
         onUpdate(content.id, {
@@ -160,13 +138,12 @@ export default function ContentSubForm({
     },
     onError: (error: any) => {
       toast.error(error?.response?.data?.message || "Failed to save lecture")
-    }
+    },
   })
 
-  // Delete lecture mutation
   const deleteLectureMutation = useMutation({
     mutationFn: async () => {
-      if (!content.id.startsWith('temp-') && content.type === "lecture") {
+      if (!content.id.startsWith("temp-") && content.type === "lecture") {
         const endpoint = `/courses/${courseId}/sections/${sectionId}/lectures/${content.id}`
         return await Axios.delete(endpoint)
       }
@@ -175,10 +152,31 @@ export default function ContentSubForm({
       toast.success("Lecture deleted successfully")
       queryClient.invalidateQueries({ queryKey: ["sections", courseId] })
       onDelete(content.id)
+      setIsDeleteDialogOpen(false)
     },
     onError: (error: any) => {
       toast.error(error?.response?.data?.message || "Failed to delete lecture")
-    }
+      setIsDeleteDialogOpen(false)
+    },
+  })
+
+  const deleteQuizMutation = useMutation({
+    mutationFn: async () => {
+      if (!content.id.startsWith("temp-") && content.type === "quiz") {
+        const endpoint = `/courses/${courseId}/sections/${sectionId}/quizzes/${content.id}`
+        return await Axios.delete(endpoint)
+      }
+    },
+    onSuccess: () => {
+      toast.success("Quiz deleted successfully")
+      queryClient.invalidateQueries({ queryKey: ["sections", courseId] })
+      onDelete(content.id)
+      setIsDeleteDialogOpen(false)
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || "Failed to delete quiz")
+      setIsDeleteDialogOpen(false)
+    },
   })
 
   const handleSelectContentType = (type: "lecture" | "quiz") => {
@@ -198,250 +196,333 @@ export default function ContentSubForm({
     setIsOpen(false)
   }
 
-  const handleQuizEdit = () => {
-    setIsQuizDialogOpen(true)
+  const handleDelete = () => {
+    setIsDeleteDialogOpen(true)
   }
 
-  const handleDelete = () => {
-    if (window.confirm(`Are you sure you want to delete this ${content.type}?`)) {
-      if (content.type === "lecture") {
-        deleteLectureMutation.mutate()
-      } else {
-        // For quiz deletion, add similar logic when implementing quiz API
-        onDelete(content.id)
-      }
+  const confirmDelete = () => {
+    if (content.type === "lecture") {
+      deleteLectureMutation.mutate()
+    } else if (content.type === "quiz") {
+      deleteQuizMutation.mutate()
     }
   }
 
   return (
-    <div ref={setNodeRef} style={style}>
-      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-        <div className="border border-gray-200 rounded-md bg-gray-50">
-          <div className="flex items-center gap-2 p-3">
-            <button
-              type="button"
-              className={`${isOpen ? "cursor-not-allowed" : "cursor-grab active:cursor-grabbing"}`}
-              {...attributes}
-              {...listeners}
-            >
-              <GripVertical className={`h-4 w-4 ${isOpen ? "text-gray-300" : "text-gray-400"}`} />
-            </button>
-
-            {content.type === "lecture" ? (
-              <Video className="h-4 w-4 text-gray-500" />
-            ) : (
-              <FileQuestion className="h-4 w-4 text-gray-500" />
-            )}
-
-            <CollapsibleTrigger asChild>
-              <button
-                type="button"
-                className="flex items-center gap-2 flex-1 text-left"
-              >
-                <ChevronRight
-                  className={`h-3 w-3 transition-transform ${
-                    isOpen ? "transform rotate-90" : ""
-                  }`}
-                />
-                <span className="text-sm text-gray-700">
-                  {content.title || "New Content"}
+    <>
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              Delete {content.type === "lecture" ? "Lecture" : "Quiz"}
+            </DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this{" "}
+              {content.type === "lecture" ? "lecture" : "quiz"}? This action
+              cannot be undone.
+              {content.type === "quiz" && content.questions?.length > 0 && (
+                <span className="block mt-2 text-red-600 font-medium">
+                  Warning: This quiz contains {content.questions.length}{" "}
+                  question(s) that will also be deleted.
                 </span>
-                <span className="text-xs text-gray-500 ml-2">
-                  ({content.type === "lecture" ? "Lecture" : "Quiz"})
-                </span>
-              </button>
-            </CollapsibleTrigger>
-
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
             <Button
               type="button"
-              variant="ghost"
-              size="icon"
-              onClick={handleDelete}
-              disabled={deleteLectureMutation.isPending}
-              className="h-7 w-7 text-red-500 hover:text-red-700 hover:bg-red-50"
+              variant="outline"
+              onClick={() => setIsDeleteDialogOpen(false)}
+              disabled={
+                deleteLectureMutation.isPending || deleteQuizMutation.isPending
+              }
             >
-              <Trash2 className="h-3 w-3" />
+              Cancel
             </Button>
-          </div>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={confirmDelete}
+              disabled={
+                deleteLectureMutation.isPending || deleteQuizMutation.isPending
+              }
+            >
+              {deleteLectureMutation.isPending || deleteQuizMutation.isPending
+                ? "Deleting..."
+                : "Delete"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-          <CollapsibleContent>
-            <div className="px-3 pb-3 space-y-3 border-t border-gray-200 pt-3">
-              {!contentType && (
-                <div className="space-y-2">
-                  <p className="text-sm text-gray-600 mb-3">
-                    Select content type:
-                  </p>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => handleSelectContentType("lecture")}
-                      className="flex items-center gap-2 h-20 flex-col"
-                    >
-                      <Video className="h-5 w-5" />
-                      <span>Lecture</span>
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => handleSelectContentType("quiz")}
-                      className="flex items-center gap-2 h-20 flex-col"
-                    >
-                      <FileQuestion className="h-5 w-5" />
-                      <span>Quiz</span>
-                    </Button>
-                  </div>
-                </div>
+      <div ref={setNodeRef} style={style}>
+        <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+          <div className="border border-gray-200 rounded-md bg-gray-50">
+            <div className="flex items-center gap-2 p-3">
+              <button
+                type="button"
+                className={`${
+                  isOpen
+                    ? "cursor-not-allowed"
+                    : "cursor-grab active:cursor-grabbing"
+                }`}
+                {...attributes}
+                {...listeners}
+              >
+                <GripVertical
+                  className={`h-4 w-4 ${
+                    isOpen ? "text-gray-300" : "text-gray-400"
+                  }`}
+                />
+              </button>
+
+              {content.type === "lecture" ? (
+                <Video className="h-4 w-4 text-gray-500" />
+              ) : (
+                <FileQuestion className="h-4 w-4 text-gray-500" />
               )}
 
-              {contentType === "lecture" && (
-                <>
-                  <div>
-                    <label className="text-xs text-gray-700 font-[501]">
-                      Lecture Title
-                    </label>
-                    <input
-                      type="text"
-                      name="title"
-                      value={lectureFormik.values.title}
-                      onChange={lectureFormik.handleChange}
-                      onBlur={lectureFormik.handleBlur}
-                      className={`w-full text-sm outline-none my-1 border rounded-sm duration-200 p-2 focus:border-blue-500 ${
-                        lectureFormik.touched.title && lectureFormik.errors.title
-                          ? "border-red-500"
-                          : "border-[#e2e6f1]"
-                      }`}
-                      placeholder="Enter lecture title"
-                    />
-                    {lectureFormik.touched.title && lectureFormik.errors.title && (
-                      <p className="text-red-500 text-xs">{lectureFormik.errors.title}</p>
-                    )}
-                  </div>
+              <CollapsibleTrigger asChild>
+                <button
+                  type="button"
+                  className="flex items-center gap-2 flex-1 text-left"
+                >
+                  <ChevronRight
+                    className={`h-3 w-3 transition-transform ${
+                      isOpen ? "transform rotate-90" : ""
+                    }`}
+                  />
+                  <span className="text-sm text-gray-700">
+                    {content.title || "New Content"}
+                  </span>
+                  <span className="text-xs text-gray-500 ml-2">
+                    ({content.type === "lecture" ? "Lecture" : "Quiz"})
+                  </span>
+                </button>
+              </CollapsibleTrigger>
 
-                  <div>
-                    <label className="text-xs text-gray-700 font-[501]">
-                      Description
-                    </label>
-                    <textarea
-                      name="content"
-                      value={lectureFormik.values.content}
-                      onChange={lectureFormik.handleChange}
-                      onBlur={lectureFormik.handleBlur}
-                      rows={2}
-                      className={`w-full text-sm outline-none my-1 border rounded-sm duration-200 p-2 focus:border-blue-500 ${
-                        lectureFormik.touched.content && lectureFormik.errors.content
-                          ? "border-red-500"
-                          : "border-[#e2e6f1]"
-                      }`}
-                      placeholder="Enter lecture description"
-                    />
-                    {lectureFormik.touched.content && lectureFormik.errors.content && (
-                      <p className="text-red-500 text-xs">
-                        {lectureFormik.errors.content}
-                      </p>
-                    )}
-                  </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={handleDelete}
+                disabled={
+                  deleteLectureMutation.isPending ||
+                  deleteQuizMutation.isPending
+                }
+                className="h-7 w-7 text-red-500 hover:text-red-700 hover:bg-red-50"
+              >
+                <Trash2 className="h-3 w-3" />
+              </Button>
+            </div>
 
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-xs text-gray-700 font-[501]">
-                        Duration (minutes)
-                      </label>
-                      <input
-                        type="number"
-                        name="duration"
-                        value={lectureFormik.values.duration}
-                        onChange={lectureFormik.handleChange}
-                        onBlur={lectureFormik.handleBlur}
-                        className={`w-full text-sm outline-none my-1 border rounded-sm duration-200 p-2 focus:border-blue-500 ${
-                          lectureFormik.touched.duration && lectureFormik.errors.duration
-                            ? "border-red-500"
-                            : "border-[#e2e6f1]"
-                        }`}
-                        placeholder="60"
-                      />
-                      {lectureFormik.touched.duration && lectureFormik.errors.duration && (
-                        <p className="text-red-500 text-xs">
-                          {lectureFormik.errors.duration}
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="text-xs text-gray-700 font-[501]">
-                        Video URL
-                      </label>
-                      <input
-                        type="url"
-                        name="video_url"
-                        value={lectureFormik.values.video_url}
-                        onChange={lectureFormik.handleChange}
-                        onBlur={lectureFormik.handleBlur}
-                        className={`w-full text-sm outline-none my-1 border rounded-sm duration-200 p-2 focus:border-blue-500 ${
-                          lectureFormik.touched.video_url && lectureFormik.errors.video_url
-                            ? "border-red-500"
-                            : "border-[#e2e6f1]"
-                        }`}
-                        placeholder="https://example.com/video.mp4"
-                      />
-                      {lectureFormik.touched.video_url && lectureFormik.errors.video_url && (
-                        <p className="text-red-500 text-xs">
-                          {lectureFormik.errors.video_url}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <Button
-                    type="button"
-                    onClick={() => lectureFormik.handleSubmit()}
-                    size="sm"
-                    disabled={saveLectureMutation.isPending}
-                    className="bg-blue-600 hover:bg-blue-700 w-full"
-                  >
-                    {saveLectureMutation.isPending ? "Saving..." : "Save Lecture"}
-                  </Button>
-                </>
-              )}
-
-              {contentType === "quiz" && (
-                <div className="space-y-3">
-                  <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
-                    <p className="text-sm text-blue-800">
-                      {content.type === "quiz" && content.questions?.length > 0
-                        ? `Quiz created with ${content.questions.length} question(s)`
-                        : "Quiz not created yet"}
+            <CollapsibleContent>
+              <div className="px-3 pb-3 space-y-3 border-t border-gray-200 pt-3">
+                {!contentType && (
+                  <div className="space-y-2">
+                    <p className="text-sm text-gray-600 mb-3">
+                      Select content type:
                     </p>
-                  </div>
-                  
-                  <Dialog open={isQuizDialogOpen} onOpenChange={setIsQuizDialogOpen}>
-                    <DialogTrigger asChild>
+                    <div className="grid grid-cols-2 gap-2">
                       <Button
                         type="button"
                         variant="outline"
-                        className="w-full"
+                        onClick={() => handleSelectContentType("lecture")}
+                        className="flex items-center gap-2 h-20 flex-col"
                       >
-                        {content.type === "quiz" && content.questions?.length > 0
-                          ? "Edit Quiz"
-                          : "Create Quiz"}
+                        <Video className="h-5 w-5" />
+                        <span>Lecture</span>
                       </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-                      <DialogHeader>
-                        <DialogTitle>Quiz Maker</DialogTitle>
-                      </DialogHeader>
-                      <QuizMaker
-                        onSave={handleQuizSave}
-                        initialData={content.type === "quiz" ? content : undefined}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => handleSelectContentType("quiz")}
+                        className="flex items-center gap-2 h-20 flex-col"
+                      >
+                        <FileQuestion className="h-5 w-5" />
+                        <span>Quiz</span>
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {contentType === "lecture" && (
+                  <>
+                    <div>
+                      <label className="text-xs text-gray-700 font-[501]">
+                        Lecture Title
+                      </label>
+                      <input
+                        type="text"
+                        name="title"
+                        value={lectureFormik.values.title}
+                        onChange={lectureFormik.handleChange}
+                        onBlur={lectureFormik.handleBlur}
+                        className={`w-full text-sm outline-none my-1 border rounded-sm duration-200 p-2 focus:border-blue-500 ${
+                          lectureFormik.touched.title &&
+                          lectureFormik.errors.title
+                            ? "border-red-500"
+                            : "border-[#e2e6f1]"
+                        }`}
+                        placeholder="Enter lecture title"
                       />
-                    </DialogContent>
-                  </Dialog>
-                </div>
-              )}
-            </div>
-          </CollapsibleContent>
-        </div>
-      </Collapsible>
-    </div>
+                      {lectureFormik.touched.title &&
+                        lectureFormik.errors.title && (
+                          <p className="text-red-500 text-xs">
+                            {lectureFormik.errors.title}
+                          </p>
+                        )}
+                    </div>
+
+                    <div>
+                      <label className="text-xs text-gray-700 font-[501]">
+                        Description
+                      </label>
+                      <textarea
+                        name="content"
+                        value={lectureFormik.values.content}
+                        onChange={lectureFormik.handleChange}
+                        onBlur={lectureFormik.handleBlur}
+                        rows={2}
+                        className={`w-full text-sm outline-none my-1 border rounded-sm duration-200 p-2 focus:border-blue-500 ${
+                          lectureFormik.touched.content &&
+                          lectureFormik.errors.content
+                            ? "border-red-500"
+                            : "border-[#e2e6f1]"
+                        }`}
+                        placeholder="Enter lecture description"
+                      />
+                      {lectureFormik.touched.content &&
+                        lectureFormik.errors.content && (
+                          <p className="text-red-500 text-xs">
+                            {lectureFormik.errors.content}
+                          </p>
+                        )}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-xs text-gray-700 font-[501]">
+                          Duration (minutes)
+                        </label>
+                        <input
+                          type="number"
+                          name="duration"
+                          value={lectureFormik.values.duration}
+                          onChange={lectureFormik.handleChange}
+                          onBlur={lectureFormik.handleBlur}
+                          className={`w-full text-sm outline-none my-1 border rounded-sm duration-200 p-2 focus:border-blue-500 ${
+                            lectureFormik.touched.duration &&
+                            lectureFormik.errors.duration
+                              ? "border-red-500"
+                              : "border-[#e2e6f1]"
+                          }`}
+                          placeholder="60"
+                        />
+                        {lectureFormik.touched.duration &&
+                          lectureFormik.errors.duration && (
+                            <p className="text-red-500 text-xs">
+                              {lectureFormik.errors.duration}
+                            </p>
+                          )}
+                      </div>
+
+                      <div>
+                        <label className="text-xs text-gray-700 font-[501]">
+                          Video URL
+                        </label>
+                        <input
+                          type="url"
+                          name="video_url"
+                          value={lectureFormik.values.video_url}
+                          onChange={lectureFormik.handleChange}
+                          onBlur={lectureFormik.handleBlur}
+                          className={`w-full text-sm outline-none my-1 border rounded-sm duration-200 p-2 focus:border-blue-500 ${
+                            lectureFormik.touched.video_url &&
+                            lectureFormik.errors.video_url
+                              ? "border-red-500"
+                              : "border-[#e2e6f1]"
+                          }`}
+                          placeholder="https://example.com/video.mp4"
+                        />
+                        {lectureFormik.touched.video_url &&
+                          lectureFormik.errors.video_url && (
+                            <p className="text-red-500 text-xs">
+                              {lectureFormik.errors.video_url}
+                            </p>
+                          )}
+                      </div>
+                    </div>
+
+                    <Button
+                      type="button"
+                      onClick={() => lectureFormik.handleSubmit()}
+                      size="sm"
+                      disabled={saveLectureMutation.isPending}
+                      className="bg-blue-600 hover:bg-blue-700 w-full"
+                    >
+                      {saveLectureMutation.isPending
+                        ? "Saving..."
+                        : "Save Lecture"}
+                    </Button>
+                  </>
+                )}
+
+                {contentType === "quiz" && (
+                  <div className="space-y-3">
+                    <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
+                      <p className="text-sm text-blue-800">
+                        {content.type === "quiz" &&
+                        content.id &&
+                        !content.id.startsWith("temp-")
+                          ? `Quiz created with ${
+                              content.questions?.length || 0
+                            } question(s)`
+                          : "Click below to create and configure your quiz"}
+                      </p>
+                    </div>
+
+                    <Dialog
+                      open={isQuizDialogOpen}
+                      onOpenChange={setIsQuizDialogOpen}
+                    >
+                      <DialogTrigger asChild>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="w-full"
+                        >
+                          {content.type === "quiz" &&
+                          content.id &&
+                          !content.id.startsWith("temp-")
+                            ? "Edit Quiz"
+                            : "Create Quiz"}
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+                        <DialogHeader>
+                          <DialogTitle>Quiz Maker</DialogTitle>
+                          <DialogDescription>
+                            Your quiz data
+                          </DialogDescription>
+                        </DialogHeader>
+                        <QuizMaker
+                          onSave={handleQuizSave}
+                          initialData={
+                            content.type === "quiz" ? content : undefined
+                          }
+                          courseId={courseId}
+                          sectionId={sectionId}
+                        />
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                )}
+              </div>
+            </CollapsibleContent>
+          </div>
+        </Collapsible>
+      </div>
+    </>
   )
 }

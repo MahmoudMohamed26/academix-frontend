@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useFormik } from "formik"
 import * as Yup from "yup"
 import { toast } from "sonner"
-import { isAxiosError } from "axios"
+import axios, { isAxiosError } from "axios"
 import { useTranslation } from "react-i18next"
 import { useRouter } from "next/navigation"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -52,7 +52,7 @@ export default function LoginForm() {
       toast.success(t("login.success"))
       router.replace("/")
     } catch (err) {
-      if (isAxiosError(err)) {
+      if (axios.isAxiosError(err)) {
         if (err.response?.status === 422)
           toast.error(t("login.errors.invalidCredentials"))
         else toast.error(t("genericError"))

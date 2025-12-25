@@ -12,6 +12,8 @@ import useAxios from "@/hooks/useAxios"
 import { getUser } from "@/lib/api/User"
 import { ProfileAvatar } from "@/lib/types/user"
 import Skeleton from "react-loading-skeleton"
+import { toast } from "sonner"
+import axios from "axios"
 
 const base64ToBlob = (base64: string): Blob => {
   const parts = base64.split(";base64,")
@@ -59,6 +61,12 @@ export function AvatarUpload() {
     },
     onError: (error) => {
       console.error("Error uploading avatar:", error)
+
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data?.message || "Something went wrong")
+      } else {
+        toast.error("Unexpected error occurred")
+      }
     },
   })
 
@@ -131,46 +139,50 @@ export function AvatarUpload() {
       <div className="p-8 lg:p-15 pt-0 pb-10! flex-col border-b gap-4">
         <div className="">
           <div className="relative w-fit m-auto">
-            {!userData ? <Skeleton width={158} height={158} className="rounded-full!" /> : <div
-              className={cn(
-                "group/avatar relative h-40 w-40 cursor-pointer overflow-hidden rounded-full border border-dashed transition-colors",
-                isDragging
-                  ? "border-primary bg-primary/5"
-                  : "border-muted-foreground/25 hover:border-muted-foreground/20",
-                userData?.avatar_url && "border-solid"
-              )}
-              onDragEnter={(e) => {
-                e.preventDefault()
-                setIsDragging(true)
-              }}
-              onDragLeave={(e) => {
-                e.preventDefault()
-                setIsDragging(false)
-              }}
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={handleDrop}
-              onClick={() => document.getElementById("avatar-input")?.click()}
-            >
-              <input
-                id="avatar-input"
-                type="file"
-                accept="image/*"
-                onChange={handleFileSelect}
-                className="sr-only"
-              />
-
-              {userData?.avatar_url ? (
-                <img
-                  src={userData.avatar_url}
-                  alt={t("Dashboard.avatarUpload.avatarAlt")}
-                  className="h-full w-full object-cover"
+            {!userData ? (
+              <Skeleton width={158} height={158} className="rounded-full!" />
+            ) : (
+              <div
+                className={cn(
+                  "group/avatar relative h-40 w-40 cursor-pointer overflow-hidden rounded-full border border-dashed transition-colors",
+                  isDragging
+                    ? "border-primary bg-primary/5"
+                    : "border-muted-foreground/25 hover:border-muted-foreground/20",
+                  userData?.avatar_url && "border-solid"
+                )}
+                onDragEnter={(e) => {
+                  e.preventDefault()
+                  setIsDragging(true)
+                }}
+                onDragLeave={(e) => {
+                  e.preventDefault()
+                  setIsDragging(false)
+                }}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={handleDrop}
+                onClick={() => document.getElementById("avatar-input")?.click()}
+              >
+                <input
+                  id="avatar-input"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  className="sr-only"
                 />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center">
-                  <User className="size-6 text-muted-foreground" />
-                </div>
-              )}
-            </div>}
+
+                {userData?.avatar_url ? (
+                  <img
+                    src={userData.avatar_url}
+                    alt={t("Dashboard.avatarUpload.avatarAlt")}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center">
+                    <User className="size-6 text-muted-foreground" />
+                  </div>
+                )}
+              </div>
+            )}
 
             {userData?.avatar_url && (
               <Button

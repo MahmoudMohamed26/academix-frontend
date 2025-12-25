@@ -68,7 +68,7 @@ export default function SectionsForm() {
       id: `temp-section-${Date.now()}`,
       title: `Section ${sections.length + 1}`,
       description: "",
-      position: sections.length,
+      position: sections.length+1,
       lectures: [],
       quizzes: [],
     }
