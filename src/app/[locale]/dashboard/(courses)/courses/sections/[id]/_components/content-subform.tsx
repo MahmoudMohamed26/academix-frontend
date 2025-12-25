@@ -9,13 +9,10 @@ import {
 import { Button } from "@/components/ui/button"
 import {
   ChevronRight,
-  GripVertical,
   Trash2,
   Video,
   FileQuestion,
 } from "lucide-react"
-import { useSortable } from "@dnd-kit/sortable"
-import { CSS } from "@dnd-kit/utilities"
 import {
   Dialog,
   DialogContent,
@@ -55,24 +52,6 @@ export default function ContentSubForm({
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const Axios = useAxios()
   const queryClient = useQueryClient()
-
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
-    id: content.id,
-    disabled: isOpen,
-  })
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  }
 
   const lectureValidationSchema = Yup.object({
     title: Yup.string().required("Lecture title is required"),
@@ -255,27 +234,10 @@ export default function ContentSubForm({
         </DialogContent>
       </Dialog>
 
-      <div ref={setNodeRef} style={style}>
+      <div>
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
           <div className="border border-gray-200 rounded-md bg-gray-50">
             <div className="flex items-center gap-2 p-3">
-              <button
-                type="button"
-                className={`${
-                  isOpen
-                    ? "cursor-not-allowed"
-                    : "cursor-grab active:cursor-grabbing"
-                }`}
-                {...attributes}
-                {...listeners}
-              >
-                <GripVertical
-                  className={`h-4 w-4 ${
-                    isOpen ? "text-gray-300" : "text-gray-400"
-                  }`}
-                />
-              </button>
-
               {content.type === "lecture" ? (
                 <Video className="h-4 w-4 text-gray-500" />
               ) : (
@@ -358,7 +320,7 @@ export default function ContentSubForm({
                         value={lectureFormik.values.title}
                         onChange={lectureFormik.handleChange}
                         onBlur={lectureFormik.handleBlur}
-                        className={`w-full text-sm outline-none my-1 border rounded-sm duration-200 p-2 focus:border-blue-500 ${
+                        className={`w-full text-sm outline-none my-1 border rounded-sm duration-200 p-2 focus:border-(--main-color) ${
                           lectureFormik.touched.title &&
                           lectureFormik.errors.title
                             ? "border-red-500"
@@ -384,7 +346,7 @@ export default function ContentSubForm({
                         onChange={lectureFormik.handleChange}
                         onBlur={lectureFormik.handleBlur}
                         rows={2}
-                        className={`w-full text-sm outline-none my-1 border rounded-sm duration-200 p-2 focus:border-blue-500 ${
+                        className={`w-full text-sm outline-none my-1 border rounded-sm duration-200 p-2 focus:border-(--main-color) ${
                           lectureFormik.touched.content &&
                           lectureFormik.errors.content
                             ? "border-red-500"
@@ -411,7 +373,7 @@ export default function ContentSubForm({
                           value={lectureFormik.values.duration}
                           onChange={lectureFormik.handleChange}
                           onBlur={lectureFormik.handleBlur}
-                          className={`w-full text-sm outline-none my-1 border rounded-sm duration-200 p-2 focus:border-blue-500 ${
+                          className={`w-full text-sm outline-none my-1 border rounded-sm duration-200 p-2 focus:border-(--main-color) ${
                             lectureFormik.touched.duration &&
                             lectureFormik.errors.duration
                               ? "border-red-500"
@@ -437,7 +399,7 @@ export default function ContentSubForm({
                           value={lectureFormik.values.video_url}
                           onChange={lectureFormik.handleChange}
                           onBlur={lectureFormik.handleBlur}
-                          className={`w-full text-sm outline-none my-1 border rounded-sm duration-200 p-2 focus:border-blue-500 ${
+                          className={`w-full text-sm outline-none my-1 border rounded-sm duration-200 p-2 focus:border-(--main-color) ${
                             lectureFormik.touched.video_url &&
                             lectureFormik.errors.video_url
                               ? "border-red-500"
@@ -459,7 +421,7 @@ export default function ContentSubForm({
                       onClick={() => lectureFormik.handleSubmit()}
                       size="sm"
                       disabled={saveLectureMutation.isPending}
-                      className="bg-blue-600 hover:bg-blue-700 w-full"
+                      className="bg-(--main-color) my-5 hover:bg-(--main-darker-color)"
                     >
                       {saveLectureMutation.isPending
                         ? "Saving..."
@@ -470,14 +432,12 @@ export default function ContentSubForm({
 
                 {contentType === "quiz" && (
                   <div className="space-y-3">
-                    <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
-                      <p className="text-sm text-blue-800">
+                    <div className="bg-orange-50 border border-orange-200 rounded-md p-3">
+                      <p className="text-sm text-orange-500">
                         {content.type === "quiz" &&
                         content.id &&
                         !content.id.startsWith("temp-")
-                          ? `Quiz created with ${
-                              content.questions?.length || 0
-                            } question(s)`
+                          ? `Quiz created click below to edit quiz/questions`
                           : "Click below to create and configure your quiz"}
                       </p>
                     </div>

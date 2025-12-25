@@ -298,10 +298,10 @@ export default function SectionItem({
         </DialogContent>
       </Dialog>
 
-      <div ref={setNodeRef} style={style} className="mb-4">
+      <div ref={setNodeRef} style={style} className="mb-2">
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-        <div className="border border-gray-200 rounded-lg bg-white">
-          <div className="flex items-center gap-2 p-4">
+        <div className="border border-gray-200">
+          <div className="flex items-center gap-2 bg-gray-100">
             <button
               type="button"
               className="cursor-grab active:cursor-grabbing"
@@ -311,13 +311,13 @@ export default function SectionItem({
               style={{ cursor: isOpen ? "not-allowed" : "grab" }}
             >
               <GripVertical
-                className={`h-5 w-5 ${
+                className={`h-5 w-5 ms-5 ${
                   isOpen ? "text-gray-300" : "text-gray-400"
                 }`}
               />
             </button>
 
-            <CollapsibleTrigger asChild>
+            <CollapsibleTrigger className="p-4" asChild>
               <button
                 type="button"
                 className="flex items-center gap-2 flex-1 text-left"
@@ -357,7 +357,7 @@ export default function SectionItem({
                   value={formik.values.title}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  className={`w-full text-sm outline-none my-2 border rounded-sm duration-200 p-2 focus:border-blue-500 ${
+                  className={`w-full text-sm outline-none my-2 border rounded-sm duration-200 p-2 focus:border-(--main-color) ${
                     formik.touched.title && formik.errors.title
                       ? "border-red-500"
                       : "border-[#e2e6f1]"
@@ -379,7 +379,7 @@ export default function SectionItem({
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   rows={3}
-                  className={`w-full text-sm outline-none my-2 border rounded-sm duration-200 p-2 focus:border-blue-500 ${
+                  className={`w-full text-sm outline-none my-2 border rounded-sm duration-200 p-2 focus:border-(--main-color) ${
                     formik.touched.description && formik.errors.description
                       ? "border-red-500"
                       : "border-[#e2e6f1]"
@@ -398,7 +398,7 @@ export default function SectionItem({
                 onClick={() => formik.handleSubmit()}
                 size="sm"
                 disabled={saveSectionMutation.isPending}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-(--main-color) hover:bg-(--main-darker-color)"
               >
                 {saveSectionMutation.isPending ? "Saving..." : "Save Section"}
               </Button>

@@ -16,6 +16,8 @@ import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query"
 import useAxios from "@/hooks/useAxios"
 import { toast } from "sonner"
 import { Quiz, QuizQuestion } from "@/lib/types/quiz"
+import * as Yup from "yup"
+import BtnLoad from "@/components/BtnLoad"
 
 interface QuizMakerProps {
   onSave: (quiz: Quiz) => void
@@ -24,6 +26,50 @@ interface QuizMakerProps {
   sectionId: string
   isOpen?: boolean
 }
+
+const quizBasicInfoSchema = Yup.object().shape({
+  title: Yup.string()
+    .trim()
+    .required("Title is required")
+    .min(1, "Title is required"),
+  description: Yup.string()
+    .trim()
+    .required("Description is required")
+    .min(1, "Description is required"),
+  points: Yup.number()
+    .required("Points is required")
+    .min(1, "Points must be at least 1")
+    .integer("Points must be a whole number"),
+  time_limit: Yup.number()
+    .required("Time limit is required")
+    .min(1, "Time limit must be at least 1 minute")
+    .integer("Time limit must be a whole number"),
+})
+
+const answerSchema = Yup.object().shape({
+  id: Yup.string().required(),
+  text: Yup.string().trim().required("Answer text is required"),
+  isCorrect: Yup.boolean().required(),
+})
+
+const questionSchema = Yup.object().shape({
+  id: Yup.string().required(),
+  question: Yup.string().trim().required("Question text is required"),
+  answers: Yup.array()
+    .of(answerSchema)
+    .min(2, "At least 2 answers are required")
+    .test(
+      "has-correct-answer",
+      "One answer must be marked as correct",
+      (answers) => answers?.some((a) => a.isCorrect) ?? false
+    ),
+})
+
+const questionsSchema = Yup.object().shape({
+  questions: Yup.array()
+    .of(questionSchema)
+    .min(1, "At least one question is required"),
+})
 
 export default function QuizMaker({
   onSave,
@@ -60,7 +106,6 @@ export default function QuizMaker({
 
   const isEditMode = !!initialData?.id && !initialData?.id.startsWith("temp-")
 
-  // Fetch existing quiz questions when in edit mode
   const { data: quizData, isLoading: isLoadingQuestions } = useQuery({
     queryKey: ["quiz-questions", courseId, sectionId, initialData?.id],
     queryFn: async () => {
@@ -73,7 +118,6 @@ export default function QuizMaker({
     enabled: isOpen && isEditMode,
   })
 
-  // Update state when quiz data is fetched
   useEffect(() => {
     if (quizData?.data?.Questions && Array.isArray(quizData.data.Questions)) {
       const fetchedQuestions = quizData.data.Questions.map((q: any) => ({
@@ -94,7 +138,6 @@ export default function QuizMaker({
     }
   }, [quizData])
 
-  // Create or Update Quiz Mutation
   const saveQuizMutation = useMutation({
     mutationFn: async (data: {
       title: string
@@ -104,13 +147,11 @@ export default function QuizMaker({
       time_limit: number
     }) => {
       if (isEditMode) {
-        // Update existing quiz
         return await Axios.patch(
           `/courses/${courseId}/sections/${sectionId}/quizzes/${initialData?.id}`,
           data
         )
       } else {
-        // Create new quiz
         return await Axios.post(
           `/courses/${courseId}/sections/${sectionId}/quizzes`,
           data
@@ -137,7 +178,6 @@ export default function QuizMaker({
     },
   })
 
-  // Add Questions Mutation (bulk add - only for newly created quiz)
   const addQuestionsMutation = useMutation({
     mutationFn: async (questionsData: any[]) => {
       return await Axios.post(
@@ -167,7 +207,6 @@ export default function QuizMaker({
     },
   })
 
-  // Update Question Mutation (individual question update)
   const updateQuestionMutation = useMutation({
     mutationFn: async ({
       questionId,
@@ -202,7 +241,6 @@ export default function QuizMaker({
     },
   })
 
-  // Delete Question Mutation
   const deleteQuestionMutation = useMutation({
     mutationFn: async (questionId: string) => {
       return await Axios.delete(
@@ -328,57 +366,65 @@ export default function QuizMaker({
     )
   }
 
-  const validateQuizBasicInfo = () => {
-    const newErrors: any = {}
-
-    if (!title.trim()) {
-      newErrors.title = "Title is required"
+  const validateQuizBasicInfo = async () => {
+    try {
+      await quizBasicInfoSchema.validate(
+        {
+          title,
+          description,
+          points,
+          time_limit: timeLimit,
+        },
+        { abortEarly: false }
+      )
+      setErrors({})
+      return true
+    } catch (err) {
+      if (err instanceof Yup.ValidationError) {
+        const newErrors: any = {}
+        err.inner.forEach((error) => {
+          if (error.path) {
+            newErrors[error.path] = error.message
+          }
+        })
+        setErrors(newErrors)
+      }
+      return false
     }
-
-    if (!description.trim()) {
-      newErrors.description = "Description is required"
-    }
-
-    if (!points || points < 1) {
-      newErrors.points = "Points must be at least 1"
-    }
-
-    if (!timeLimit || timeLimit < 1) {
-      newErrors.time_limit = "Time limit must be at least 1 minute"
-    }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
   }
 
-  const validateQuestions = () => {
-    const newErrors: any = {}
-
-    if (questions.length === 0) {
-      newErrors.questions = "At least one question is required"
-      setErrors(newErrors)
+  const validateQuestions = async () => {
+    try {
+      await questionsSchema.validate({ questions }, { abortEarly: false })
+      setErrors({})
+      return true
+    } catch (err) {
+      if (err instanceof Yup.ValidationError) {
+        const newErrors: any = {}
+        if (err.errors.length > 0) {
+          newErrors.questions = err.errors[0]
+        }
+        setErrors(newErrors)
+      }
       return false
     }
+  }
 
-    const hasInvalidQuestions = questions.some((q) => {
-      if (!q.question.trim()) return true
-      if (q.answers.length < 2) return true
-      if (q.answers.some((a) => !a.text.trim())) return true
-      if (!q.answers.some((a) => a.isCorrect)) return true
-      return false
-    })
-
-    if (hasInvalidQuestions) {
-      newErrors.questions =
-        "Each question must have a question text, at least 2 answers with text, and one correct answer marked"
+  const validateSingleQuestion = async (question: QuizQuestion) => {
+    try {
+      await questionSchema.validate(question, { abortEarly: false })
+      return { isValid: true, errors: [] }
+    } catch (err) {
+      if (err instanceof Yup.ValidationError) {
+        return { isValid: false, errors: err.errors }
+      }
+      return { isValid: false, errors: ["Validation failed"] }
     }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
   }
 
   const handleSaveQuiz = async () => {
-    if (!validateQuizBasicInfo()) return
+    const isValid = await validateQuizBasicInfo()
+    if (!isValid) return
 
     await saveQuizMutation.mutateAsync({
       title,
@@ -390,9 +436,9 @@ export default function QuizMaker({
   }
 
   const handleAddQuestions = async () => {
-    if (!validateQuestions()) return
+    const isValid = await validateQuestions()
+    if (!isValid) return
 
-    // Filter only local (newly added) questions
     const localQuestions = questions.filter((q) => q.id.startsWith("temp-"))
 
     if (localQuestions.length === 0) {
@@ -416,23 +462,10 @@ export default function QuizMaker({
     const question = questions.find((q) => q.id === questionId)
     if (!question) return
 
-    if (!question.question.trim()) {
-      toast.error("Question text is required")
-      return
-    }
-
-    if (question.answers.length < 2) {
-      toast.error("At least 2 answers are required")
-      return
-    }
-
-    if (question.answers.some((a) => !a.text.trim())) {
-      toast.error("All answers must have text")
-      return
-    }
-
-    if (!question.answers.some((a) => a.isCorrect)) {
-      toast.error("One answer must be marked as correct")
+    const validation = await validateSingleQuestion(question)
+    
+    if (!validation.isValid) {
+      toast.error(validation.errors[0] || "Please fix validation errors")
       return
     }
 
@@ -556,7 +589,7 @@ export default function QuizMaker({
             type="button"
             onClick={handleSaveQuiz}
             disabled={saveQuizMutation.isPending}
-            className="w-full bg-blue-600 hover:bg-blue-700"
+            className="w-full bg-(--main-color) hover:bg-(--main-darker-color)"
           >
             {saveQuizMutation.isPending
               ? isEditMode
@@ -572,7 +605,7 @@ export default function QuizMaker({
           <div className="border-t pt-4">
             {isLoadingQuestions ? (
               <div className="flex items-center justify-center py-8">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+                <BtnLoad color="main" size={35} />
                 <span className="ml-2 text-gray-600">Loading questions...</span>
               </div>
             ) : (
@@ -691,7 +724,6 @@ export default function QuizMaker({
                           ))}
                         </div>
 
-                        {/* Show update button only for real (non-local) questions */}
                         {!isLocalQuestion && (
                           <div className="ml-8 pt-2">
                             <Button
@@ -714,21 +746,19 @@ export default function QuizMaker({
 
                 {questions.length === 0 && (
                   <div className="text-center py-8 text-gray-500">
-                    {/* <FileQuestion className="h-12 w-12 mx-auto mb-2 opacity-50" /> */}
                     <p className="text-sm">
                       No questions yet. Click "Add Question" to start.
                     </p>
                   </div>
                 )}
 
-                {/* Show "Add Questions" button only if there are local questions */}
                 {hasLocalQuestions && (
                   <div className="flex gap-2 pt-4 border-t">
                     <Button
                       type="button"
                       onClick={handleAddQuestions}
                       disabled={addQuestionsMutation.isPending}
-                      className="flex-1 bg-blue-600 hover:bg-blue-700"
+                      className="flex-1 bg-(--main-color) hover:bg-(--main-darker-color)"
                     >
                       {addQuestionsMutation.isPending
                         ? "Adding Questions..."
@@ -744,25 +774,3 @@ export default function QuizMaker({
     </>
   )
 }
-
-// function FileQuestion({ className }: { className?: string }) {
-//   return (
-//     <svg
-//       xmlns="http://www.w3.org/2000/svg"
-//       width="24"
-//       height="24"
-//       viewBox="0 0 24 24"
-//       fill="none"
-//       stroke="currentColor"
-//       strokeWidth="2"
-//       strokeLinecap="round"
-//       strokeLinejoin="round"
-//       className={className}
-//     >
-//       <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-//       <polyline points="14 2 14 8 20 8" />
-//       <path d="M10 14.5a2 2 0 1 0 4 0 2 2 0 1 0-4 0" />
-//       <path d="M12 16.5v2" />
-//     </svg>
-//   )
-// }
