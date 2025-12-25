@@ -39,12 +39,14 @@ export default function CourseDetailsClient() {
       : setRestStars(5 - Math.floor(course?.rating_avg || 0))
   }, [course])
 
+  console.log(course)
+
   return (
     <>
       <div className="bg-[#17161C] pt-5 pb-20">
         <div className="container text-white">
           <Breadcrumb textColor="main" />
-          <div className="max-w-[800px]">
+          <div className="max-w-[600px] xl:max-w-[800px]">
             <h1 className="text-4xl font-semibold">{course?.title}</h1>
             <p className="mt-5 text-[oklch(100%_0_0)]">
               {course?.short_description}
@@ -54,7 +56,7 @@ export default function CourseDetailsClient() {
                 <User size={18} /> Created by {course?.instructor}
               </span>
               <span className="flex gap-2 mt-4 items-center">
-                <OctagonAlert size={18} /> Last Updated{" "}
+                <OctagonAlert size={18} /> Last Updated {" "}
                 {formatDate(course?.updated as any, "MMMM dd, yyyy")}
               </span>
             </p>
@@ -90,7 +92,7 @@ export default function CourseDetailsClient() {
           <div className="h-[70px] border-e"></div>
           <div className="flex flex-col items-center gap-1 px-15">
             <Presentation size={25} />
-            <p className="font-bold">20</p>
+            <p className="font-bold">{course?.lectures_count}</p>
             <p className="text-sm underline text-[#666]">Lectures</p>
           </div>
           <div className="h-[70px] border-e"></div>

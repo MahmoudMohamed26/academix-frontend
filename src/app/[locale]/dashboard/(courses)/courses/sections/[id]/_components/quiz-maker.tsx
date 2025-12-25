@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Plus, Trash2, X, Loader2 } from "lucide-react"
+import { Plus, Trash2, X } from "lucide-react"
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query"
 import useAxios from "@/hooks/useAxios"
 import { toast } from "sonner"
@@ -26,6 +26,7 @@ interface QuizMakerProps {
   courseId: string
   sectionId: string
   isOpen?: boolean
+  allContent?: any[]
 }
 
 const quizBasicInfoSchema = Yup.object().shape({
@@ -78,6 +79,7 @@ export default function QuizMaker({
   courseId,
   sectionId,
   isOpen = true,
+  allContent = [],
 }: QuizMakerProps) {
   const [title, setTitle] = useState(initialData?.title || "")
   const [description, setDescription] = useState(initialData?.description || "")
@@ -106,6 +108,13 @@ export default function QuizMaker({
   const generateId = () => `temp-${Math.random().toString(36).substr(2, 9)}`
 
   const isEditMode = !!initialData?.id && !initialData?.id.startsWith("temp-")
+
+  const calculatePosition = () => {
+    const savedContentCount = allContent.filter(
+      item => !item.id.startsWith("temp-")
+    ).length
+    return savedContentCount + 1
+  }
 
   const { data: quizData, isLoading: isLoadingQuestions } = useQuery({
     queryKey: ["quiz-questions", courseId, sectionId, initialData?.id],
@@ -424,10 +433,14 @@ export default function QuizMaker({
     const isValid = await validateQuizBasicInfo()
     if (!isValid) return
 
+    const position = (initialData?.id && !initialData?.id.startsWith("temp-")) 
+      ? initialData?.position || 0 
+      : calculatePosition()
+
     await saveQuizMutation.mutateAsync({
       title,
       description,
-      position: initialData?.position || 0,
+      position,
       points,
       time_limit: timeLimit,
     })

@@ -35,6 +35,7 @@ interface ContentSubFormProps {
   onDelete: (id: string) => void
   sectionId: string
   courseId: string
+  allContent: ContentItem[]
 }
 
 export default function ContentSubForm({
@@ -43,6 +44,7 @@ export default function ContentSubForm({
   onDelete,
   sectionId,
   courseId,
+  allContent,
 }: ContentSubFormProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [contentType, setContentType] = useState<"lecture" | "quiz" | null>(
@@ -52,6 +54,13 @@ export default function ContentSubForm({
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const Axios = useAxios()
   const queryClient = useQueryClient()
+
+  const calculatePosition = () => {
+    const savedContentCount = allContent.filter(
+      item => !item.id.startsWith("temp-")
+    ).length
+    return savedContentCount + 1
+  }
 
   const lectureValidationSchema = Yup.object({
     title: Yup.string().required("Lecture title is required"),
@@ -82,17 +91,18 @@ export default function ContentSubForm({
     mutationFn: async (values: any) => {
       const isNewLecture = content.id.startsWith("temp-")
       const endpoint = `/courses/${courseId}/sections/${sectionId}/lectures`
+      const position = isNewLecture ? calculatePosition() : content.position
 
       if (isNewLecture) {
         return await Axios.post(endpoint, {
           ...values,
-          position: content.position,
+          position,
           section_id: sectionId,
         })
       } else {
         return await Axios.patch(`${endpoint}/${content.id}`, {
           ...values,
-          position: content.position,
+          position,
         })
       }
     },
@@ -104,7 +114,7 @@ export default function ContentSubForm({
           ...lectureFormik.values,
           id: response.data.id,
           type: "lecture",
-          position: content.position,
+          position: response.data.position || calculatePosition(),
         })
       } else {
         onUpdate(content.id, {
@@ -166,10 +176,12 @@ export default function ContentSubForm({
   }
 
   const handleQuizSave = (quizData: Omit<Quiz, "id" | "position" | "type">) => {
+    const position = content.id.startsWith("temp-") ? calculatePosition() : content.position
+    
     onUpdate(content.id, {
       ...quizData,
       type: "quiz",
-      position: content.position,
+      position,
     })
     setIsQuizDialogOpen(false)
     setIsOpen(false)
@@ -472,6 +484,7 @@ export default function ContentSubForm({
                             content.type === "quiz" ? content : undefined
                           }
                           courseId={courseId}
+                          allContent={allContent}
                           sectionId={sectionId}
                         />
                       </DialogContent>

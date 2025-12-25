@@ -52,7 +52,7 @@ export default function SingleCourse({ grid, course }: SingleCourseProps) {
                 {t("coursesPage.hours")} {course.hours}
               </span>
               <span className="border rounded-sm py-1 px-2 flex gap-1 items-center text-xs">
-                {t("coursesPage.lectures")} 40
+                {t("coursesPage.lectures")} {course.lectures_count}
               </span>
               <span className="border rounded-sm py-1 px-2 flex gap-1 items-center text-xs">
                 {course.level}

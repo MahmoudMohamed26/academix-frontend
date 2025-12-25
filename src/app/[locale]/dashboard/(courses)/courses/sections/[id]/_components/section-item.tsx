@@ -146,11 +146,15 @@ export default function SectionItem({
       const isNewSection = section.id.startsWith('temp-')
       const endpoint = `/courses/${courseId}/sections`
       
+      const cachedData = queryClient.getQueryData(["sections", courseId]) as any
+      const dbSections = cachedData?.sections?.filter((s: any) => !s.id.startsWith('temp-')) || []
+      const calculatedPosition = isNewSection ? dbSections.length + 1 : section.position
+      
       if (isNewSection) {
         return await Axios.post(endpoint, {
           title: values.title,
           description: values.description,
-          position: section.position
+          position: calculatedPosition
         })
       } else {
         return await Axios.patch(`${endpoint}/${section.id}`, {
@@ -451,6 +455,7 @@ export default function SectionItem({
                           onDelete={handleDeleteContent}
                           sectionId={section.id}
                           courseId={courseId}
+                          allContent={contents}
                         />
                       ))}
                     </SortableContext>

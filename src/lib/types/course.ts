@@ -9,6 +9,8 @@ export interface Course {
   level: "beginner" | "intermediate" | "advanced"
   hours: number
   price: number
+  lectures_count: number
+  sections_count: number
   image: string
   published: boolean
   rating_avg: number
