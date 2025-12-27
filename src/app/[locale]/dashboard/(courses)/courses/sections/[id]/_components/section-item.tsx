@@ -26,6 +26,7 @@ import {
   useSensor,
   useSensors,
   DragEndEvent,
+  TouchSensor,
 } from "@dnd-kit/core"
 import {
   arrayMove,
@@ -305,10 +306,9 @@ export default function SectionItem({
       <div ref={setNodeRef} style={style} className="mb-2">
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
           <div className="border border-gray-200">
-            <div className="flex items-center gap-2 bg-gray-100">
+            <div className="flex items-center gap-2 bg-gray-100 touch-none">
               {!reorder ? (
-                <button
-                  type="button"
+                <div
                   className="cursor-grab active:cursor-grabbing"
                   {...attributes}
                   {...listeners}
@@ -318,7 +318,7 @@ export default function SectionItem({
                       isOpen ? "text-gray-400" : "text-gray-400"
                     }`}
                   />
-                </button>
+                </div>
               ) : (
                 <button className="ms-5 opacity-70">
                   <BtnLoad color="main" size={20} />

@@ -8,6 +8,7 @@ import {
   useSensor,
   useSensors,
   DragEndEvent,
+  TouchSensor,
 } from "@dnd-kit/core"
 import {
   arrayMove,
@@ -45,16 +46,16 @@ export default function SectionsForm() {
     }
   }, [data])
 
-  const updateSectionPosition = async ({ 
-    sectionId, 
-    title, 
-    description, 
-    position 
-  }: { 
+  const updateSectionPosition = async ({
+    sectionId,
+    title,
+    description,
+    position,
+  }: {
     sectionId: string
     title: string
     description: string
-    position: number 
+    position: number
   }) => {
     if (isUpdatingRef.current) {
       return
@@ -63,18 +64,19 @@ export default function SectionsForm() {
     try {
       isUpdatingRef.current = true
       setIsUpdating(true)
-      
+
       await Axios.patch(`/courses/${id}/sections/${sectionId}`, {
         title,
         description,
-        position
+        position,
       })
-      
+
       toast.success("Section position updated successfully")
-      queryClient.invalidateQueries({ queryKey: ["sections", id] })
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to update section position")
-      
+      toast.error(
+        error?.response?.data?.message || "Failed to update section position"
+      )
+
       if (data) {
         setSections(data)
       }
@@ -93,39 +95,46 @@ export default function SectionsForm() {
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
-    
+
     if (!over || active.id === over.id) {
       return
     }
 
     const oldIndex = sections.findIndex((item) => item.id === active.id)
     const newIndex = sections.findIndex((item) => item.id === over.id)
-    
+
     const reordered = arrayMove(sections, oldIndex, newIndex)
-    
-    const updatedSections = reordered.map((item, index) => ({
-      ...item,
-      position: index + 1,
-    }))
+
+    const savedSections = reordered.filter((s) => !s.id.startsWith("temp-"))
+    const updatedSections = reordered.map((item) => {
+      if (item.id.startsWith("temp-")) {
+        return item
+      }
+      const savedIndex = savedSections.findIndex((s) => s.id === item.id)
+      return {
+        ...item,
+        position: savedIndex + 1,
+      }
+    })
 
     setSections(updatedSections)
 
-    const draggedSection = updatedSections.find(s => s.id === active.id)
-    
-    if (draggedSection && !draggedSection.id.startsWith('temp-')) {
+    const draggedSection = updatedSections.find((s) => s.id === active.id)
+
+    if (draggedSection && !draggedSection.id.startsWith("temp-")) {
       updateSectionPosition({
         sectionId: draggedSection.id,
         title: draggedSection.title,
         description: draggedSection.description,
-        position: draggedSection.position
+        position: draggedSection.position,
       })
     }
   }
 
   const handleCreateSection = () => {
-    const savedSections = sections.filter(s => !s.id.startsWith('temp-'))
+    const savedSections = sections.filter((s) => !s.id.startsWith("temp-"))
     const position = savedSections.length + 1
-    
+
     const newSection: Section = {
       id: `temp-section-${Date.now()}`,
       title: `Section ${sections.length + 1}`,
@@ -157,14 +166,7 @@ export default function SectionsForm() {
           <Skeleton className="h-10! w-36!" />
         </div>
         <div>
-          <Skeleton height={50} className="w-full! mb-5" />
-          <Skeleton height={50} className="w-full! mb-5" />
-          <Skeleton height={50} className="w-full! mb-5" />
-          <Skeleton height={50} className="w-full! mb-5" />
-          <Skeleton height={50} className="w-full! mb-5" />
-          <Skeleton height={50} className="w-full! mb-5" />
-          <Skeleton height={50} className="w-full! mb-5" />
-          <Skeleton height={50} className="w-full! mb-5" />
+          <Skeleton height={600} className="w-full! mb-5" />
         </div>
       </div>
     )
