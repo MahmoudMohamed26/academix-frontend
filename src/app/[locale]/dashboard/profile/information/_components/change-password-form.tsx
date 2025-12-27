@@ -71,7 +71,7 @@ export default function ChangePasswordForm() {
       <button
         type="button"
         onClick={changepassword.handleSubmit as any}
-        className={`bg-(--main-color) mt-6 cursor-pointer flex justify-center mb-4 text-sm text-white rounded py-2 px-4 hover:bg-(--main-darker-color) transition duration-300`}
+        className={`bg-(--main-color) my-4 cursor-pointer flex justify-center text-sm text-white rounded py-2 px-4 hover:bg-(--main-darker-color) transition duration-300`}
       >
         {t("Dashboard.profileForm.changePasswordButton")}
       </button>

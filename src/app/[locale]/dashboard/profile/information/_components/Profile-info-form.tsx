@@ -173,7 +173,7 @@ export default function ProfileInforForm({ user }: { user?: User }) {
       <button
         type="submit"
         onClick={form.handleSubmit as any}
-        className={`bg-(--main-color) flex justify-center mb-4 text-sm text-white rounded mt-4 py-2 px-4 hover:bg-(--main-darker-color) transition duration-300 ${
+        className={`bg-(--main-color) flex justify-center my-4 text-sm text-white rounded py-2 px-4 hover:bg-(--main-darker-color) transition duration-300 ${
           profileMutation.isPending
             ? "cursor-not-allowed opacity-50"
             : "cursor-pointer"

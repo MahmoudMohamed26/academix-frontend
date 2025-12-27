@@ -15,20 +15,24 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import SectionItem from "./section-item"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useParams } from "next/navigation"
 import { getSections } from "@/lib/api/Sections"
 import useAxios from "@/hooks/useAxios"
 import Skeleton from "react-loading-skeleton"
+import { toast } from "sonner"
 
 export default function SectionsForm() {
   const [sections, setSections] = useState<Section[]>([])
+  const [isUpdating, setIsUpdating] = useState(false)
+  const isUpdatingRef = useRef(false)
   const { id } = useParams()
   const Axios = useAxios()
+  const queryClient = useQueryClient()
 
   const { data, isLoading } = useQuery({
     queryKey: ["sections", id],
@@ -41,6 +45,45 @@ export default function SectionsForm() {
     }
   }, [data])
 
+  const updateSectionPosition = async ({ 
+    sectionId, 
+    title, 
+    description, 
+    position 
+  }: { 
+    sectionId: string
+    title: string
+    description: string
+    position: number 
+  }) => {
+    if (isUpdatingRef.current) {
+      return
+    }
+
+    try {
+      isUpdatingRef.current = true
+      setIsUpdating(true)
+      
+      await Axios.patch(`/courses/${id}/sections/${sectionId}`, {
+        title,
+        description,
+        position
+      })
+      
+      toast.success("Section position updated successfully")
+      queryClient.invalidateQueries({ queryKey: ["sections", id] })
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Failed to update section position")
+      
+      if (data) {
+        setSections(data)
+      }
+    } finally {
+      setIsUpdating(false)
+      isUpdatingRef.current = false
+    }
+  }
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -50,21 +93,36 @@ export default function SectionsForm() {
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
-    if (over && active.id !== over.id) {
-      setSections((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id)
-        const newIndex = items.findIndex((item) => item.id === over.id)
-        const reordered = arrayMove(items, oldIndex, newIndex)
-        return reordered.map((item, index) => ({
-          ...item,
-          position: index,
-        }))
+    
+    if (!over || active.id === over.id) {
+      return
+    }
+
+    const oldIndex = sections.findIndex((item) => item.id === active.id)
+    const newIndex = sections.findIndex((item) => item.id === over.id)
+    
+    const reordered = arrayMove(sections, oldIndex, newIndex)
+    
+    const updatedSections = reordered.map((item, index) => ({
+      ...item,
+      position: index + 1,
+    }))
+
+    setSections(updatedSections)
+
+    const draggedSection = updatedSections.find(s => s.id === active.id)
+    
+    if (draggedSection && !draggedSection.id.startsWith('temp-')) {
+      updateSectionPosition({
+        sectionId: draggedSection.id,
+        title: draggedSection.title,
+        description: draggedSection.description,
+        position: draggedSection.position
       })
     }
   }
 
   const handleCreateSection = () => {
-    // Calculate position based only on saved sections (excluding temp sections)
     const savedSections = sections.filter(s => !s.id.startsWith('temp-'))
     const position = savedSections.length + 1
     
@@ -114,7 +172,6 @@ export default function SectionsForm() {
 
   return (
     <>
-      {/* Sections Section - Outside Form */}
       <div className="px-2 py-4 mt-6 bg-[#ffff] rounded-md">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-800">
@@ -124,6 +181,7 @@ export default function SectionsForm() {
             type="button"
             onClick={handleCreateSection}
             className="bg-(--main-color) hover:bg-(--main-darker-color) gap-2"
+            disabled={isUpdating}
           >
             <Plus className="h-4 w-4" />
             Create Section
@@ -151,6 +209,7 @@ export default function SectionsForm() {
                   section={section as any}
                   onUpdate={handleUpdateSection}
                   onDelete={handleDeleteSection}
+                  reorder={isUpdating}
                   courseId={id as string}
                 />
               ))}

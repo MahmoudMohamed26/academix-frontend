@@ -15,9 +15,9 @@ export interface Quiz {
   title: string
   description: string
   questions: QuizQuestion[]
-  position?: number
-  points?: number
-  time_limit?: number
+  position: number
+  points: number
+  time_limit: number
   type: "quiz"
 }
 
