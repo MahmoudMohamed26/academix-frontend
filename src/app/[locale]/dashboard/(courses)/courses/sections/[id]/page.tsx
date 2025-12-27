@@ -12,7 +12,7 @@ export default async function CoursesPage({
 
   return (
     <div>
-      <SpecialHeader name={"Course Sections"} />
+      <SpecialHeader name={t("Dashboard.SectionForm.title")} />
       <SectionsForm />
     </div>
   )

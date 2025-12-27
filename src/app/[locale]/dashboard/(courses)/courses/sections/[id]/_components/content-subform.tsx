@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useFormik } from "formik"
 import * as Yup from "yup"
+import { useTranslation } from "react-i18next"
 import {
   Collapsible,
   CollapsibleContent,
@@ -46,6 +47,7 @@ export default function ContentSubForm({
   courseId,
   allContent,
 }: ContentSubFormProps) {
+  const { t, i18n } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
   const [contentType, setContentType] = useState<"lecture" | "quiz" | null>(
     content.type
@@ -63,14 +65,14 @@ export default function ContentSubForm({
   }
 
   const lectureValidationSchema = Yup.object({
-    title: Yup.string().required("Lecture title is required"),
-    content: Yup.string().required("Lecture description is required"),
+    title: Yup.string().required(t("Dashboard.SectionContent.lectureTitleRequired")),
+    content: Yup.string().required(t("Dashboard.SectionContent.descriptionRequired")),
     duration: Yup.number()
-      .required("Duration is required")
-      .min(1, "Duration must be at least 1 minute"),
+      .required(t("Dashboard.SectionContent.durationRequired"))
+      .min(1, t("Dashboard.SectionContent.durationMin")),
     video_url: Yup.string()
-      .url("Must be a valid URL")
-      .required("Video URL is required"),
+      .url(t("Dashboard.SectionContent.videoUrlInvalid"))
+      .required(t("Dashboard.SectionContent.videoUrlRequired")),
   })
 
   const lectureFormik = useFormik({
@@ -107,7 +109,7 @@ export default function ContentSubForm({
       }
     },
     onSuccess: (response) => {
-      toast.success("Lecture saved successfully")
+      toast.success(t("Dashboard.SectionContent.lectureSaved"))
       queryClient.invalidateQueries({ queryKey: ["sections", courseId] })
       if (content.id.startsWith("temp-") && response.data?.id) {
         onUpdate(content.id, {
@@ -126,7 +128,7 @@ export default function ContentSubForm({
       setIsOpen(false)
     },
     onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Failed to save lecture")
+      toast.error(error?.response?.data?.message || t("Dashboard.SectionContent.lectureSaveFailed"))
     },
   })
 
@@ -138,13 +140,13 @@ export default function ContentSubForm({
       }
     },
     onSuccess: () => {
-      toast.success("Lecture deleted successfully")
+      toast.success(t("Dashboard.SectionContent.lectureDeleted"))
       queryClient.invalidateQueries({ queryKey: ["sections", courseId] })
       onDelete(content.id)
       setIsDeleteDialogOpen(false)
     },
     onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Failed to delete lecture")
+      toast.error(error?.response?.data?.message || t("Dashboard.SectionContent.lectureDeleteFailed"))
       setIsDeleteDialogOpen(false)
     },
   })
@@ -157,13 +159,13 @@ export default function ContentSubForm({
       }
     },
     onSuccess: () => {
-      toast.success("Quiz deleted successfully")
+      toast.success(t("Dashboard.SectionContent.quizDeleted"))
       queryClient.invalidateQueries({ queryKey: ["sections", courseId] })
       onDelete(content.id)
       setIsDeleteDialogOpen(false)
     },
     onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Failed to delete quiz")
+      toast.error(error?.response?.data?.message || t("Dashboard.SectionContent.quizDeleteFailed"))
       setIsDeleteDialogOpen(false)
     },
   })
@@ -199,22 +201,31 @@ export default function ContentSubForm({
     }
   }
 
+  const getContentTypeLabel = () => {
+    return content.type === "lecture" 
+      ? t("Dashboard.SectionContent.lecture") 
+      : t("Dashboard.SectionContent.quiz")
+  }
+
   return (
     <>
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              Delete {content.type === "lecture" ? "Lecture" : "Quiz"}
+              {content.type === "lecture" 
+                ? t("Dashboard.SectionContent.deleteLecture") 
+                : t("Dashboard.SectionContent.deleteQuiz")}
             </DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete this{" "}
-              {content.type === "lecture" ? "lecture" : "quiz"}? This action
-              cannot be undone.
+              {t("Dashboard.SectionContent.deleteContentConfirmation", { 
+                type: getContentTypeLabel().toLowerCase() 
+              })}
               {content.type === "quiz" && content.questions?.length > 0 && (
                 <span className="block mt-2 text-red-600 font-medium">
-                  Warning: This quiz contains {content.questions.length}{" "}
-                  question(s) that will also be deleted.
+                  {t("Dashboard.SectionContent.deleteQuizWarning", { 
+                    count: content.questions.length 
+                  })}
                 </span>
               )}
             </DialogDescription>
@@ -228,7 +239,7 @@ export default function ContentSubForm({
                 deleteLectureMutation.isPending || deleteQuizMutation.isPending
               }
             >
-              Cancel
+              {t("Dashboard.SectionContent.cancel")}
             </Button>
             <Button
               type="button"
@@ -239,8 +250,8 @@ export default function ContentSubForm({
               }
             >
               {deleteLectureMutation.isPending || deleteQuizMutation.isPending
-                ? "Deleting..."
-                : "Delete"}
+                ? t("Dashboard.SectionContent.deleting")
+                : t("Dashboard.SectionContent.delete")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -249,28 +260,28 @@ export default function ContentSubForm({
       <div>
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
           <div className="border border-gray-200 rounded-md bg-gray-50">
-            <div className="flex items-center gap-2 p-3">
+            <div className="flex items-center gap-2 px-3">
               {content.type === "lecture" ? (
                 <Video className="h-4 w-4 text-gray-500" />
               ) : (
                 <FileQuestion className="h-4 w-4 text-gray-500" />
               )}
 
-              <CollapsibleTrigger asChild>
+              <CollapsibleTrigger className="p-3" asChild>
                 <button
                   type="button"
                   className="flex items-center gap-2 flex-1 text-left"
                 >
                   <ChevronRight
                     className={`h-3 w-3 transition-transform ${
-                      isOpen ? "transform rotate-90" : ""
+                      isOpen ? "transform rotate-90" : i18n.language === "ar" ? "rotate-180" : ""
                     }`}
                   />
                   <span className="text-sm text-gray-700">
-                    {content.title || "New Content"}
+                    {content.title || t("Dashboard.SectionContent.newContent")}
                   </span>
                   <span className="text-xs text-gray-500 ml-2">
-                    ({content.type === "lecture" ? "Lecture" : "Quiz"})
+                    ({getContentTypeLabel()})
                   </span>
                 </button>
               </CollapsibleTrigger>
@@ -295,7 +306,7 @@ export default function ContentSubForm({
                 {!contentType && (
                   <div className="space-y-2">
                     <p className="text-sm text-gray-600 mb-3">
-                      Select content type:
+                      {t("Dashboard.SectionContent.selectContentType")}
                     </p>
                     <div className="grid grid-cols-2 gap-2">
                       <Button
@@ -305,7 +316,7 @@ export default function ContentSubForm({
                         className="flex items-center gap-2 h-20 flex-col"
                       >
                         <Video className="h-5 w-5" />
-                        <span>Lecture</span>
+                        <span>{t("Dashboard.SectionContent.lecture")}</span>
                       </Button>
                       <Button
                         type="button"
@@ -314,7 +325,7 @@ export default function ContentSubForm({
                         className="flex items-center gap-2 h-20 flex-col"
                       >
                         <FileQuestion className="h-5 w-5" />
-                        <span>Quiz</span>
+                        <span>{t("Dashboard.SectionContent.quiz")}</span>
                       </Button>
                     </div>
                   </div>
@@ -324,7 +335,7 @@ export default function ContentSubForm({
                   <>
                     <div>
                       <label className="text-xs text-gray-700 font-[501]">
-                        Lecture Title
+                        {t("Dashboard.SectionContent.lectureTitle")}
                       </label>
                       <input
                         type="text"
@@ -338,7 +349,7 @@ export default function ContentSubForm({
                             ? "border-red-500"
                             : "border-[#e2e6f1]"
                         }`}
-                        placeholder="Enter lecture title"
+                        placeholder={t("Dashboard.SectionContent.lectureTitlePlaceholder")}
                       />
                       {lectureFormik.touched.title &&
                         lectureFormik.errors.title && (
@@ -350,7 +361,7 @@ export default function ContentSubForm({
 
                     <div>
                       <label className="text-xs text-gray-700 font-[501]">
-                        Description
+                        {t("Dashboard.SectionContent.description")}
                       </label>
                       <textarea
                         name="content"
@@ -364,7 +375,7 @@ export default function ContentSubForm({
                             ? "border-red-500"
                             : "border-[#e2e6f1]"
                         }`}
-                        placeholder="Enter lecture description"
+                        placeholder={t("Dashboard.SectionContent.descriptionPlaceholder")}
                       />
                       {lectureFormik.touched.content &&
                         lectureFormik.errors.content && (
@@ -377,7 +388,7 @@ export default function ContentSubForm({
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <label className="text-xs text-gray-700 font-[501]">
-                          Duration (minutes)
+                          {t("Dashboard.SectionContent.duration")}
                         </label>
                         <input
                           type="number"
@@ -391,7 +402,7 @@ export default function ContentSubForm({
                               ? "border-red-500"
                               : "border-[#e2e6f1]"
                           }`}
-                          placeholder="60"
+                          placeholder={t("Dashboard.SectionContent.durationPlaceholder")}
                         />
                         {lectureFormik.touched.duration &&
                           lectureFormik.errors.duration && (
@@ -403,7 +414,7 @@ export default function ContentSubForm({
 
                       <div>
                         <label className="text-xs text-gray-700 font-[501]">
-                          Video URL
+                          {t("Dashboard.SectionContent.videoUrl")}
                         </label>
                         <input
                           type="url"
@@ -417,7 +428,7 @@ export default function ContentSubForm({
                               ? "border-red-500"
                               : "border-[#e2e6f1]"
                           }`}
-                          placeholder="https://example.com/video.mp4"
+                          placeholder={t("Dashboard.SectionContent.videoUrlPlaceholder")}
                         />
                         {lectureFormik.touched.video_url &&
                           lectureFormik.errors.video_url && (
@@ -436,8 +447,8 @@ export default function ContentSubForm({
                       className="bg-(--main-color) my-5 hover:bg-(--main-darker-color)"
                     >
                       {saveLectureMutation.isPending
-                        ? "Saving..."
-                        : "Save Lecture"}
+                        ? t("Dashboard.SectionContent.saving")
+                        : t("Dashboard.SectionContent.saveLecture")}
                     </Button>
                   </>
                 )}
@@ -449,8 +460,8 @@ export default function ContentSubForm({
                         {content.type === "quiz" &&
                         content.id &&
                         !content.id.startsWith("temp-")
-                          ? `Quiz created click below to edit quiz/questions`
-                          : "Click below to create and configure your quiz"}
+                          ? t("Dashboard.SectionContent.quizCreatedInfo")
+                          : t("Dashboard.SectionContent.quizCreateInfo")}
                       </p>
                     </div>
 
@@ -467,15 +478,15 @@ export default function ContentSubForm({
                           {content.type === "quiz" &&
                           content.id &&
                           !content.id.startsWith("temp-")
-                            ? "Edit Quiz"
-                            : "Create Quiz"}
+                            ? t("Dashboard.SectionContent.editQuiz")
+                            : t("Dashboard.SectionContent.createQuiz")}
                         </Button>
                       </DialogTrigger>
                       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
                         <DialogHeader>
-                          <DialogTitle>Quiz Maker</DialogTitle>
+                          <DialogTitle>{t("Dashboard.SectionContent.quizMaker")}</DialogTitle>
                           <DialogDescription>
-                            Your quiz data
+                            {t("Dashboard.SectionContent.quizMakerDescription")}
                           </DialogDescription>
                         </DialogHeader>
                         <QuizMaker

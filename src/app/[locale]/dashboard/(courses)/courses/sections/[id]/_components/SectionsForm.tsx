@@ -1,5 +1,6 @@
 "use client"
 import { Section } from "@/lib/types/section"
+import { useTranslation } from "react-i18next"
 import {
   DndContext,
   closestCenter,
@@ -8,7 +9,6 @@ import {
   useSensor,
   useSensors,
   DragEndEvent,
-  TouchSensor,
 } from "@dnd-kit/core"
 import {
   arrayMove,
@@ -28,6 +28,7 @@ import Skeleton from "react-loading-skeleton"
 import { toast } from "sonner"
 
 export default function SectionsForm() {
+  const { t } = useTranslation()
   const [sections, setSections] = useState<Section[]>([])
   const [isUpdating, setIsUpdating] = useState(false)
   const isUpdatingRef = useRef(false)
@@ -71,10 +72,10 @@ export default function SectionsForm() {
         position,
       })
 
-      toast.success("Section position updated successfully")
+      toast.success(t("SectionForm.positionUpdated"))
     } catch (error: any) {
       toast.error(
-        error?.response?.data?.message || "Failed to update section position"
+        error?.response?.data?.message || t("SectionForm.positionUpdateFailed")
       )
 
       if (data) {
@@ -137,7 +138,7 @@ export default function SectionsForm() {
 
     const newSection: Section = {
       id: `temp-section-${Date.now()}`,
-      title: `Section ${sections.length + 1}`,
+      title: `${t("SectionForm.section")} ${sections.length + 1}`,
       description: "",
       position: position,
       lectures: [],
@@ -177,7 +178,7 @@ export default function SectionsForm() {
       <div className="px-2 py-4 mt-6 bg-[#ffff] rounded-md">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-800">
-            Course Sections
+            {t("Dashboard.SectionForm.courseSections")}
           </h3>
           <Button
             type="button"
@@ -186,13 +187,13 @@ export default function SectionsForm() {
             disabled={isUpdating}
           >
             <Plus className="h-4 w-4" />
-            Create Section
+            {t("Dashboard.SectionForm.createSection")}
           </Button>
         </div>
         {sections.length === 0 ? (
           <div className="text-center py-12 text-gray-400">
             <p className="text-sm">
-              No sections yet. Click "Create Section" to add a new section.
+              {t("Dashboard.SectionForm.noSections")}
             </p>
           </div>
         ) : (

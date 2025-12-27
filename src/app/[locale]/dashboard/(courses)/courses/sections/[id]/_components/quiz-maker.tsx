@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -29,50 +30,6 @@ interface QuizMakerProps {
   allContent?: any[]
 }
 
-const quizBasicInfoSchema = Yup.object().shape({
-  title: Yup.string()
-    .trim()
-    .required("Title is required")
-    .min(1, "Title is required"),
-  description: Yup.string()
-    .trim()
-    .required("Description is required")
-    .min(1, "Description is required"),
-  points: Yup.number()
-    .required("Points is required")
-    .min(1, "Points must be at least 1")
-    .integer("Points must be a whole number"),
-  time_limit: Yup.number()
-    .required("Time limit is required")
-    .min(1, "Time limit must be at least 1 minute")
-    .integer("Time limit must be a whole number"),
-})
-
-const answerSchema = Yup.object().shape({
-  id: Yup.string().required(),
-  text: Yup.string().trim().required("Answer text is required"),
-  isCorrect: Yup.boolean().required(),
-})
-
-const questionSchema = Yup.object().shape({
-  id: Yup.string().required(),
-  question: Yup.string().trim().required("Question text is required"),
-  answers: Yup.array()
-    .of(answerSchema)
-    .min(2, "At least 2 answers are required")
-    .test(
-      "has-correct-answer",
-      "One answer must be marked as correct",
-      (answers) => answers?.some((a) => a.isCorrect) ?? false
-    ),
-})
-
-const questionsSchema = Yup.object().shape({
-  questions: Yup.array()
-    .of(questionSchema)
-    .min(1, "At least one question is required"),
-})
-
 export default function QuizMaker({
   onSave,
   initialData,
@@ -81,6 +38,7 @@ export default function QuizMaker({
   isOpen = true,
   allContent = [],
 }: QuizMakerProps) {
+  const { t } = useTranslation()
   const [title, setTitle] = useState(initialData?.title || "")
   const [description, setDescription] = useState(initialData?.description || "")
   const [points, setPoints] = useState(initialData?.points || 10)
@@ -115,6 +73,51 @@ export default function QuizMaker({
     ).length
     return savedContentCount + 1
   }
+
+  // Validation schemas with translations
+  const quizBasicInfoSchema = Yup.object().shape({
+    title: Yup.string()
+      .trim()
+      .required(t("Dashboard.QuizMaker.quizTitleRequired"))
+      .min(1, t("Dashboard.QuizMaker.quizTitleRequired")),
+    description: Yup.string()
+      .trim()
+      .required(t("Dashboard.QuizMaker.quizDescriptionRequired"))
+      .min(1, t("Dashboard.QuizMaker.quizDescriptionRequired")),
+    points: Yup.number()
+      .required(t("Dashboard.QuizMaker.pointsRequired"))
+      .min(1, t("Dashboard.QuizMaker.pointsMin"))
+      .integer(t("Dashboard.QuizMaker.pointsInteger")),
+    time_limit: Yup.number()
+      .required(t("Dashboard.QuizMaker.timeLimitRequired"))
+      .min(1, t("Dashboard.QuizMaker.timeLimitMin"))
+      .integer(t("Dashboard.QuizMaker.timeLimitInteger")),
+  })
+
+  const answerSchema = Yup.object().shape({
+    id: Yup.string().required(),
+    text: Yup.string().trim().required(t("Dashboard.QuizMaker.answerRequired")),
+    isCorrect: Yup.boolean().required(),
+  })
+
+  const questionSchema = Yup.object().shape({
+    id: Yup.string().required(),
+    question: Yup.string().trim().required(t("Dashboard.QuizMaker.questionRequired")),
+    answers: Yup.array()
+      .of(answerSchema)
+      .min(2, t("Dashboard.QuizMaker.answersMin"))
+      .test(
+        "has-correct-answer",
+        t("Dashboard.QuizMaker.hasCorrectAnswer"),
+        (answers) => answers?.some((a) => a.isCorrect) ?? false
+      ),
+  })
+
+  const questionsSchema = Yup.object().shape({
+    questions: Yup.array()
+      .of(questionSchema)
+      .min(1, t("Dashboard.QuizMaker.questionsMin")),
+  })
 
   const { data: quizData, isLoading: isLoadingQuestions } = useQuery({
     queryKey: ["quiz-questions", courseId, sectionId, initialData?.id],
@@ -167,7 +170,9 @@ export default function QuizMaker({
     },
     onSuccess: (response) => {
       toast.success(
-        isEditMode ? "Quiz updated successfully" : "Quiz created successfully"
+        isEditMode 
+          ? t("Dashboard.QuizMaker.quizUpdated") 
+          : t("Dashboard.QuizMaker.quizCreated")
       )
       if (!isEditMode) {
         setQuizId(response.data.id)
@@ -180,7 +185,9 @@ export default function QuizMaker({
     onError: (error: any) => {
       toast.error(
         error?.response?.data?.message ||
-          `Failed to ${isEditMode ? "update" : "create"} quiz`
+          (isEditMode 
+            ? t("Dashboard.QuizMaker.quizUpdateFailed")
+            : t("Dashboard.QuizMaker.quizCreateFailed"))
       )
     },
   })
@@ -193,7 +200,7 @@ export default function QuizMaker({
       )
     },
     onSuccess: () => {
-      toast.success("Questions added successfully")
+      toast.success(t("Dashboard.QuizMaker.questionsAdded"))
       queryClient.invalidateQueries({ queryKey: ["sections", courseId] })
       queryClient.invalidateQueries({
         queryKey: ["quiz-questions", courseId, sectionId, quizId],
@@ -210,7 +217,7 @@ export default function QuizMaker({
       })
     },
     onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Failed to add questions")
+      toast.error(error?.response?.data?.message || t("Dashboard.QuizMaker.questionsAddFailed"))
     },
   })
 
@@ -230,7 +237,7 @@ export default function QuizMaker({
       )
     },
     onSuccess: () => {
-      toast.success("Question updated successfully")
+      toast.success(t("Dashboard.QuizMaker.questionUpdated"))
       queryClient.invalidateQueries({ queryKey: ["sections", courseId] })
       queryClient.invalidateQueries({
         queryKey: [
@@ -243,7 +250,7 @@ export default function QuizMaker({
       setUpdatingQuestionId(null)
     },
     onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Failed to update question")
+      toast.error(error?.response?.data?.message || t("Dashboard.QuizMaker.questionUpdateFailed"))
       setUpdatingQuestionId(null)
     },
   })
@@ -257,7 +264,7 @@ export default function QuizMaker({
       )
     },
     onSuccess: () => {
-      toast.success("Question deleted successfully")
+      toast.success(t("Dashboard.QuizMaker.questionDeleted"))
       queryClient.invalidateQueries({ queryKey: ["sections", courseId] })
       queryClient.invalidateQueries({
         queryKey: [
@@ -271,7 +278,7 @@ export default function QuizMaker({
       setQuestionToDelete(null)
     },
     onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Failed to delete question")
+      toast.error(error?.response?.data?.message || t("Dashboard.QuizMaker.questionDeleteFailed"))
       setIsDeleteDialogOpen(false)
     },
   })
@@ -425,7 +432,7 @@ export default function QuizMaker({
       if (err instanceof Yup.ValidationError) {
         return { isValid: false, errors: err.errors }
       }
-      return { isValid: false, errors: ["Validation failed"] }
+      return { isValid: false, errors: [t("Dashboard.QuizMaker.fixValidationErrors")] }
     }
   }
 
@@ -453,7 +460,7 @@ export default function QuizMaker({
     const localQuestions = questions.filter((q) => q.id.startsWith("temp-"))
 
     if (localQuestions.length === 0) {
-      toast.info("No new questions to add")
+      toast.info(t("Dashboard.QuizMaker.noNewQuestions"))
       return
     }
 
@@ -476,7 +483,7 @@ export default function QuizMaker({
     const validation = await validateSingleQuestion(question)
     
     if (!validation.isValid) {
-      toast.error(validation.errors[0] || "Please fix validation errors")
+      toast.error(validation.errors[0] || t("Dashboard.QuizMaker.fixValidationErrors"))
       return
     }
 
@@ -502,10 +509,9 @@ export default function QuizMaker({
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Question</DialogTitle>
+            <DialogTitle>{t("Dashboard.QuizMaker.deleteQuestion")}</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete this question? This action cannot
-              be undone.
+              {t("Dashboard.QuizMaker.deleteQuestionConfirmation")}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -515,7 +521,7 @@ export default function QuizMaker({
               onClick={() => setIsDeleteDialogOpen(false)}
               disabled={deleteQuestionMutation.isPending}
             >
-              Cancel
+              {t("Dashboard.QuizMaker.cancel")}
             </Button>
             <Button
               type="button"
@@ -523,7 +529,9 @@ export default function QuizMaker({
               onClick={confirmDeleteQuestion}
               disabled={deleteQuestionMutation.isPending}
             >
-              {deleteQuestionMutation.isPending ? "Deleting..." : "Delete"}
+              {deleteQuestionMutation.isPending 
+                ? t("Dashboard.QuizMaker.deleting") 
+                : t("Dashboard.QuizMaker.delete")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -533,12 +541,12 @@ export default function QuizMaker({
         <div className="space-y-4">
           <div>
             <label className="text-sm font-medium text-gray-700">
-              Quiz Title *
+              {t("Dashboard.QuizMaker.quizTitle")} {t("Dashboard.QuizMaker.required")}
             </label>
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Enter quiz title"
+              placeholder={t("Dashboard.QuizMaker.quizTitlePlaceholder")}
               className={`mt-1 ${errors.title ? "border-red-500" : ""}`}
             />
             {errors.title && (
@@ -548,12 +556,12 @@ export default function QuizMaker({
 
           <div>
             <label className="text-sm font-medium text-gray-700">
-              Quiz Description *
+              {t("Dashboard.QuizMaker.quizDescription")} {t("Dashboard.QuizMaker.required")}
             </label>
             <Textarea
               value={description}
               onChange={(e: any) => setDescription(e.target.value)}
-              placeholder="Enter quiz description"
+              placeholder={t("Dashboard.QuizMaker.quizDescriptionPlaceholder")}
               rows={3}
               className={`mt-1 ${errors.description ? "border-red-500" : ""}`}
             />
@@ -565,13 +573,13 @@ export default function QuizMaker({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="text-sm font-medium text-gray-700">
-                Points *
+                {t("Dashboard.QuizMaker.points")} {t("Dashboard.QuizMaker.required")}
               </label>
               <Input
                 type="number"
                 value={points}
                 onChange={(e) => setPoints(Number(e.target.value))}
-                placeholder="10"
+                placeholder={t("Dashboard.QuizMaker.pointsPlaceholder")}
                 className={`mt-1 ${errors.points ? "border-red-500" : ""}`}
               />
               {errors.points && (
@@ -581,13 +589,13 @@ export default function QuizMaker({
 
             <div>
               <label className="text-sm font-medium text-gray-700">
-                Time Limit (minutes) *
+                {t("Dashboard.QuizMaker.timeLimit")} {t("Dashboard.QuizMaker.required")}
               </label>
               <Input
                 type="number"
                 value={timeLimit}
                 onChange={(e) => setTimeLimit(Number(e.target.value))}
-                placeholder="60"
+                placeholder={t("Dashboard.QuizMaker.timeLimitPlaceholder")}
                 className={`mt-1 ${errors.time_limit ? "border-red-500" : ""}`}
               />
               {errors.time_limit && (
@@ -603,12 +611,12 @@ export default function QuizMaker({
             className="w-full bg-(--main-color) hover:bg-(--main-darker-color)"
           >
             {saveQuizMutation.isPending
-              ? isEditMode
-                ? "Updating Quiz..."
-                : "Creating Quiz..."
-              : isEditMode
-              ? "Update Quiz"
-              : "Create Quiz"}
+              ? (isEditMode
+                ? t("Dashboard.QuizMaker.updatingQuiz")
+                : t("Dashboard.QuizMaker.creatingQuiz"))
+              : (isEditMode
+              ? t("Dashboard.QuizMaker.updateQuiz")
+              : t("Dashboard.QuizMaker.createQuiz"))}
           </Button>
         </div>
 
@@ -617,13 +625,15 @@ export default function QuizMaker({
             {isLoadingQuestions ? (
               <div className="flex items-center justify-center py-8">
                 <BtnLoad color="main" size={35} />
-                <span className="ml-2 text-gray-600">Loading questions...</span>
+                <span className="ml-2 text-gray-600">
+                  {t("Dashboard.QuizMaker.loadingQuestions")}
+                </span>
               </div>
             ) : (
               <>
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-gray-900">
-                    Questions
+                    {t("Dashboard.QuizMaker.questions")}
                   </h3>
                   <Button
                     type="button"
@@ -633,7 +643,7 @@ export default function QuizMaker({
                     className="flex items-center gap-1"
                   >
                     <Plus className="h-4 w-4" />
-                    Add Question
+                    {t("Dashboard.QuizMaker.addQuestion")}
                   </Button>
                 </div>
 
@@ -654,7 +664,7 @@ export default function QuizMaker({
                       >
                         <div className="flex items-start gap-3">
                           <span className="text-sm font-medium text-gray-500 mt-2">
-                            Q{qIndex + 1}
+                            {t("Dashboard.QuizMaker.questionLabel", { index: qIndex + 1 })}
                           </span>
                           <div className="flex-1">
                             <Input
@@ -662,7 +672,7 @@ export default function QuizMaker({
                               onChange={(e) =>
                                 updateQuestion(question.id, e.target.value)
                               }
-                              placeholder="Enter question"
+                              placeholder={t("Dashboard.QuizMaker.questionPlaceholder")}
                               className="w-full"
                             />
                           </div>
@@ -680,7 +690,7 @@ export default function QuizMaker({
                         <div className="ml-8 space-y-3">
                           <div className="flex items-center justify-between">
                             <label className="text-xs font-medium text-gray-600">
-                              Answers (check one as correct)
+                              {t("Dashboard.QuizMaker.answersLabel")}
                             </label>
                             <Button
                               type="button"
@@ -690,7 +700,7 @@ export default function QuizMaker({
                               className="h-7 text-xs"
                             >
                               <Plus className="h-3 w-3 mr-1" />
-                              Add Answer
+                              {t("Dashboard.QuizMaker.addAnswer")}
                             </Button>
                           </div>
 
@@ -715,7 +725,7 @@ export default function QuizMaker({
                                     e.target.value
                                   )
                                 }
-                                placeholder={`Answer ${aIndex + 1}`}
+                                placeholder={t("Dashboard.QuizMaker.answerPlaceholder", { index: aIndex + 1 })}
                                 className="flex-1"
                               />
                               {question.answers.length > 2 && (
@@ -745,8 +755,8 @@ export default function QuizMaker({
                               className="bg-green-600 hover:bg-green-700"
                             >
                               {updatingQuestionId === question.id
-                                ? "Updating..."
-                                : "Update Question"}
+                                ? t("Dashboard.QuizMaker.updatingQuestion")
+                                : t("Dashboard.QuizMaker.updateQuestion")}
                             </Button>
                           </div>
                         )}
@@ -758,7 +768,7 @@ export default function QuizMaker({
                 {questions.length === 0 && (
                   <div className="text-center py-8 text-gray-500">
                     <p className="text-sm">
-                      No questions yet. Click "Add Question" to start.
+                      {t("Dashboard.QuizMaker.noQuestions")}
                     </p>
                   </div>
                 )}
@@ -772,8 +782,8 @@ export default function QuizMaker({
                       className="flex-1 bg-(--main-color) hover:bg-(--main-darker-color)"
                     >
                       {addQuestionsMutation.isPending
-                        ? "Adding Questions..."
-                        : "Add Questions"}
+                        ? t("Dashboard.QuizMaker.addingQuestions")
+                        : t("Dashboard.QuizMaker.addQuestions")}
                     </Button>
                   </div>
                 )}

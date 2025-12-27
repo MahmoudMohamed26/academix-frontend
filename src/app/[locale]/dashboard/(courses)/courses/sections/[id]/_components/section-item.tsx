@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { useFormik } from "formik"
 import * as Yup from "yup"
+import { useTranslation } from "react-i18next"
 import {
   Collapsible,
   CollapsibleContent,
@@ -65,6 +66,7 @@ export default function SectionItem({
   courseId,
   reorder,
 }: SectionItemProps) {
+  const { t } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [contents, setContents] = useState<ContentItem[]>([])
@@ -105,8 +107,8 @@ export default function SectionItem({
   }
 
   const validationSchema = Yup.object({
-    title: Yup.string().required("Section title is required"),
-    description: Yup.string().required("Section description is required"),
+    title: Yup.string().required(t("Dashboard.SectionForm.sectionTitleRequired")),
+    description: Yup.string().required(t("Dashboard.SectionForm.sectionDescriptionRequired")),
   })
 
   const formik = useFormik({
@@ -161,7 +163,7 @@ export default function SectionItem({
       }
     },
     onSuccess: (response) => {
-      toast.success("Section saved successfully")
+      toast.success(t("Dashboard.SectionForm.sectionSaved"))
       queryClient.invalidateQueries({ queryKey: ["sections", courseId] })
       if (section.id.startsWith("temp-") && response.data?.id) {
         onUpdate(section.id, { ...formik.values, id: response.data.id })
@@ -170,7 +172,7 @@ export default function SectionItem({
       }
     },
     onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Failed to save section")
+      toast.error(error?.response?.data?.message || t("Dashboard.SectionForm.saveFailed"))
     },
   })
 
@@ -181,13 +183,13 @@ export default function SectionItem({
       }
     },
     onSuccess: () => {
-      toast.success("Section deleted successfully")
+      toast.success(t("Dashboard.SectionForm.sectionDeleted"))
       queryClient.invalidateQueries({ queryKey: ["sections", courseId] })
       onDelete(section.id)
       setIsDeleteDialogOpen(false)
     },
     onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Failed to delete section")
+      toast.error(error?.response?.data?.message || t("Dashboard.SectionForm.deleteFailed"))
       setIsDeleteDialogOpen(false)
     },
   })
@@ -270,14 +272,12 @@ export default function SectionItem({
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Section</DialogTitle>
+            <DialogTitle>{t("Dashboard.SectionForm.deleteSection")}</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete this section? This action cannot
-              be undone.
+              {t("Dashboard.SectionForm.deleteConfirmation")}
               {contents.length > 0 && (
                 <span className="block mt-2 text-red-600 font-medium">
-                  Warning: This section contains {contents.length} content
-                  item(s) that will also be deleted.
+                  {t("Dashboard.SectionForm.deleteWarning", { count: contents.length })}
                 </span>
               )}
             </DialogDescription>
@@ -289,7 +289,7 @@ export default function SectionItem({
               onClick={() => setIsDeleteDialogOpen(false)}
               disabled={deleteSectionMutation.isPending}
             >
-              Cancel
+              {t("Dashboard.SectionForm.cancel")}
             </Button>
             <Button
               type="button"
@@ -297,7 +297,7 @@ export default function SectionItem({
               onClick={confirmDelete}
               disabled={deleteSectionMutation.isPending}
             >
-              {deleteSectionMutation.isPending ? "Deleting..." : "Delete"}
+              {deleteSectionMutation.isPending ? t("Dashboard.SectionForm.deleting") : t("Dashboard.SectionForm.delete")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -306,21 +306,22 @@ export default function SectionItem({
       <div ref={setNodeRef} style={style} className="mb-2">
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
           <div className="border border-gray-200">
-            <div className="flex items-center gap-2 bg-gray-100 touch-none">
+            <div className="flex items-center px-4 gap-2 bg-gray-100 touch-none">
               {!reorder ? (
-                <div
+                <button
+                  type="button"
                   className="cursor-grab active:cursor-grabbing"
                   {...attributes}
                   {...listeners}
                 >
                   <GripVertical
-                    className={`h-5 w-5 ms-5 ${
+                    className={`h-5 w-5 ${
                       isOpen ? "text-gray-400" : "text-gray-400"
                     }`}
                   />
-                </div>
+                </button>
               ) : (
-                <button className="ms-5 opacity-70">
+                <button className="opacity-70">
                   <BtnLoad color="main" size={20} />
                 </button>
               )}
@@ -357,7 +358,7 @@ export default function SectionItem({
               <div className="px-4 pb-4 space-y-4 border-t border-gray-100 pt-4">
                 <div>
                   <label className="text-sm text-gray-700 font-[501]">
-                    Section Title
+                    {t("Dashboard.SectionForm.sectionTitle")}
                   </label>
                   <input
                     type="text"
@@ -370,7 +371,7 @@ export default function SectionItem({
                         ? "border-red-500"
                         : "border-[#e2e6f1]"
                     }`}
-                    placeholder="Enter section title"
+                    placeholder={t("Dashboard.SectionForm.sectionTitlePlaceholder")}
                   />
                   {formik.touched.title && formik.errors.title && (
                     <p className="text-red-500 text-xs">
@@ -381,7 +382,7 @@ export default function SectionItem({
 
                 <div>
                   <label className="text-sm text-gray-700 font-[501]">
-                    Section Description
+                    {t("Dashboard.SectionForm.sectionDescription")}
                   </label>
                   <textarea
                     name="description"
@@ -394,7 +395,7 @@ export default function SectionItem({
                         ? "border-red-500"
                         : "border-[#e2e6f1]"
                     }`}
-                    placeholder="Enter section description"
+                    placeholder={t("Dashboard.SectionForm.sectionDescriptionPlaceholder")}
                   />
                   {formik.touched.description && formik.errors.description && (
                     <p className="text-red-500 text-xs">
@@ -410,14 +411,14 @@ export default function SectionItem({
                   disabled={saveSectionMutation.isPending}
                   className="bg-(--main-color) hover:bg-(--main-darker-color)"
                 >
-                  {saveSectionMutation.isPending ? "Saving..." : "Save Section"}
+                  {saveSectionMutation.isPending ? t("Dashboard.SectionForm.saving") : t("Dashboard.SectionForm.saveSection")}
                 </Button>
 
                 {!section.id.startsWith("temp-") && (
                   <div className="mt-6 border-t border-gray-200 pt-4">
                     <div className="flex items-center justify-between mb-4">
                       <h4 className="text-sm font-medium text-gray-700">
-                        Content ({contents.length})
+                        {t("Dashboard.SectionForm.contentCount", { count: contents.length })}
                       </h4>
                       <div className="flex gap-2">
                         <Button
@@ -428,7 +429,7 @@ export default function SectionItem({
                           className="gap-2"
                         >
                           <Plus className="h-4 w-4" />
-                          Add Lecture
+                          {t("Dashboard.SectionForm.addLecture")}
                         </Button>
                         <Button
                           type="button"
@@ -438,7 +439,7 @@ export default function SectionItem({
                           className="gap-2"
                         >
                           <Plus className="h-4 w-4" />
-                          Add Quiz
+                          {t("Dashboard.SectionForm.addQuiz")}
                         </Button>
                       </div>
                     </div>
@@ -469,8 +470,7 @@ export default function SectionItem({
 
                       {contents.length === 0 && (
                         <p className="text-sm text-gray-400 text-center py-4">
-                          No content yet. Click "Add Lecture" or "Add Quiz" to
-                          create one.
+                          {t("Dashboard.SectionForm.noContent")}
                         </p>
                       )}
                     </div>
