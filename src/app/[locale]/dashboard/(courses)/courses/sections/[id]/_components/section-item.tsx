@@ -147,8 +147,18 @@ export default function SectionItem({
       const endpoint = `/courses/${courseId}/sections`
       
       const cachedData = queryClient.getQueryData(["sections", courseId]) as any
-      const dbSections = cachedData?.sections?.filter((s: any) => !s.id.startsWith('temp-')) || []
+      
+      const allSections = Array.isArray(cachedData) ? cachedData : (cachedData?.sections || [])
+      const dbSections = allSections.filter((s: any) => !s.id.startsWith('temp-'))
       const calculatedPosition = isNewSection ? dbSections.length + 1 : section.position
+      
+      console.log('Saving section:', {
+        isNewSection,
+        allSections: allSections.length,
+        dbSections: dbSections.length,
+        calculatedPosition,
+        sectionPosition: section.position
+      })
       
       if (isNewSection) {
         return await Axios.post(endpoint, {

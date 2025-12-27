@@ -64,11 +64,15 @@ export default function SectionsForm() {
   }
 
   const handleCreateSection = () => {
+    // Calculate position based only on saved sections (excluding temp sections)
+    const savedSections = sections.filter(s => !s.id.startsWith('temp-'))
+    const position = savedSections.length + 1
+    
     const newSection: Section = {
       id: `temp-section-${Date.now()}`,
       title: `Section ${sections.length + 1}`,
       description: "",
-      position: sections.length+1,
+      position: position,
       lectures: [],
       quizzes: [],
     }
