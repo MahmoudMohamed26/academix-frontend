@@ -1,11 +1,11 @@
 "use client"
 
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 import { useParams } from "next/navigation"
 
 import useAxios from "@/hooks/useAxios"
-import { getPublishedCourses, useDeleteCourse } from "@/lib/api/Courses"
+import { getNonPublishedCourses, useRejectCourse } from "@/lib/api/Courses"
 
 import DataTable from "../../../_components/tables"
 import DeleteDialog from "../../../_components/delete-dialog"
@@ -14,6 +14,7 @@ import { TableHeader } from "@/lib/types/table"
 import { Course, CourseSearchParams } from "@/lib/types/course"
 import FilterDialog from "@/components/filter-dialog"
 import Pagination from "@/components/pagination"
+import { toast } from "sonner"
 
 interface CategoriesClientProps {
   tableHeaders: TableHeader[]
@@ -50,7 +51,7 @@ function sanitizeSearchParams(
   return sanitized
 }
 
-export default function Courses({
+export default function PendingCourses({
   searchParams,
   tableHeaders,
 }: CategoriesClientProps) {
@@ -58,8 +59,8 @@ export default function Courses({
   const { locale } = useParams<{ locale: string }>()
   const currLang = locale ?? "en"
 
-  const deleteMutation = useDeleteCourse(Axios)
-
+  const deleteMutation = useRejectCourse(Axios)
+  const queryClient =  useQueryClient()
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null)
 
@@ -75,13 +76,34 @@ export default function Courses({
   }`
 
   const { data: courseData, isLoading } = useQuery({
-    queryKey: ["courses", sanitizedParams],
-    queryFn: () => getPublishedCourses(Axios, url),
+    queryKey: ["non-published-courses", sanitizedParams],
+    queryFn: () => getNonPublishedCourses(Axios, url),
   })
 
   const handleDeleteClick = (courseId: string) => {
     setSelectedCourseId(courseId)
     setIsDialogOpen(true)
+  }
+
+  const approveCourseMutation = useMutation({
+    mutationFn: (courseId: string) =>
+      Axios.patch(`courses/${courseId}/publication-status`, {
+        status: true,
+      }),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["courses"] })
+      queryClient.invalidateQueries({ queryKey: ["non-published-courses"] })
+      toast.success("Course accepted successfully")
+    },
+
+    onError: (error) => {
+      console.error(error)
+    },
+  })
+
+  const handleApprove = async (courseId: string) => {
+    approveCourseMutation.mutate(courseId)
   }
 
   const getCategoryName = (course: Course) => {
@@ -97,7 +119,8 @@ export default function Courses({
         data={courseData?.courses || []}
         isLoading={isLoading}
         tableHeaders={tableHeaders}
-        type="courses"
+        onApprove={handleApprove}
+        type="pending-courses"
         onDelete={handleDeleteClick}
         getCategoryName={getCategoryName}
       />
@@ -107,7 +130,7 @@ export default function Courses({
         onOpenChange={setIsDialogOpen}
         itemId={selectedCourseId}
         deleteMutation={deleteMutation}
-        type="courses"
+        type="pending-courses"
       />
       <Pagination paginationLinks={courseData?.meta} />
     </>

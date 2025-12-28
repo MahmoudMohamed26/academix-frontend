@@ -55,6 +55,7 @@ export default function CategoriesClient({
         onOpenChange={setIsDialogOpen}
         itemId={selectedCategoryId}
         deleteMutation={deleteMutation}
+        type="categories"
       />
     </>
   )

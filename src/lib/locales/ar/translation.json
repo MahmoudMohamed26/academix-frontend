@@ -160,10 +160,21 @@
       "actions": "الإجراءات",
       "edit": "تعديل",
       "delete": "حذف",
-      "confirmDeleteTitle": "تأكيد حذف الفئة",
+      "confirmDeleteTitle": "",
       "confirmDeleteDescription": "هل أنت متأكد أنك تريد حذف هذه الفئة؟ جميع الدورات المرتبطة سيتم حذفها. لا يمكن التراجع عن هذا الإجراء.",
       "cancelButton": "إلغاء",
       "deleteButton": "نعم، احذف"
+    },
+    "deleteDialog": {
+      "confirmDeleteTitleCategory": "تأكيد حذف الفئة",
+      "confirmDeleteTitleCourse": "تأكيد حذف الكورس",
+      "confirmDeleteTitlePendingCourses": "تأكيد رفض الكورس",
+      "confirmDeleteDescriptionCategory": "هل أنت متأكد أنك تريد حذف هذا التصنيف؟ سيتم حذف جميع الكورسات المرتبطة به أيضًا. لا يمكن التراجع عن هذا الإجراء.",
+      "confirmDeleteDescriptionCourse": "هل أنت متأكد أنك تريد حذف هذا الكورس؟ لن يتمكن جميع الطلاب المسجلين من الوصول إلى هذا الكورس بعد الآن.",
+      "confirmDeleteDescriptionPendingCourse": "هل أنت متأكد أنك تريد رفض هذا الكورس؟",
+      "cancelButton": "إلغاء",
+      "deleteButton": "نعم، حذف",
+      "RejectButton": "نعم، رفض"
     },
     "addCategory": {
       "title": "إضافة فئة",
@@ -196,6 +207,10 @@
       "confirmDeleteDescription": "هل أنت متأكد أنك تريد حذف هذه الدورة؟ لا يمكن التراجع عن هذا الإجراء.",
       "cancelButton": "إلغاء",
       "deleteButton": "نعم، احذف",
+      "noData": "لا توجد دورات متاحة."
+    },
+    "pending-courses": {
+      "title": "الدورات المعلقة",
       "noData": "لا توجد دورات متاحة."
     },
     "addCourse": {

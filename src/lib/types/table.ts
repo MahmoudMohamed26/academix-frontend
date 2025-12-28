@@ -8,7 +8,8 @@ export interface DataTableProps{
   isLoading: boolean
   tableHeaders: TableHeader[]
   onDelete?: (itemId: string) => void
-  type?: "categories" | "courses" | "payments" | "default"
+  onApprove?: (itemId: string) => void
+  type?: "categories" | "courses" | "payments" | "default" | "pending-courses"
   getCategoryName?: (item: any) => string
   noDataText?: string
 }

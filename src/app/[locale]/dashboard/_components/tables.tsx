@@ -9,7 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Pencil, Section, Trash2 } from "lucide-react"
+import { CircleCheck, CircleX, Pencil, Section, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { formatDate } from "@/helpers/format-date"
 import { DataTableProps, TableHeader as THeader } from "@/lib/types/table"
@@ -22,6 +22,7 @@ export default function DataTable({
   isLoading,
   tableHeaders,
   onDelete,
+  onApprove,
   type = "default",
   getCategoryName,
   noDataText,
@@ -63,7 +64,7 @@ export default function DataTable({
           />
         </div>
       )
-    } else if (header.key === "actions") {
+    } else if (header.key === "actions" && type !== "pending-courses") {
       return (
         <div className="flex gap-2">
           {type === "courses" && (
@@ -91,6 +92,28 @@ export default function DataTable({
               title="delete"
             >
               <Trash2 className="w-4 h-4 text-red-600" />
+            </button>
+          )}
+        </div>
+      )
+    } else if (header.key === "actions" && type === "pending-courses") {
+      return (
+        <div className="flex gap-2">
+          {onApprove && <button
+            onClick={() => onApprove(item.id)}
+            className="p-2 hover:bg-green-100 cursor-pointer rounded-md transition-colors"
+            title="Approve course"
+          >
+            <CircleCheck className="w-4 h-4 text-green-600" />
+          </button>}
+          {onDelete && (
+            <button
+              onClick={() => onDelete(item.id)}
+              className="p-2 hover:bg-red-100 cursor-pointer rounded-md transition-colors"
+              aria-label="Delete"
+              title="Reject course"
+            >
+              <CircleX className="w-4 h-4 text-red-600" />
             </button>
           )}
         </div>

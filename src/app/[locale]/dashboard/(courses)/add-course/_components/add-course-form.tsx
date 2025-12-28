@@ -104,7 +104,7 @@ export default function AddCourseForm({
       return response.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["courses"] })
+      queryClient.invalidateQueries({ queryKey: ["non-published-courses"] })
       form.resetForm()
       setImagePreview("")
       setImageFile(null)

@@ -9,11 +9,25 @@ export async function getCourses(axiosInstance: AxiosInstance): Promise<Course[]
 }
 
 export async function getFilterdCourses(axiosInstance: AxiosInstance , url: string): Promise<CourseRes> {
+  const res = await axiosInstance.get(url)
+  return res.data.data;
+}
+
+export async function getPublishedCourses(axiosInstance: AxiosInstance , url: string): Promise<CourseRes> {
   const res = await axiosInstance.get(url, {
-    headers: {
-      published: 'true'
+  params: {
+    published: 1,
     },
-  });
+  })
+  return res.data.data;
+}
+
+export async function getNonPublishedCourses(axiosInstance: AxiosInstance , url: string): Promise<CourseRes> {
+  const res = await axiosInstance.get(url, {
+  params: {
+    published: 0,
+    },
+  })
   return res.data.data;
 }
 
@@ -38,6 +52,22 @@ export function useDeleteCourse(axiosInstance: AxiosInstance) {
     },
     onError: (error) => {
       console.error('Error deleting course:', error);
+    },
+  });
+}
+
+export function useRejectCourse(axiosInstance: AxiosInstance) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (courseId: string) => {
+      await deleteCourse(axiosInstance, courseId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['non-published-courses'] });
+    },
+    onError: (error) => {
+      console.error('Error rejecting course:', error);
     },
   });
 }

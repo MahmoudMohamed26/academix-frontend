@@ -159,11 +159,18 @@
       "updatedAt": "Updated At",
       "actions": "Actions",
       "edit": "Edit",
-      "delete": "Delete",
-      "confirmDeleteTitle": "Confirm Category Deletion",
-      "confirmDeleteDescription": "Are you sure you want to delete this category? All related courses will also be deleted. This action cannot be undone.",
+      "delete": "Delete"
+    },
+    "deleteDialog": {
+      "confirmDeleteTitleCategory": "Confirm Category Deletion",
+      "confirmDeleteTitleCourse": "Confirm Course Deletion",
+      "confirmDeleteTitlePendingCourses": "Confirm Course Rejection",
+      "confirmDeleteDescriptionCategory": "Are you sure you want to delete this category? All related courses will also be deleted. This action cannot be undone.",
+      "confirmDeleteDescriptionCourse": "Are you sure you want to delete this Course? All enrolled students will have no longer access to this course",
+      "confirmDeleteDescriptionPendingCourse": "Are you sure you want to reject this Course?",
       "cancelButton": "Cancel",
-      "deleteButton": "Yes, Delete"
+      "deleteButton": "Yes, Delete",
+      "RejectButton": "Yes, Reject"
     },
     "addCategory": {
       "title": "Add Category",
@@ -195,6 +202,10 @@
       "confirmDeleteDescription": "Are you sure you want to delete this course? This action cannot be undone.",
       "cancelButton": "Cancel",
       "deleteButton": "Yes, Delete",
+      "noData": "No courses available."
+    },
+    "pending-courses": {
+      "title": "Pending Courses",
       "noData": "No courses available."
     },
     "addCourse": {
