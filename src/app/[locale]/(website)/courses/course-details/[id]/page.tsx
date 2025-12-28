@@ -1,7 +1,7 @@
 import { getCourse } from "@/lib/api/Courses"
 import { getServerAxios } from "@/lib/axios-server"
-import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query"
 import CourseDetailsClient from "./_components/course-details-client";
+import { getSections } from "@/lib/api/Sections";
 
 export default async function CourseDetailsPage({
   params,
@@ -10,16 +10,12 @@ export default async function CourseDetailsPage({
 }) {
   const { locale, id } = await params
   const axiosInstance = await getServerAxios(locale)
-  const queryClient = new QueryClient()
 
-  await queryClient.prefetchQuery({
-    queryKey: ["course-details", id],
-    queryFn: () => getCourse(axiosInstance, id),
-  })
+  const course = await getCourse(axiosInstance, id)
+
+  const sections = await getSections(axiosInstance, id)
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <CourseDetailsClient />
-    </HydrationBoundary>
+      <CourseDetailsClient course={course} sections={sections} />
   )
 }

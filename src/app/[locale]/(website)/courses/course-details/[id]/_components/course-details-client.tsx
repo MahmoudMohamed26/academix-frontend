@@ -3,6 +3,8 @@
 import Breadcrumb from "@/components/BreadCrumb"
 import useAxios from "@/hooks/useAxios"
 import { getCourse } from "@/lib/api/Courses"
+import { Course } from "@/lib/types/course"
+import { Section } from "@/lib/types/section"
 import { useQuery } from "@tanstack/react-query"
 import { formatDate } from "date-fns"
 import {
@@ -19,16 +21,16 @@ import Image from "next/image"
 import { useParams } from "next/navigation"
 import { useEffect, useState } from "react"
 
-export default function CourseDetailsClient() {
+type CourseDetailsClientProps = {
+  course: Course,
+  sections: Section[]
+}
+
+export default function CourseDetailsClient({course, sections}: CourseDetailsClientProps) {
   const { id } = useParams()
   const Axios = useAxios()
   const [halfStar, setHalfStar] = useState(false)
   const [restStars, setRestStars] = useState(5)
-  const { data: course, isLoading } = useQuery({
-    queryKey: ["course-details", id],
-    queryFn: () => getCourse(Axios, id),
-    staleTime: 5 * 60 * 1000,
-  })
 
   useEffect(() => {
     course?.rating_avg || 0 - Math.floor(course?.rating_avg || 0) >= 0.5
@@ -38,8 +40,6 @@ export default function CourseDetailsClient() {
       ? setRestStars(5 - Math.floor(course?.rating_avg || 0) - 1)
       : setRestStars(5 - Math.floor(course?.rating_avg || 0))
   }, [course])
-
-  console.log(course)
 
   return (
     <>

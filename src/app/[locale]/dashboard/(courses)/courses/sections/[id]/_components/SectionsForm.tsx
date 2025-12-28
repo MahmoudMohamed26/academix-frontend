@@ -138,7 +138,7 @@ export default function SectionsForm() {
 
     const newSection: Section = {
       id: `temp-section-${Date.now()}`,
-      title: `${t("SectionForm.section")} ${sections.length + 1}`,
+      title: `${t("Dashboard.SectionForm.section")} ${sections.length + 1}`,
       description: "",
       position: position,
       lectures: [],
