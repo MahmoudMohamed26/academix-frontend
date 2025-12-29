@@ -23,14 +23,7 @@ import { CourseFormData } from "@/lib/types/course"
 import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
 
-
-interface AddCourseClientProps {
-  initialCategories: Category[]
-}
-
-export default function AddCourseForm({
-  initialCategories,
-}: AddCourseClientProps) {
+export default function AddCourseForm() {
   const { t, i18n } = useTranslation()
   const Axios = useAxios()
   const queryClient = useQueryClient()
@@ -119,7 +112,6 @@ export default function AddCourseForm({
   const { data: categories, isLoading: categoriesLoading } = useQuery({
     queryKey: ["categories"],
     queryFn: () => getCategories(Axios),
-    initialData: initialCategories,
   })
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -299,7 +291,7 @@ export default function AddCourseForm({
                           <SelectItem disabled value="none">
                             {t("Dashboard.addCourse.categoryPlaceholder")}
                           </SelectItem>
-                          {categories.map((category: any) => (
+                          {categories?.map((category: any) => (
                             <SelectItem key={category.id} value={category.id}>
                               {i18n.language === "en"
                                 ? category.name_en
