@@ -12,7 +12,7 @@ export interface Section {
   description: string
   position: number
   lectures: Lecture[]
-  quizzes?: any
+  quizzes?: Quiz[]
 }
 
 export type ContentItem = Lecture | Quiz

@@ -62,7 +62,7 @@ export default function QuizMaker({
 
   const Axios = useAxios()
   const queryClient = useQueryClient()
-
+  console.log(initialData)
   const generateId = () => `temp-${Math.random().toString(36).substr(2, 9)}`
 
   const isEditMode = !!initialData?.id && !initialData?.id.startsWith("temp-")

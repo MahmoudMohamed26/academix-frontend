@@ -20,11 +20,3 @@ export interface Quiz {
   time_limit: number
   type: "quiz"
 }
-
-interface QuizMakerProps {
-  onSave: (quiz: Quiz) => void
-  initialData?: Quiz
-  courseId: string
-  sectionId: string
-  isOpen?: boolean
-}

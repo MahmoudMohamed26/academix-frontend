@@ -27,7 +27,6 @@ import {
   useSensor,
   useSensors,
   DragEndEvent,
-  TouchSensor,
 } from "@dnd-kit/core"
 import {
   arrayMove,

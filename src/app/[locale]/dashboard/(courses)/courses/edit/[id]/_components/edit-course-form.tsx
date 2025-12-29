@@ -24,9 +24,84 @@ import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
 import { getCourse } from "@/lib/api/Courses"
 import { useParams, useRouter } from "next/navigation"
+import { LexicalComposer } from "@lexical/react/LexicalComposer"
+import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin"
+import { ContentEditable } from "@lexical/react/LexicalContentEditable"
+import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin"
+import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin"
+import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary"
+import { HeadingNode, QuoteNode } from "@lexical/rich-text"
+import { ListItemNode, ListNode } from "@lexical/list"
+import { ListPlugin } from "@lexical/react/LexicalListPlugin"
+import { LinkNode } from "@lexical/link"
+import { $generateHtmlFromNodes, $generateNodesFromDOM } from "@lexical/html"
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
+import { $getRoot, $insertNodes } from "lexical"
+import ToolbarPlugin from "@/components/tool-bar-plugin"
 
-interface AddCourseClientProps {
-  initialCategories: Category[]
+const editorConfig = {
+  namespace: "CourseEditor",
+  theme: {
+    paragraph: "mb-2",
+    heading: {
+      h1: "text-xl font-semibold mb-4",
+      h2: "text-2xl font-semibold mb-3",
+      h3: "text-xl font-semibold mb-2",
+    },
+    list: {
+      ul: "list-disc list-inside mb-2",
+      ol: "list-decimal list-inside mb-2",
+      listitem: "ml-4",
+    },
+    text: {
+      bold: "font-semibold",
+      italic: "italic",
+      underline: "underline",
+    },
+    quote: "border-l-4 border-gray-300 pl-4 italic my-2",
+  },
+  nodes: [HeadingNode, QuoteNode, ListNode, ListItemNode, LinkNode],
+  onError: (error: Error) => {
+    console.error(error)
+  },
+}
+
+function HtmlPlugin({ onChange }: { onChange: (html: string) => void }) {
+  const [editor] = useLexicalComposerContext()
+
+  return (
+    <OnChangePlugin
+      onChange={(editorState) => {
+        editorState.read(() => {
+          const html = $generateHtmlFromNodes(editor, null)
+          const textContent = html.replace(/<[^>]*>/g, '').trim()
+          const cleanHtml = textContent ? html : ''
+          onChange(cleanHtml)
+        })
+      }}
+    />
+  )
+}
+
+function InitialContentPlugin({ html }: { html: string }) {
+  const [editor] = useLexicalComposerContext()
+  const [isInitialized, setIsInitialized] = useState(false)
+
+  useEffect(() => {
+    if (html && !isInitialized) {
+      editor.update(() => {
+        const parser = new DOMParser()
+        const dom = parser.parseFromString(html, "text/html")
+        const nodes = $generateNodesFromDOM(editor, dom)
+        const root = $getRoot()
+        root.clear()
+        $insertNodes(nodes)
+      })
+      setIsInitialized(true)
+    }
+  }, [editor, html, isInitialized])
+
+  return null
 }
 
 export default function EditCourseForm() {
@@ -38,6 +113,7 @@ export default function EditCourseForm() {
   const [imagePreview, setImagePreview] = useState<string>("")
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [isFormReady, setIsFormReady] = useState(false)
+  const [editorKey, setEditorKey] = useState(0)
   const router = useRouter()
 
   const { data: categories, isLoading: categoriesLoading } = useQuery({
@@ -57,6 +133,12 @@ export default function EditCourseForm() {
       setImagePreview(course.image)
     }
   }, [course?.image])
+
+  useEffect(() => {
+    if (course?.detailed_description) {
+      setEditorKey((prev) => prev + 1)
+    }
+  }, [course?.detailed_description])
 
   const validationSchema = Yup.object({
     title: Yup.string().required(t("Dashboard.addCourse.requiredNameError")),
@@ -97,6 +179,7 @@ export default function EditCourseForm() {
         toast.error(t("Dashboard.addCourse.requiredImageError"))
         return
       }
+
       createCourseMutation.mutate(values)
     },
   })
@@ -174,6 +257,14 @@ export default function EditCourseForm() {
     if (!imagePreview) {
       fileInputRef.current?.click()
     }
+  }
+
+  const handleEditorChange = (html: string) => {
+    form.setFieldValue("detailed_description", html)
+  }
+
+  const handleEditorBlur = () => {
+    form.setFieldTouched("detailed_description", true)
   }
 
   return (
@@ -441,22 +532,42 @@ export default function EditCourseForm() {
               <label className="text-sm text-gray-700 font-[501]">
                 {t("Dashboard.addCourse.detailedDescriptionLabel")}
               </label>
-              <textarea
-                className={`w-full text-sm outline-none my-2 border rounded-sm duration-200 p-2 focus:border-(--main-color) ${
+              <div
+                className={`my-2 border rounded-sm ${
                   form.touched.detailed_description &&
                   form.errors.detailed_description
-                    ? "border-red-500!"
-                    : "border-[#e2e6f1] special_shadow"
+                    ? "border-red-500"
+                    : "border-[#e2e6f1]"
                 }`}
-                name="detailed_description"
-                rows={20}
-                placeholder={t(
-                  "Dashboard.addCourse.detailedDescriptionPlaceholder"
-                )}
-                value={form.values.detailed_description}
-                onChange={form.handleChange}
-                onBlur={form.handleBlur}
-              />
+              >
+                <LexicalComposer key={editorKey} initialConfig={editorConfig}>
+                  <ToolbarPlugin />
+                  <div className="relative">
+                    <RichTextPlugin
+                      contentEditable={
+                        <ContentEditable
+                          className="min-h-[400px] outline-none p-4 text-sm"
+                          onBlur={handleEditorBlur}
+                        />
+                      }
+                      placeholder={
+                        <div className="absolute top-4 left-4 text-gray-400 text-sm pointer-events-none">
+                          {t(
+                            "Dashboard.addCourse.detailedDescriptionPlaceholder"
+                          )}
+                        </div>
+                      }
+                      ErrorBoundary={LexicalErrorBoundary}
+                    />
+                  </div>
+                  <HistoryPlugin />
+                  <ListPlugin />
+                  <HtmlPlugin onChange={handleEditorChange} />
+                  <InitialContentPlugin
+                    html={course?.detailed_description || ""}
+                  />
+                </LexicalComposer>
+              </div>
               {form.touched.detailed_description &&
                 form.errors.detailed_description && (
                   <p className="text-red-500 text-xs">
