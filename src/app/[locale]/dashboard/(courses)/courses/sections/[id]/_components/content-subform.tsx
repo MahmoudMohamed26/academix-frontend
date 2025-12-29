@@ -8,12 +8,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
 import { Button } from "@/components/ui/button"
-import {
-  ChevronRight,
-  Trash2,
-  Video,
-  FileQuestion,
-} from "lucide-react"
+import { ChevronRight, Trash2, Video, FileQuestion } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -59,14 +54,18 @@ export default function ContentSubForm({
 
   const calculatePosition = () => {
     const savedContentCount = allContent.filter(
-      item => !item.id.startsWith("temp-")
+      (item) => !item.id.startsWith("temp-")
     ).length
     return savedContentCount + 1
   }
 
   const lectureValidationSchema = Yup.object({
-    title: Yup.string().required(t("Dashboard.SectionContent.lectureTitleRequired")),
-    content: Yup.string().required(t("Dashboard.SectionContent.descriptionRequired")),
+    title: Yup.string().required(
+      t("Dashboard.SectionContent.lectureTitleRequired")
+    ),
+    content: Yup.string().required(
+      t("Dashboard.SectionContent.descriptionRequired")
+    ),
     duration: Yup.number()
       .required(t("Dashboard.SectionContent.durationRequired"))
       .min(1, t("Dashboard.SectionContent.durationMin")),
@@ -128,7 +127,10 @@ export default function ContentSubForm({
       setIsOpen(false)
     },
     onError: (error: any) => {
-      toast.error(error?.response?.data?.message || t("Dashboard.SectionContent.lectureSaveFailed"))
+      toast.error(
+        error?.response?.data?.message ||
+          t("Dashboard.SectionContent.lectureSaveFailed")
+      )
     },
   })
 
@@ -146,7 +148,10 @@ export default function ContentSubForm({
       setIsDeleteDialogOpen(false)
     },
     onError: (error: any) => {
-      toast.error(error?.response?.data?.message || t("Dashboard.SectionContent.lectureDeleteFailed"))
+      toast.error(
+        error?.response?.data?.message ||
+          t("Dashboard.SectionContent.lectureDeleteFailed")
+      )
       setIsDeleteDialogOpen(false)
     },
   })
@@ -165,7 +170,10 @@ export default function ContentSubForm({
       setIsDeleteDialogOpen(false)
     },
     onError: (error: any) => {
-      toast.error(error?.response?.data?.message || t("Dashboard.SectionContent.quizDeleteFailed"))
+      toast.error(
+        error?.response?.data?.message ||
+          t("Dashboard.SectionContent.quizDeleteFailed")
+      )
       setIsDeleteDialogOpen(false)
     },
   })
@@ -178,8 +186,10 @@ export default function ContentSubForm({
   }
 
   const handleQuizSave = (quizData: Omit<Quiz, "id" | "position" | "type">) => {
-    const position = content.id.startsWith("temp-") ? calculatePosition() : content.position
-    
+    const position = content.id.startsWith("temp-")
+      ? calculatePosition()
+      : content.position
+
     onUpdate(content.id, {
       ...quizData,
       type: "quiz",
@@ -202,8 +212,8 @@ export default function ContentSubForm({
   }
 
   const getContentTypeLabel = () => {
-    return content.type === "lecture" 
-      ? t("Dashboard.SectionContent.lecture") 
+    return content.type === "lecture"
+      ? t("Dashboard.SectionContent.lecture")
       : t("Dashboard.SectionContent.quiz")
   }
 
@@ -213,18 +223,18 @@ export default function ContentSubForm({
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {content.type === "lecture" 
-                ? t("Dashboard.SectionContent.deleteLecture") 
+              {content.type === "lecture"
+                ? t("Dashboard.SectionContent.deleteLecture")
                 : t("Dashboard.SectionContent.deleteQuiz")}
             </DialogTitle>
             <DialogDescription>
-              {t("Dashboard.SectionContent.deleteContentConfirmation", { 
-                type: getContentTypeLabel().toLowerCase() 
+              {t("Dashboard.SectionContent.deleteContentConfirmation", {
+                type: getContentTypeLabel().toLowerCase(),
               })}
               {content.type === "quiz" && content.questions?.length > 0 && (
                 <span className="block mt-2 text-red-600 font-medium">
-                  {t("Dashboard.SectionContent.deleteQuizWarning", { 
-                    count: content.questions.length 
+                  {t("Dashboard.SectionContent.deleteQuizWarning", {
+                    count: content.questions.length,
                   })}
                 </span>
               )}
@@ -274,7 +284,11 @@ export default function ContentSubForm({
                 >
                   <ChevronRight
                     className={`h-3 w-3 transition-transform ${
-                      isOpen ? "transform rotate-90" : i18n.language === "ar" ? "rotate-180" : ""
+                      isOpen
+                        ? "transform rotate-90"
+                        : i18n.language === "ar"
+                        ? "rotate-180"
+                        : ""
                     }`}
                   />
                   <span className="text-sm text-gray-700">
@@ -349,7 +363,9 @@ export default function ContentSubForm({
                             ? "border-red-500"
                             : "border-[#e2e6f1]"
                         }`}
-                        placeholder={t("Dashboard.SectionContent.lectureTitlePlaceholder")}
+                        placeholder={t(
+                          "Dashboard.SectionContent.lectureTitlePlaceholder"
+                        )}
                       />
                       {lectureFormik.touched.title &&
                         lectureFormik.errors.title && (
@@ -375,7 +391,9 @@ export default function ContentSubForm({
                             ? "border-red-500"
                             : "border-[#e2e6f1]"
                         }`}
-                        placeholder={t("Dashboard.SectionContent.descriptionPlaceholder")}
+                        placeholder={t(
+                          "Dashboard.SectionContent.descriptionPlaceholder"
+                        )}
                       />
                       {lectureFormik.touched.content &&
                         lectureFormik.errors.content && (
@@ -402,7 +420,9 @@ export default function ContentSubForm({
                               ? "border-red-500"
                               : "border-[#e2e6f1]"
                           }`}
-                          placeholder={t("Dashboard.SectionContent.durationPlaceholder")}
+                          placeholder={t(
+                            "Dashboard.SectionContent.durationPlaceholder"
+                          )}
                         />
                         {lectureFormik.touched.duration &&
                           lectureFormik.errors.duration && (
@@ -428,7 +448,9 @@ export default function ContentSubForm({
                               ? "border-red-500"
                               : "border-[#e2e6f1]"
                           }`}
-                          placeholder={t("Dashboard.SectionContent.videoUrlPlaceholder")}
+                          placeholder={t(
+                            "Dashboard.SectionContent.videoUrlPlaceholder"
+                          )}
                         />
                         {lectureFormik.touched.video_url &&
                           lectureFormik.errors.video_url && (
@@ -482,9 +504,16 @@ export default function ContentSubForm({
                             : t("Dashboard.SectionContent.createQuiz")}
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+                      <DialogContent
+                        onInteractOutside={(e) => {
+                          e.preventDefault()
+                        }}
+                        className="max-w-3xl max-h-[90vh] overflow-y-auto"
+                      >
                         <DialogHeader>
-                          <DialogTitle>{t("Dashboard.SectionContent.quizMaker")}</DialogTitle>
+                          <DialogTitle>
+                            {t("Dashboard.SectionContent.quizMaker")}
+                          </DialogTitle>
                           <DialogDescription>
                             {t("Dashboard.SectionContent.quizMakerDescription")}
                           </DialogDescription>

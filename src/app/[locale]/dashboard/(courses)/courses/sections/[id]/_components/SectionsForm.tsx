@@ -20,7 +20,7 @@ import { useEffect, useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import SectionItem from "./section-item"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { useParams } from "next/navigation"
 import { getSections } from "@/lib/api/Sections"
 import useAxios from "@/hooks/useAxios"
@@ -34,7 +34,6 @@ export default function SectionsForm() {
   const isUpdatingRef = useRef(false)
   const { id } = useParams()
   const Axios = useAxios()
-  const queryClient = useQueryClient()
 
   const { data, isLoading } = useQuery({
     queryKey: ["sections", id],
@@ -72,10 +71,10 @@ export default function SectionsForm() {
         position,
       })
 
-      toast.success(t("SectionForm.positionUpdated"))
+      toast.success(t("Dashboard.SectionForm.positionUpdated"))
     } catch (error: any) {
       toast.error(
-        error?.response?.data?.message || t("SectionForm.positionUpdateFailed")
+        error?.response?.data?.message || t("Dashboard.SectionForm.positionUpdateFailed")
       )
 
       if (data) {
