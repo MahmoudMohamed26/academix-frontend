@@ -75,9 +75,11 @@ export default function Courses({
   }`
 
   const { data: courseData, isLoading } = useQuery({
-    queryKey: ["courses", sanitizedParams],
+    queryKey: ["published-courses", sanitizedParams],
     queryFn: () => getPublishedCourses(Axios, url),
   })
+
+  console.log(courseData);
 
   const handleDeleteClick = (courseId: string) => {
     setSelectedCourseId(courseId)

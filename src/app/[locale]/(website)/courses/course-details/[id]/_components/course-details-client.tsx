@@ -20,10 +20,10 @@ import {
   Users,
 } from "lucide-react"
 import Image from "next/image"
-import { useParams } from "next/navigation"
+import DOMPurify from "dompurify"
 import { useEffect, useState } from "react"
 import SectionItem from "./section-item"
-import { truncateText } from "@/helpers/word-cut"
+import truncate from "truncate-html"
 
 type CourseDetailsClientProps = {
   course: Course
@@ -37,6 +37,11 @@ export default function CourseDetailsClient({
   const [halfStar, setHalfStar] = useState(false)
   const [restStars, setRestStars] = useState(5)
   const [showAll, setShowAll] = useState<boolean>(false)
+  const cleanHtml = DOMPurify.sanitize(course?.detailed_description || "")
+
+  const html = showAll
+  ? cleanHtml
+  : truncate(cleanHtml, 1000)
 
   useEffect(() => {
     course?.rating_avg || 0 - Math.floor(course?.rating_avg || 0) >= 0.5
@@ -165,9 +170,9 @@ export default function CourseDetailsClient({
           <section className="my-10">
             <h2 className="font-semibold text-2xl">Description:</h2>
             <div
-              className="mt-4 text-[#333] text-sm"
+              className="prose mt-4 text-[#333] text-sm"
               dangerouslySetInnerHTML={{
-                __html: showAll ? truncateText(course?.detailed_description) : truncateText(course?.detailed_description, 4000),
+                __html: DOMPurify.sanitize(html),
               }}
             />
             {course?.detailed_description.length > 4000 && (
@@ -177,7 +182,6 @@ export default function CourseDetailsClient({
             )}
           </section>
         </div>
-
         <section className="lg:max-w-[350px] w-full lg:p-4 mt-5 lg:-mt-60 lg:shadow-2xl bg-white lg:sticky top-2 flex-1 rounded-sm">
           <div className={`relative rounded-sm h-[300px] lg:h-[175px]`}>
             <Image

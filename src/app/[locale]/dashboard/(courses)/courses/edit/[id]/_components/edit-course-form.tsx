@@ -203,7 +203,11 @@ export default function EditCourseForm() {
       return response.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["courses"] })
+      if(course?.published){
+        queryClient.invalidateQueries({ queryKey: ["published-courses"] })
+      }else{
+        queryClient.invalidateQueries({ queryKey: ["non-published-courses"] })
+      }
       router.push("/dashboard/courses")
       toast.success(t("Dashboard.addCourse.editSuccessMessage"))
     },

@@ -53,7 +53,7 @@ export default function LoginForm() {
       router.replace("/")
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        if (err.response?.status === 422)
+        if (err.response?.status === 422 || err.response?.status === 401)
           toast.error(t("login.errors.invalidCredentials"))
         else toast.error(t("genericError"))
         setLoad(false)
