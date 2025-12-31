@@ -124,10 +124,10 @@ export default function DataTable({
   }
 
   return (
-    <div className="block px-2 py-2 bg-white rounded-md">
+    <div className="block bg-white rounded-md">
       <Table>
         <TableHeader>
-          <TableRow>
+          <TableRow className="p-2">
             <TableHead className="text-start">#</TableHead>
             {tableHeaders.map((header) => (
               <TableHead className="text-start" key={header.key}>
@@ -154,7 +154,7 @@ export default function DataTable({
               </TableRow>
             ))
           ) : data.length === 0 ? (
-            <TableRow>
+            <TableRow className="p-2">
               <TableCell
                 colSpan={tableHeaders.length + 1}
                 className="text-center"

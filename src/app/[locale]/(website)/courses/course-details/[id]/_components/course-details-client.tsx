@@ -64,7 +64,7 @@ export default function CourseDetailsClient({
             </p>
             <p className="mt-10 text-xs">
               <span className="flex gap-2 items-center">
-                <User size={18} /> Created by {course?.instructor}
+                <User size={18} /> Created by {course?.instructor.name}
               </span>
               <span className="flex gap-2 mt-4 items-center">
                 <OctagonAlert size={18} /> Last Updated{" "}

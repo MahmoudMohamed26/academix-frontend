@@ -32,7 +32,7 @@ export default function SingleCourse({ grid, course }: SingleCourseProps) {
             <p className="text-sm text-[#666] mt-2">
               {course.short_description}
             </p>
-            <p className="text-xs mt-2 text-[#666]">{course.instructor}</p>
+            <p className="text-xs mt-2 text-[#666]">{course.instructor.name}</p>
           </div>
           <div className={`${grid ? "mt-auto" : "mt-auto"}`}>
             <div className="flex gap-2 flex-wrap mt-8 text-[#333]">

@@ -1,3 +1,5 @@
+import { User } from "./user"
+
 export interface Course {
   id: string
   title: string
@@ -5,7 +7,7 @@ export interface Course {
   category_ar: string
   short_description: string
   detailed_description: string
-  instructor: string
+  instructor: User
   level: "beginner" | "intermediate" | "advanced"
   hours: number
   price: number
