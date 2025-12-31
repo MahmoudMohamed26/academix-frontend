@@ -8,7 +8,12 @@ import {
   BadgeCheck,
   BookText,
   Clock,
+  Facebook,
+  Github,
   Heart,
+  Instagram,
+  Linkedin,
+  Link as LinkIcon,
   MonitorPlay,
   OctagonAlert,
   Presentation,
@@ -20,11 +25,12 @@ import {
   Users,
 } from "lucide-react"
 import Image from "next/image"
-import DOMPurify from "dompurify"
 import { useEffect, useState } from "react"
 import SectionItem from "./section-item"
 import truncate from "truncate-html"
 import createDOMPurify from "dompurify"
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
+import Link from "next/link"
 
 type CourseDetailsClientProps = {
   course: Course
@@ -40,9 +46,7 @@ export default function CourseDetailsClient({
   const [showAll, setShowAll] = useState<boolean>(false)
   const [cleanHtml, setCleanHtml] = useState("")
 
-  const html = showAll
-  ? cleanHtml
-  : truncate(cleanHtml, 1000)
+  const html = showAll ? cleanHtml : truncate(cleanHtml, 1000)
 
   useEffect(() => {
     course?.rating_avg || 0 - Math.floor(course?.rating_avg || 0) >= 0.5
@@ -54,9 +58,7 @@ export default function CourseDetailsClient({
 
     if (typeof window !== "undefined") {
       const DOMPurify = createDOMPurify(window)
-      setCleanHtml(
-        DOMPurify.sanitize(course?.detailed_description || "")
-      )
+      setCleanHtml(DOMPurify.sanitize(course?.detailed_description || ""))
     }
   }, [course])
 
@@ -158,7 +160,7 @@ export default function CourseDetailsClient({
           </section>
 
           <section className="mt-10">
-            <h2 className="font-semibold text-2xl">Course Content</h2>
+            <h2 className="font-semibold text-2xl">Course Content:</h2>
             <div className="mt-5">
               <p className="text-[#333] text-sm mb-2">
                 {course?.sections_count} Sections • {course?.lectures_count}{" "}
@@ -184,12 +186,74 @@ export default function CourseDetailsClient({
               }}
             />
             {course?.detailed_description.length > 4000 && (
-              <button onClick={() => setShowAll((prev) => !prev)} className="mt-2 py-2 px-4 bg-orange-100 text-(--main-color) text-sm cursor-pointer rounded-sm">
+              <button
+                onClick={() => setShowAll((prev) => !prev)}
+                className="mt-2 py-2 px-4 bg-orange-100 text-(--main-color) text-sm cursor-pointer rounded-sm"
+              >
                 {showAll ? "Show less" : "Show all"}
               </button>
             )}
           </section>
+
+          <section className="mt-10">
+            <h2 className="font-semibold text-2xl">Instructor:</h2>
+            <div className="mt-5 flex gap-5">
+              <Link href={`/user/${course.instructor.id}`}>
+                <Avatar className="w-16 h-16">
+                  <AvatarImage src={course.instructor.avatar_url as any} />
+                </Avatar>
+              </Link>
+              <div>
+                <p className="text-[#333] font-semibold">
+                  {course.instructor.name}
+                </p>
+                <ul className="flex gap-2 mt-2 text-[#666]">
+                  {course.instructor.links.personalSite && (
+                    <li className="relative group">
+                      <span className="absolute py-1 px-3 bg-[#333] text-white -top-5">Personal site</span>
+                      <Link href={`${course.instructor.links.personalSite}`}>
+                        <LinkIcon size={16} />
+                      </Link>
+                    </li>
+                  )}
+                  {course.instructor.links.github && (
+                    <li className="relative group">
+                      <span className="absolute left-1/2 before:hidden hidden group-hover:block group-hover:before:block -translate-x-1/2 py-1 px-3 bg-[#333] text-white -top-8 text-[10px] rounded-sm before:absolute before:w-0 before:h-0 before:border-7 before:border-t-[#333] before:top-[23px] before:left-1/2 before:-translate-x-1/2 before:border-b-transparent before:border-l-transparent before:border-r-transparent w-fit whitespace-nowrap">github</span>
+                      <Link href={`${course.instructor.links.github}`}>
+                        <Github size={16} />
+                      </Link>
+                    </li>
+                  )}
+                  {course.instructor.links.linkedin && (
+                    <li className="relative group">
+                      <span className="absolute left-1/2 before:hidden hidden group-hover:block group-hover:before:block -translate-x-1/2 py-1 px-3 bg-[#333] text-white -top-8 text-[10px] rounded-sm before:absolute before:w-0 before:h-0 before:border-7 before:border-t-[#333] before:top-[23px] before:left-1/2 before:-translate-x-1/2 before:border-b-transparent before:border-l-transparent before:border-r-transparent w-fit whitespace-nowrap">linkedin</span>
+                      <Link href={`${course.instructor.links.linkedin}`}>
+                        <Linkedin size={16} />
+                      </Link>
+                    </li>
+                  )}
+                  {course.instructor.links.facebook && (
+                    <li className="relative group">
+                      <span className="absolute left-1/2 before:hidden hidden group-hover:block group-hover:before:block -translate-x-1/2 py-1 px-3 bg-[#333] text-white -top-8 text-[10px] rounded-sm before:absolute before:w-0 before:h-0 before:border-7 before:border-t-[#333] before:top-[23px] before:left-1/2 before:-translate-x-1/2 before:border-b-transparent before:border-l-transparent before:border-r-transparent w-fit whitespace-nowrap">facebook</span>
+                      <Link href={`${course.instructor.links.facebook}`}>
+                        <Facebook size={16} />
+                      </Link>
+                    </li>
+                  )}
+                  {course.instructor.links.instagram && (
+                    <li className="relative group">
+                      <span className="absolute left-1/2 before:hidden hidden group-hover:block group-hover:before:block -translate-x-1/2 py-1 px-3 bg-[#333] text-white -top-8 text-[10px] rounded-sm before:absolute before:w-0 before:h-0 before:border-7 before:border-t-[#333] before:top-[23px] before:left-1/2 before:-translate-x-1/2 before:border-b-transparent before:border-l-transparent before:border-r-transparent w-fit whitespace-nowrap">instagram</span>
+                      <Link href={`${course.instructor.links.instagram}`}>
+                        <Instagram size={16} />
+                      </Link>
+                    </li>
+                  )}
+                </ul>
+              </div>
+            </div>
+          </section>
         </div>
+
         <section className="lg:max-w-[350px] w-full lg:p-4 mt-5 lg:-mt-60 lg:shadow-2xl bg-white lg:sticky top-2 flex-1 rounded-sm">
           <div className={`relative rounded-sm h-[300px] lg:h-[175px]`}>
             <Image

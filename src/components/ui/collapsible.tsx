@@ -11,6 +11,7 @@ function CollapsibleTrigger({
 }: React.ComponentProps<typeof CollapsiblePrimitive.CollapsibleTrigger>) {
   return (
     <CollapsiblePrimitive.CollapsibleTrigger
+    suppressHydrationWarning
       data-slot="collapsible-trigger"
       {...props}
     />
