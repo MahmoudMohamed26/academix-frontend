@@ -24,6 +24,7 @@ import DOMPurify from "dompurify"
 import { useEffect, useState } from "react"
 import SectionItem from "./section-item"
 import truncate from "truncate-html"
+import createDOMPurify from "dompurify"
 
 type CourseDetailsClientProps = {
   course: Course
@@ -37,7 +38,7 @@ export default function CourseDetailsClient({
   const [halfStar, setHalfStar] = useState(false)
   const [restStars, setRestStars] = useState(5)
   const [showAll, setShowAll] = useState<boolean>(false)
-  const cleanHtml = DOMPurify.sanitize(course?.detailed_description || "")
+  const [cleanHtml, setCleanHtml] = useState("")
 
   const html = showAll
   ? cleanHtml
@@ -50,6 +51,13 @@ export default function CourseDetailsClient({
     halfStar
       ? setRestStars(5 - Math.floor(course?.rating_avg || 0) - 1)
       : setRestStars(5 - Math.floor(course?.rating_avg || 0))
+
+    if (typeof window !== "undefined") {
+      const DOMPurify = createDOMPurify(window)
+      setCleanHtml(
+        DOMPurify.sanitize(course?.detailed_description || "")
+      )
+    }
   }, [course])
 
   return (
@@ -172,7 +180,7 @@ export default function CourseDetailsClient({
             <div
               className="prose mt-4 text-[#333] text-sm"
               dangerouslySetInnerHTML={{
-                __html: DOMPurify.sanitize(html),
+                __html: html,
               }}
             />
             {course?.detailed_description.length > 4000 && (
