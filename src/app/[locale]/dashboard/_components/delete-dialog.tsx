@@ -45,9 +45,9 @@ export default function DeleteDialog({
         <DialogHeader>
           <DialogTitle>
             {type === "categories"
-              ? t("Dashboard.deleteDialog.confirmDeleteTitle")
+              ? t("Dashboard.deleteDialog.confirmDeleteTitleCategory")
               : type === "courses"
-              ? t("Dashboard.deleteDialog.confirmDeleteTitle")
+              ? t("Dashboard.deleteDialog.confirmDeleteTitleCourse")
               : type === "pending-courses"
               ? t("Dashboard.deleteDialog.confirmDeleteTitlePendingCourses")
               : ""}
