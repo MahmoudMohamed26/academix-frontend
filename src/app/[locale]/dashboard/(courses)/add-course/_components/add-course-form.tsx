@@ -33,7 +33,7 @@ import { ListPlugin } from "@lexical/react/LexicalListPlugin"
 import { LinkNode } from "@lexical/link"
 import { $generateHtmlFromNodes } from "@lexical/html"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
-import ToolbarPlugin from "../../../../../../components/tool-bar-plugin"
+import ToolbarPlugin from "@/components/tool-bar-plugin"
 
 const editorConfig = {
   namespace: "CourseEditor",
@@ -154,7 +154,7 @@ export default function AddCourseForm() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["non-published-courses"] })
-      form.resetForm()
+      // form.resetForm()
       setImagePreview("")
       setImageFile(null)
       toast.success(t("Dashboard.addCourse.successMessage"))
