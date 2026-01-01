@@ -12,6 +12,7 @@ export interface Course {
   hours: number
   price: number
   lectures_count: number
+  video_url: string
   sections_count: number
   enrollments_count: number
   image: string
@@ -50,6 +51,7 @@ export interface CourseFormData {
   short_description: string
   image: string
   price: number
+  video_url: string
   hours: number
   level: string
   category_slug: string

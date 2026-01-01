@@ -215,6 +215,8 @@
       "sectionTitle": "Section",
       "sectionNameLabel": "Section Title",
       "sectionNamePlaceholder": "Enter section title",
+      "video_urlPlaceholder": "Enter video url",
+      "video_url": "Preview video link",
       "addSectionButton": "Add Section",
       "removeSectionButton": "Remove Section",
       "saveSectionButton": "Save Section",

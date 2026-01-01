@@ -34,6 +34,7 @@ import { LinkNode } from "@lexical/link"
 import { $generateHtmlFromNodes } from "@lexical/html"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import ToolbarPlugin from "@/components/tool-bar-plugin"
+import { useRouter } from "next/navigation"
 
 const editorConfig = {
   namespace: "CourseEditor",
@@ -70,8 +71,8 @@ function HtmlPlugin({ onChange }: { onChange: (html: string) => void }) {
       onChange={(editorState) => {
         editorState.read(() => {
           const html = $generateHtmlFromNodes(editor, null)
-          const textContent = html.replace(/<[^>]*>/g, '').trim()
-          const cleanHtml = textContent ? html : ''
+          const textContent = html.replace(/<[^>]*>/g, "").trim()
+          const cleanHtml = textContent ? html : ""
           onChange(cleanHtml)
         })
       }}
@@ -86,6 +87,7 @@ export default function AddCourseForm() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [imagePreview, setImagePreview] = useState<string>("")
   const [imageFile, setImageFile] = useState<File | null>(null)
+  const router = useRouter()
 
   const validationSchema = Yup.object({
     title: Yup.string().required(t("Dashboard.addCourse.requiredNameError")),
@@ -106,6 +108,9 @@ export default function AddCourseForm() {
       .min(0.1, t("Dashboard.addCourse.minHoursError")),
     level: Yup.string().required(t("Dashboard.addCourse.requiredLevelError")),
     image: Yup.mixed(),
+    video_url: Yup.string()
+      .url(t("Dashboard.SectionContent.videoUrlInvalid"))
+      .required(t("Dashboard.SectionContent.videoUrlRequired")),
   })
 
   const form = useFormik<CourseFormData>({
@@ -115,6 +120,7 @@ export default function AddCourseForm() {
       detailed_description: "",
       image: "",
       price: 0,
+      video_url: "",
       hours: 0,
       level: "beginner",
       category_slug: "none",
@@ -138,6 +144,7 @@ export default function AddCourseForm() {
       formData.append("detailed_description", values.detailed_description)
       formData.append("price", values.price.toString())
       formData.append("hours", values.hours.toString())
+      formData.append("video_url", values.video_url)
       formData.append("level", values.level)
       formData.append("category_slug", values.category_slug.toString())
 
@@ -152,11 +159,10 @@ export default function AddCourseForm() {
       })
       return response.data
     },
-    onSuccess: () => {
+    onSuccess: (res) => {
       queryClient.invalidateQueries({ queryKey: ["non-published-courses"] })
-      // form.resetForm()
-      setImagePreview("")
-      setImageFile(null)
+      const id = res.data.course.id
+      router.replace(`/dashboard/courses/sections/${id}`)
       toast.success(t("Dashboard.addCourse.successMessage"))
     },
     onError: (error) => {
@@ -451,6 +457,13 @@ export default function AddCourseForm() {
                 </div>
               </div>
 
+              <Input
+                formik={form as any}
+                placeholder={t("Dashboard.addCourse.video_urlPlaceholder")}
+                label={t("Dashboard.addCourse.video_url")}
+                name="video_url"
+              />
+
               <label className="text-sm text-gray-700 font-[501]">
                 {t("Dashboard.addCourse.shortDescriptionLabel")}
               </label>
@@ -493,7 +506,7 @@ export default function AddCourseForm() {
                   <div className="relative">
                     <RichTextPlugin
                       contentEditable={
-                        <ContentEditable 
+                        <ContentEditable
                           className="min-h-[400px] outline-none p-4 text-sm"
                           onBlur={handleEditorBlur}
                         />

@@ -167,6 +167,7 @@ export default function EditCourseForm() {
       short_description: course?.short_description || "",
       detailed_description: course?.detailed_description || "",
       image: course?.image || "",
+      video_url: course?.video_url || "",
       price: course?.price || 0,
       hours: course?.hours || 0,
       level: course?.level || "beginner",

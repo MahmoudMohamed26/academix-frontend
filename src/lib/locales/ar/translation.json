@@ -220,6 +220,8 @@
       "sectionTitle": "القسم",
       "sectionNameLabel": "عنوان القسم",
       "sectionNamePlaceholder": "ادخل عنوان القسم",
+      "video_urlPlaceholder": "ادخل رابط الفيديو",
+      "video_url": "رابط فيديو العرض",
       "addSectionButton": "إضافة قسم",
       "removeSectionButton": "إزالة قسم",
       "saveSectionButton": "حفظ القسم",
