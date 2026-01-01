@@ -46,6 +46,14 @@ export type Links = {
   }
 }
 
+export type ShowLinks = {
+  personalSite: string
+  facebook: string
+  github: string
+  linkedin: string
+  instagram: string
+}
+
 export type ProfileAvatar = {
   avatar: string | null
 }

@@ -13,6 +13,7 @@ export interface Course {
   price: number
   lectures_count: number
   sections_count: number
+  enrollments_count: number
   image: string
   published: boolean
   rating_avg: number

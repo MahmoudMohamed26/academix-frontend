@@ -53,7 +53,7 @@ export default function SectionItem({ section, last }: SectionItemProbs) {
             <span>{content.title}</span>
           </p>
           <p>
-            {content.type === "lecture" ? <span>{content.duration} minute</span> : <span>30 minute quiz</span>}
+            {content.type === "lecture" ? <span>{content.duration} minute</span> : <span>{content.time_limit} minute quiz</span>}
           </p>
         </li>
       ))}

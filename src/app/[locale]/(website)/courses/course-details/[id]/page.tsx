@@ -1,7 +1,7 @@
 import { getCourse } from "@/lib/api/Courses"
 import { getServerAxios } from "@/lib/axios-server"
+import { getSections } from "@/lib/api/Sections"
 import CourseDetailsClient from "./_components/course-details-client";
-import { getSections } from "@/lib/api/Sections";
 
 export default async function CourseDetailsPage({
   params,
@@ -15,7 +15,5 @@ export default async function CourseDetailsPage({
 
   const sections = await getSections(axiosInstance, id)
 
-  return (
-      <CourseDetailsClient course={course} sections={sections} />
-  )
+  return <CourseDetailsClient course={course} sections={sections} />
 }

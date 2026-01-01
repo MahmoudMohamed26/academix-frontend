@@ -8,12 +8,7 @@ import {
   BadgeCheck,
   BookText,
   Clock,
-  Facebook,
-  Github,
   Heart,
-  Instagram,
-  Linkedin,
-  Link as LinkIcon,
   MonitorPlay,
   OctagonAlert,
   Presentation,
@@ -26,11 +21,13 @@ import {
 } from "lucide-react"
 import Image from "next/image"
 import { useEffect, useState } from "react"
-import SectionItem from "./section-item"
 import truncate from "truncate-html"
 import createDOMPurify from "dompurify"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import Link from "next/link"
+import ShowLinks from "@/components/ShowLinks"
+import ShowLinksComponent from "@/components/ShowLinks"
+import SectionItem from "./section-item"
 
 type CourseDetailsClientProps = {
   course: Course
@@ -135,11 +132,11 @@ export default function CourseDetailsClient({
                 </li>
                 <li className="flex items-center gap-4">
                   <SectionIcon size={16} />
-                  <span>{course?.sections_count} Section</span>
+                  <span>{course?.sections_count} Sections</span>
                 </li>
                 <li className="flex items-center gap-4">
                   <MonitorPlay size={16} />
-                  <span>{course?.lectures_count} lecture</span>
+                  <span>{course?.lectures_count} lectures</span>
                 </li>
               </ul>
               <ul className="space-y-4 text-[#333] mt-4 sm:mt-0">
@@ -149,7 +146,7 @@ export default function CourseDetailsClient({
                 </li>
                 <li className="flex items-center gap-4">
                   <Users size={16} />
-                  <span>113 Enrolled students</span>
+                  <span>{course.enrollments_count} Enrolled students</span>
                 </li>
                 <li className="flex items-center gap-4">
                   <Trophy size={16} />
@@ -198,7 +195,7 @@ export default function CourseDetailsClient({
           <section className="mt-10">
             <h2 className="font-semibold text-2xl">Instructor:</h2>
             <div className="mt-5 flex gap-5">
-              <Link href={`/user/${course.instructor.id}`}>
+              <Link href={`/instructors/${course.instructor.id}`}>
                 <Avatar className="w-16 h-16">
                   <AvatarImage src={course.instructor.avatar_url as any} />
                 </Avatar>
@@ -207,48 +204,7 @@ export default function CourseDetailsClient({
                 <p className="text-[#333] font-semibold">
                   {course.instructor.name}
                 </p>
-                <ul className="flex gap-2 mt-2 text-[#666]">
-                  {course.instructor.links.personalSite && (
-                    <li className="relative group">
-                      <span className="absolute py-1 px-3 bg-[#333] text-white -top-5">Personal site</span>
-                      <Link href={`${course.instructor.links.personalSite}`}>
-                        <LinkIcon size={16} />
-                      </Link>
-                    </li>
-                  )}
-                  {course.instructor.links.github && (
-                    <li className="relative group">
-                      <span className="absolute left-1/2 before:hidden hidden group-hover:block group-hover:before:block -translate-x-1/2 py-1 px-3 bg-[#333] text-white -top-8 text-[10px] rounded-sm before:absolute before:w-0 before:h-0 before:border-7 before:border-t-[#333] before:top-[23px] before:left-1/2 before:-translate-x-1/2 before:border-b-transparent before:border-l-transparent before:border-r-transparent w-fit whitespace-nowrap">github</span>
-                      <Link href={`${course.instructor.links.github}`}>
-                        <Github size={16} />
-                      </Link>
-                    </li>
-                  )}
-                  {course.instructor.links.linkedin && (
-                    <li className="relative group">
-                      <span className="absolute left-1/2 before:hidden hidden group-hover:block group-hover:before:block -translate-x-1/2 py-1 px-3 bg-[#333] text-white -top-8 text-[10px] rounded-sm before:absolute before:w-0 before:h-0 before:border-7 before:border-t-[#333] before:top-[23px] before:left-1/2 before:-translate-x-1/2 before:border-b-transparent before:border-l-transparent before:border-r-transparent w-fit whitespace-nowrap">linkedin</span>
-                      <Link href={`${course.instructor.links.linkedin}`}>
-                        <Linkedin size={16} />
-                      </Link>
-                    </li>
-                  )}
-                  {course.instructor.links.facebook && (
-                    <li className="relative group">
-                      <span className="absolute left-1/2 before:hidden hidden group-hover:block group-hover:before:block -translate-x-1/2 py-1 px-3 bg-[#333] text-white -top-8 text-[10px] rounded-sm before:absolute before:w-0 before:h-0 before:border-7 before:border-t-[#333] before:top-[23px] before:left-1/2 before:-translate-x-1/2 before:border-b-transparent before:border-l-transparent before:border-r-transparent w-fit whitespace-nowrap">facebook</span>
-                      <Link href={`${course.instructor.links.facebook}`}>
-                        <Facebook size={16} />
-                      </Link>
-                    </li>
-                  )}
-                  {course.instructor.links.instagram && (
-                    <li className="relative group">
-                      <span className="absolute left-1/2 before:hidden hidden group-hover:block group-hover:before:block -translate-x-1/2 py-1 px-3 bg-[#333] text-white -top-8 text-[10px] rounded-sm before:absolute before:w-0 before:h-0 before:border-7 before:border-t-[#333] before:top-[23px] before:left-1/2 before:-translate-x-1/2 before:border-b-transparent before:border-l-transparent before:border-r-transparent w-fit whitespace-nowrap">instagram</span>
-                      <Link href={`${course.instructor.links.instagram}`}>
-                        <Instagram size={16} />
-                      </Link>
-                    </li>
-                  )}
-                </ul>
+                <ShowLinksComponent links={course.instructor.links} />
               </div>
             </div>
           </section>
