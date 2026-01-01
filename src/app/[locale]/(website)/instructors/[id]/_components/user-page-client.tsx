@@ -61,11 +61,11 @@ export default function UserPageClient() {
               highlightColor="#3a3a3a"
             />
           ) : (
-            <h1 className="text-4xl font-bold">{instructor?.name}</h1>
+            <h1 className="text-4xl text-center sm:text-start font-bold">{instructor?.name}</h1>
           )}
         </div>
       </div>
-      <div className="flex justify-between gap-10 container">
+      <div className="flex justify-between flex-col-reverse sm:flex-row gap-10 container">
         <div className="mt-5 flex-1">
           <SpecialHeader name="Courses" />
           {isLoadingCourses ? (
