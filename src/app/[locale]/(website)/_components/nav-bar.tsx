@@ -144,7 +144,7 @@ export default function NavBar() {
               <DropdownMenuTrigger suppressHydrationWarning className="cursor-pointer">
                 <Avatar className="outline-none!">
                   <AvatarImage
-                    className="rounded-full h-8 w-8 outline-none! bg-gray-100"
+                    className="rounded-full h-8 w-8 outline-none!"
                     src={user?.avatar_url as any}
                   />
                   <AvatarFallback>

@@ -111,7 +111,6 @@ export default function UserPageClient() {
               <AvatarImage src={instructor?.avatar_url as any} />
               <AvatarFallback>
                 <img
-                  className="rounded-full h-8 w-8"
                   src={avatarFallbackImage.src}
                   alt="avatar fall back image"
                 />

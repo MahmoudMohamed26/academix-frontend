@@ -23,11 +23,11 @@ import Image from "next/image"
 import { useEffect, useState } from "react"
 import truncate from "truncate-html"
 import createDOMPurify from "dompurify"
-import { Avatar, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import Link from "next/link"
-import ShowLinks from "@/components/ShowLinks"
 import ShowLinksComponent from "@/components/ShowLinks"
 import SectionItem from "./section-item"
+import avatarImg from "@/assets/avatar.webp"
 
 type CourseDetailsClientProps = {
   course: Course
@@ -198,13 +198,18 @@ export default function CourseDetailsClient({
               <Link href={`/instructors/${course.instructor.id}`}>
                 <Avatar className="w-16 h-16">
                   <AvatarImage src={course.instructor.avatar_url as any} />
+                  <AvatarFallback>
+                    <img src={avatarImg.src as any} alt="avatar fall back" />
+                  </AvatarFallback>
                 </Avatar>
               </Link>
               <div>
                 <p className="text-[#333] font-semibold">
                   {course.instructor.name}
                 </p>
-                <ShowLinksComponent links={course.instructor.links} />
+                {course.instructor.links && (
+                  <ShowLinksComponent links={course.instructor.links} />
+                )}
               </div>
             </div>
           </section>
