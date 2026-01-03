@@ -13,7 +13,5 @@ export default async function CourseDetailsPage({
 
   const course = await getCourse(axiosInstance, id)
 
-  const sections = await getSections(axiosInstance, id)
-
-  return <CourseDetailsClient course={course} sections={sections} />
+  return <CourseDetailsClient course={course} />
 }

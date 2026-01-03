@@ -28,22 +28,25 @@ import Link from "next/link"
 import ShowLinksComponent from "@/components/ShowLinks"
 import SectionItem from "./section-item"
 import avatarImg from "@/assets/avatar.webp"
+import { useQuery } from "@tanstack/react-query"
+import { getSections } from "@/lib/api/Sections"
+import useAxios from "@/hooks/useAxios"
+import Skeleton from "react-loading-skeleton"
 
-type CourseDetailsClientProps = {
-  course: Course
-  sections: Section[]
-}
-
-export default function CourseDetailsClient({
-  course,
-  sections,
-}: CourseDetailsClientProps) {
+export default function CourseDetailsClient({ course }: { course: Course }) {
   const [halfStar, setHalfStar] = useState(false)
   const [restStars, setRestStars] = useState(5)
   const [showAll, setShowAll] = useState<boolean>(false)
   const [cleanHtml, setCleanHtml] = useState("")
+  const Axios = useAxios()
 
   const html = showAll ? cleanHtml : truncate(cleanHtml, 1000)
+
+  const { data: sections, isLoading: sectionsLoading } = useQuery({
+    queryKey: ["sections", course.id],
+    queryFn: () => getSections(Axios, course.id),
+    staleTime: 10 * 60 * 1000,
+  })
 
   useEffect(() => {
     course?.rating_avg || 0 - Math.floor(course?.rating_avg || 0) >= 0.5
@@ -163,14 +166,18 @@ export default function CourseDetailsClient({
                 {course?.sections_count} Sections • {course?.lectures_count}{" "}
                 Lectures
               </p>
-              {sections.map((section, index) => (
-                <div key={section.id}>
-                  <SectionItem
-                    last={sections.length - 1 === index}
-                    section={section}
-                  />
-                </div>
-              ))}
+              {sectionsLoading ? (
+                <Skeleton className="w-full! h-[400px]" />
+              ) : (
+                sections?.map((section, index) => (
+                  <div key={section.id}>
+                    <SectionItem
+                      last={sections.length - 1 === index}
+                      section={section}
+                    />
+                  </div>
+                ))
+              )}
             </div>
           </section>
 

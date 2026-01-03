@@ -38,6 +38,7 @@ export default function SectionsForm() {
   const { data, isLoading } = useQuery({
     queryKey: ["sections", id],
     queryFn: () => getSections(Axios, id),
+    staleTime: 10 * 60 * 1000,
   })
 
   useEffect(() => {

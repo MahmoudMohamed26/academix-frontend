@@ -119,6 +119,7 @@ export default function EditCourseForm() {
   const { data: categories, isLoading: categoriesLoading } = useQuery({
     queryKey: ["categories"],
     queryFn: () => getCategories(Axios),
+    staleTime: 10 * 60 * 1000,
   })
 
   const { data: course, isLoading } = useQuery({
