@@ -32,12 +32,14 @@ import { useQuery } from "@tanstack/react-query"
 import { getSections } from "@/lib/api/Sections"
 import useAxios from "@/hooks/useAxios"
 import Skeleton from "react-loading-skeleton"
+import ReviewsDialog from "./reviews-dialog"
 
 export default function CourseDetailsClient({ course }: { course: Course }) {
   const [halfStar, setHalfStar] = useState(false)
   const [restStars, setRestStars] = useState(5)
   const [showAll, setShowAll] = useState<boolean>(false)
   const [cleanHtml, setCleanHtml] = useState("")
+  const [openReviews, setOpenReviews] = useState<boolean>(false)
   const Axios = useAxios()
 
   const html = showAll ? cleanHtml : truncate(cleanHtml, 1000)
@@ -64,7 +66,7 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
 
   return (
     <>
-      <div className="bg-[#17161C] pt-5 pb-20">
+      <div className="bg-[#17161C] pt-5 pb-5 lg:pb-20">
         <div className="container text-white">
           <Breadcrumb textColor="main" />
           <div className="w-full lg:max-w-[600px] xl:max-w-[800px]">
@@ -220,6 +222,41 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
               </div>
             </div>
           </section>
+
+          <section className="mt-10">
+            <h2 className="font-semibold text-2xl">Reviews:</h2>
+            <div className="mt-5 flex gap-5">
+              <button
+                onClick={() => setOpenReviews((prev) => !prev)}
+                className="cursor-pointer w-full outline-none bg-gray-50 rounded-md py-5 flex justify-center flex-col gap-2 hover:bg-gray-100"
+              >
+                <p className="text-5xl font-bold">
+                  {course?.rating_avg.toFixed(1)}
+                </p>
+                <div className="flex justify-center gap-1">
+                  {Array.from({
+                    length: Math.floor(course?.rating_avg || 0),
+                  }).map((_, index) => (
+                    <Star
+                      key={index}
+                      fill="#C67514"
+                      color="#C67514"
+                      size={12}
+                    />
+                  ))}
+                  {halfStar && (
+                    <StarHalf fill="#C67514" color="#C67514" size={12} />
+                  )}
+                  {Array.from({ length: restStars }).map((_, index) => (
+                    <Star key={index} color="#C67514" size={12} />
+                  ))}
+                </div>
+                <p className="text-sm underline text-[#666]">
+                  {course?.rating_counts} Reviews
+                </p>
+              </button>
+            </div>
+          </section>
         </div>
 
         <section className="lg:max-w-[350px] w-full lg:p-4 mt-5 lg:-mt-60 lg:shadow-2xl bg-white lg:sticky top-2 flex-1 rounded-sm">
@@ -265,6 +302,8 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
           </p>
         </section>
       </div>
+
+      <ReviewsDialog course={course} open={openReviews} setOpen={setOpenReviews} />
     </>
   )
 }
