@@ -1,16 +1,12 @@
 "use client"
 
-import Breadcrumb from "@/components/BreadCrumb"
 import { Course } from "@/lib/types/course"
-import { Section } from "@/lib/types/section"
-import { formatDate } from "date-fns"
 import {
   BadgeCheck,
   BookText,
   Clock,
   Heart,
   MonitorPlay,
-  OctagonAlert,
   Presentation,
   Section as SectionIcon,
   Star,
@@ -33,16 +29,36 @@ import { getSections } from "@/lib/api/Sections"
 import useAxios from "@/hooks/useAxios"
 import Skeleton from "react-loading-skeleton"
 import ReviewsDialog from "./reviews-dialog"
+import { getCourse } from "@/lib/api/Courses"
+import { useTranslation } from "react-i18next"
 
-export default function CourseDetailsClient({ course }: { course: Course }) {
-  const [halfStar, setHalfStar] = useState(false)
-  const [restStars, setRestStars] = useState(5)
+const getStarDisplay = (rating: number) => {
+  const fullStars = Math.floor(rating)
+  const hasHalfStar = rating - fullStars >= 0.5
+  const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0)
+
+  return { fullStars, hasHalfStar, emptyStars }
+}
+
+export default function CourseDetailsClient({
+  course: initialCourse,
+}: {
+  course: Course
+}) {
   const [showAll, setShowAll] = useState<boolean>(false)
+  const { t, i18n } = useTranslation()
   const [cleanHtml, setCleanHtml] = useState("")
   const [openReviews, setOpenReviews] = useState<boolean>(false)
   const Axios = useAxios()
 
   const html = showAll ? cleanHtml : truncate(cleanHtml, 1000)
+
+  const { data: course } = useQuery({
+    queryKey: ["course", initialCourse.id],
+    queryFn: () => getCourse(Axios, initialCourse.id),
+    initialData: initialCourse,
+    staleTime: 10 * 60 * 1000,
+  })
 
   const { data: sections, isLoading: sectionsLoading } = useQuery({
     queryKey: ["sections", course.id],
@@ -51,42 +67,20 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
   })
 
   useEffect(() => {
-    course?.rating_avg || 0 - Math.floor(course?.rating_avg || 0) >= 0.5
-      ? setHalfStar(true)
-      : setHalfStar(false)
-    halfStar
-      ? setRestStars(5 - Math.floor(course?.rating_avg || 0) - 1)
-      : setRestStars(5 - Math.floor(course?.rating_avg || 0))
-
     if (typeof window !== "undefined") {
       const DOMPurify = createDOMPurify(window)
       setCleanHtml(DOMPurify.sanitize(course?.detailed_description || ""))
     }
   }, [course])
 
+  const { fullStars, hasHalfStar, emptyStars } = getStarDisplay(
+    course?.rating_avg || 0
+  )
+
+  console.log(course)
+
   return (
     <>
-      <div className="bg-[#17161C] pt-5 pb-5 lg:pb-20">
-        <div className="container text-white">
-          <Breadcrumb textColor="main" />
-          <div className="w-full lg:max-w-[600px] xl:max-w-[800px]">
-            <h1 className="text-4xl font-semibold">{course?.title}</h1>
-            <p className="mt-5 text-[oklch(100%_0_0)]">
-              {course?.short_description}
-            </p>
-            <p className="mt-10 text-xs">
-              <span className="flex gap-2 items-center">
-                <User size={18} /> Created by {course?.instructor.name}
-              </span>
-              <span className="flex gap-2 mt-4 items-center">
-                <OctagonAlert size={18} /> Last Updated{" "}
-                {formatDate(course?.updated as any, "MMMM dd, yyyy")}
-              </span>
-            </p>
-          </div>
-        </div>
-      </div>
-
       <div className="container flex flex-col-reverse lg:flex-row lg:gap-0 gap-10 items-start justify-between lg:-mt-12!">
         <div className="xl:w-[800px] lg:w-[623px] w-full">
           <section className="rounded-md justify-between overflow-hidden flex flex-col md:flex-row items-center border bg-white">
@@ -99,16 +93,14 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
                 {course?.rating_avg.toFixed(1)}
               </p>
               <div className="flex gap-1">
-                {Array.from({
-                  length: Math.floor(course?.rating_avg || 0),
-                }).map((_, index) => (
+                {Array.from({ length: fullStars }).map((_, index) => (
                   <Star key={index} fill="#C67514" color="#C67514" size={12} />
                 ))}
-                {halfStar && (
-                  <StarHalf fill="#C67514" color="#C67514" size={12} />
+                {hasHalfStar && (
+                  <StarHalf className={`${i18n.language === "ar" ? "rotate-180" : ""}`} fill="#C67514" color="#C67514" size={12} />
                 )}
-                {Array.from({ length: restStars }).map((_, index) => (
-                  <Star key={index} color="#C67514" size={12} />
+                {Array.from({ length: emptyStars }).map((_, index) => (
+                  <Star key={`empty-${index}`} color="#C67514" size={12} />
                 ))}
               </div>
               <p className="text-sm underline text-[#666]">
@@ -234,9 +226,7 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
                   {course?.rating_avg.toFixed(1)}
                 </p>
                 <div className="flex justify-center gap-1">
-                  {Array.from({
-                    length: Math.floor(course?.rating_avg || 0),
-                  }).map((_, index) => (
+                  {Array.from({ length: fullStars }).map((_, index) => (
                     <Star
                       key={index}
                       fill="#C67514"
@@ -244,11 +234,11 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
                       size={12}
                     />
                   ))}
-                  {halfStar && (
-                    <StarHalf fill="#C67514" color="#C67514" size={12} />
+                  {hasHalfStar && (
+                    <StarHalf className={`${i18n.language === "ar" ? "rotate-180" : ""}`} fill="#C67514" color="#C67514" size={12} />
                   )}
-                  {Array.from({ length: restStars }).map((_, index) => (
-                    <Star key={index} color="#C67514" size={12} />
+                  {Array.from({ length: emptyStars }).map((_, index) => (
+                    <Star key={`empty-${index}`} color="#C67514" size={12} />
                   ))}
                 </div>
                 <p className="text-sm underline text-[#666]">
@@ -303,7 +293,11 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
         </section>
       </div>
 
-      <ReviewsDialog course={course} open={openReviews} setOpen={setOpenReviews} />
+      <ReviewsDialog
+        course={course}
+        open={openReviews}
+        setOpen={setOpenReviews}
+      />
     </>
   )
 }
