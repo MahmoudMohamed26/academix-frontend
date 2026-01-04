@@ -59,7 +59,7 @@ export default function ReviewsDialog({ course, open, setOpen }: ReviewDialog) {
             Check all reviews for this course
           </DialogDescription>
         </VisuallyHidden>
-        <div className="flex gap-20 max-h-[800px] overflow-y-auto p-5">
+        <div className="flex gap-20 max-h-[800px] overflow-y-auto p-5 pb-0!">
           <div className="flex flex-1 sticky top-0 items-center gap-2 flex-col bg-white">
             <p className="text-5xl font-bold">
               {course?.rating_avg.toFixed(1)}
@@ -81,11 +81,10 @@ export default function ReviewsDialog({ course, open, setOpen }: ReviewDialog) {
               {course?.rating_counts} Reviews
             </p>
 
-            {/* Review Form */}
           </div>
-          <div className="flex-1/2">
+          <div className="relative flex-1/2">
             <ReviewItem />
-            <div className="w-full mt-6 space-y-4">
+            <div className=" py-2 space-y-4 start-0 sticky bg-white bottom-0">
               <div className="flex items-start gap-3">
                 <Avatar className="w-12 h-12">
                   <AvatarImage src={avatarImg.src as any} />
@@ -102,7 +101,7 @@ export default function ReviewsDialog({ course, open, setOpen }: ReviewDialog) {
                       {[1, 2, 3, 4, 5].map((star) => (
                         <Star
                           key={star}
-                          size={24}
+                          size={14}
                           className="cursor-pointer transition-colors"
                           fill={
                             star <= (hoveredStar || formik.values.rate)

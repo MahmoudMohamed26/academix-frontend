@@ -135,7 +135,7 @@ export default function ReviewItem() {
           <h6 className="font-semibold text-sm">Mahmoud Mohamed</h6>
           <p className="text-xs text-[#666]">16 Nov 2025</p>
           <p className="text-sm mt-2">
-            i love this course, i learned alot from it
+            b6a6s
           </p>
         </div>
       </div>
