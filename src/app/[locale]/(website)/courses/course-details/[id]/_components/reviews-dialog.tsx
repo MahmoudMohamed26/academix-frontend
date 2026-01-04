@@ -24,17 +24,6 @@ interface ReviewDialog {
   setOpen: (open: boolean) => void
 }
 
-const reviewSchema = Yup.object({
-  rate: Yup.number()
-    .min(1, "Please select a rating")
-    .max(5, "Rating must be between 1 and 5")
-    .required("Rating is required"),
-  comment: Yup.string()
-    .min(10, "Comment must be at least 10 characters")
-    .max(500, "Comment must not exceed 500 characters")
-    .required("Comment is required"),
-})
-
 const getStarDisplay = (rating: number) => {
   const fullStars = Math.floor(rating)
   const hasHalfStar = rating - fullStars >= 0.5
@@ -49,6 +38,17 @@ export default function ReviewsDialog({ course, open, setOpen }: ReviewDialog) {
   const { t, i18n } = useTranslation()
   const queryClient = useQueryClient()
 
+  const reviewSchema = Yup.object({
+    rate: Yup.number()
+      .min(1, t("courseDetails.ratingRequired"))
+      .max(5, t("courseDetails.ratingRange"))
+      .required(t("courseDetails.ratingRequired")),
+    comment: Yup.string()
+      .min(10, t("courseDetails.commentMinLength"))
+      .max(500, t("courseDetails.commentMaxLength"))
+      .required(t("courseDetails.commentRequired")),
+  })
+
   const { fullStars, hasHalfStar, emptyStars } = getStarDisplay(
     course?.rating_avg || 0
   )
@@ -62,22 +62,18 @@ export default function ReviewsDialog({ course, open, setOpen }: ReviewDialog) {
 
   const mutation = useMutation({
     mutationFn: async (values: { rate: number; comment: string }) => {
-      const response = await Axios.post(
-        `/courses/${course.id}/rating`,
-        values
-      )
+      const response = await Axios.post(`/courses/${course.id}/rating`, values)
       return response.data
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["course", course.id] })
       queryClient.invalidateQueries({ queryKey: ["reviews", course.id] })
       formik.resetForm()
-      toast.success("Review submitted successfully!")
+      toast.success(t("courseDetails.reviewSuccess"))
     },
     onError: (error: any) => {
       const errorMessage =
-        error?.response?.data?.message ||
-        "Failed to submit review. Please try again."
+        error?.response?.data?.message || t("courseDetails.reviewError")
       toast.error(errorMessage)
     },
   })
@@ -104,9 +100,9 @@ export default function ReviewsDialog({ course, open, setOpen }: ReviewDialog) {
         className="md:min-w-[700px] lg:min-w-[800px] p-0!"
       >
         <VisuallyHidden>
-          <DialogTitle>Reviews</DialogTitle>
+          <DialogTitle>{t("courseDetails.reviewsDialogTitle")}</DialogTitle>
           <DialogDescription className="text-sm text-[#666]">
-            Check all reviews for this course
+            {t("courseDetails.reviewsDialogDescription")}
           </DialogDescription>
         </VisuallyHidden>
         <div className="flex flex-col md:flex-row gap-10 h-[700px] overflow-y-auto p-5 pb-0!">
@@ -131,7 +127,7 @@ export default function ReviewsDialog({ course, open, setOpen }: ReviewDialog) {
               ))}
             </div>
             <p className="text-sm underline text-[#666]">
-              {course?.rating_counts} Reviews
+              {course?.rating_counts} {t("courseDetails.reviews")}
             </p>
           </div>
           <div className="relative flex flex-col justify-between flex-1/2">
@@ -147,7 +143,7 @@ export default function ReviewsDialog({ course, open, setOpen }: ReviewDialog) {
               </div>
             ) : (
               <div className="py-10 text-center text-[#666]">
-                <p>No reviews yet. Be the first to review this course!</p>
+                <p>{t("courseDetails.noReviews")}</p>
               </div>
             )}
             <div className=" py-2 space-y-4 start-0 sticky bg-white bottom-0">
@@ -183,12 +179,13 @@ export default function ReviewsDialog({ course, open, setOpen }: ReviewDialog) {
                   </div>
 
                   <Textarea
-                    placeholder="Share your thoughts about this course..."
+                    placeholder={t("courseDetails.shareThoughts")}
                     className="min-h-[100px] resize-none"
                     value={formik.values.comment}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     name="comment"
+                    
                   />
                   {formik.touched.comment && formik.errors.comment && (
                     <span className="text-xs text-red-500 mt-1">
@@ -205,7 +202,7 @@ export default function ReviewsDialog({ course, open, setOpen }: ReviewDialog) {
                     className="mt-3 block bg-(--main-color) hover:bg-(--main-darker-color)"
                     disabled={mutation.isPending}
                   >
-                    {mutation.isPending ? "Submitting..." : "Submit Review"}
+                    {mutation.isPending ? t("courseDetails.submitting") : t("courseDetails.submitReview")}
                   </Button>
                 </div>
               </div>

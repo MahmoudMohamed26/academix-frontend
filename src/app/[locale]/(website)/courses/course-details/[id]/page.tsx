@@ -41,17 +41,17 @@ export default async function CourseDetailsPage({
             </p>
             <p className="mt-10 text-xs">
               <span className="flex gap-2 items-center">
-                <User size={18} /> Created by {course?.instructor.name}
+                <User size={18} /> {t("courseDetails.createdBy")} {course?.instructor.name}
               </span>
               <span className="flex gap-2 mt-4 items-center">
-                <OctagonAlert size={18} /> Last Updated{" "}
+                <OctagonAlert size={18} /> {t("courseDetails.lastUpdated")}{" "}
                 {formatDate(course?.updated as any, "MMMM dd, yyyy")}
               </span>
             </p>
           </div>
         </div>
       </div>
-      <CourseDetailsClient course={course} />
+      <CourseDetailsClient />
     </HydrationBoundary>
   )
 }
