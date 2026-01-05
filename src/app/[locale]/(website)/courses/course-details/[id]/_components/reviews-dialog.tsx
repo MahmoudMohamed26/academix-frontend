@@ -60,25 +60,18 @@ export default function ReviewsDialog({ course, open, setOpen }: ReviewDialog) {
   const { data: reviewsData, isLoading: reviewsLoading } = useQuery({
     queryKey: ["reviews", course.id],
     queryFn: () => getReviews(Axios, course.id),
-    enabled: open,
     staleTime: 10 * 60 * 1000,
   })
 
-  const reviews: Review[] = reviewsData?.reviews ?? []
-  const next = reviewsData?.links.next
-
   useEffect(() => {
-    if (reviewsData && next) {
-      setNextUrl(next)
-    }
-  }, [reviewsData?.links.next])
-
-  useEffect(() => {
-    if (!open) {
-      setAdditionalReviews([])
+    if (reviewsData?.links?.next) {
+      setNextUrl(reviewsData.links.next)
+    } else {
       setNextUrl(null)
     }
-  }, [open])
+  }, [reviewsData])
+
+  const reviews: Review[] = reviewsData?.reviews ?? []
 
   const loadMoreReviews = async () => {
     if (!nextUrl || isLoadingMore) return
@@ -87,9 +80,8 @@ export default function ReviewsDialog({ course, open, setOpen }: ReviewDialog) {
     try {
       const response = await Axios.get(nextUrl)
       const newReviews = response.data?.data.reviews ?? []
-      console.log(newReviews);
       const newNext = response.data?.links?.next ?? null
-      
+
       setAdditionalReviews((prev) => [...prev, ...newReviews])
       setNextUrl(newNext)
     } catch (error: any) {
@@ -111,7 +103,6 @@ export default function ReviewsDialog({ course, open, setOpen }: ReviewDialog) {
       queryClient.invalidateQueries({ queryKey: ["reviews", course.id] })
       formik.resetForm()
       toast.success(t("courseDetails.reviewSuccess"))
-      // Reset additional reviews when new review is submitted
       setAdditionalReviews([])
     },
     onError: (error: any) => {
@@ -184,20 +175,22 @@ export default function ReviewsDialog({ course, open, setOpen }: ReviewDialog) {
               <div className="space-y-4">
                 <div>
                   {allReviews.map((review, index) => (
-                    <ReviewItem key={`${review.created}-${index}`} review={review} />
+                    <ReviewItem
+                      key={`${review.created}-${index}`}
+                      review={review}
+                    />
                   ))}
                 </div>
-                
+
                 {nextUrl && (
                   <div className="flex justify-center pb-4">
                     <Button
                       onClick={loadMoreReviews}
                       disabled={isLoadingMore}
-                      variant="outline"
-                      className="w-full"
+                      className="w-full bg-(--main-color) hover:bg-(--main-darker-color) disabled:opacity-50 disabled:cursor-not-allowed text-white"
                     >
                       {isLoadingMore ? (
-                        <BtnLoad color="main" size={20} />
+                        <BtnLoad size={20} />
                       ) : (
                         t("courseDetails.loadMore")
                       )}
@@ -249,7 +242,6 @@ export default function ReviewsDialog({ course, open, setOpen }: ReviewDialog) {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     name="comment"
-                    
                   />
                   {formik.touched.comment && formik.errors.comment && (
                     <span className="text-xs text-red-500 mt-1">
@@ -266,7 +258,9 @@ export default function ReviewsDialog({ course, open, setOpen }: ReviewDialog) {
                     className="mt-3 block bg-(--main-color) hover:bg-(--main-darker-color)"
                     disabled={mutation.isPending}
                   >
-                    {mutation.isPending ? t("courseDetails.submitting") : t("courseDetails.submitReview")}
+                    {mutation.isPending
+                      ? t("courseDetails.submitting")
+                      : t("courseDetails.submitReview")}
                   </Button>
                 </div>
               </div>
