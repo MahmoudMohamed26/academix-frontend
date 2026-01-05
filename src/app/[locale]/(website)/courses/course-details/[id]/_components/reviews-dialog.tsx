@@ -2,9 +2,9 @@ import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { DialogDescription } from "@radix-ui/react-dialog"
 import ReviewItem from "./review-item"
-import { Course } from "@/lib/types/course"
+import { Course, CourseLinks } from "@/lib/types/course"
 import { Star, StarHalf } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
@@ -17,6 +17,7 @@ import { getReviews } from "@/lib/api/Reviews"
 import useAxios from "@/hooks/useAxios"
 import { useTranslation } from "react-i18next"
 import BtnLoad from "@/components/BtnLoad"
+import { Review } from "@/lib/types/review"
 
 interface ReviewDialog {
   course: Course
@@ -34,6 +35,9 @@ const getStarDisplay = (rating: number) => {
 
 export default function ReviewsDialog({ course, open, setOpen }: ReviewDialog) {
   const [hoveredStar, setHoveredStar] = useState(0)
+  const [additionalReviews, setAdditionalReviews] = useState<Review[]>([])
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [nextUrl, setNextUrl] = useState<string | null>(null)
   const Axios = useAxios()
   const { t, i18n } = useTranslation()
   const queryClient = useQueryClient()
@@ -53,12 +57,49 @@ export default function ReviewsDialog({ course, open, setOpen }: ReviewDialog) {
     course?.rating_avg || 0
   )
 
-  const { data: reviews, isLoading: reviewsLoading } = useQuery({
+  const { data: reviewsData, isLoading: reviewsLoading } = useQuery({
     queryKey: ["reviews", course.id],
     queryFn: () => getReviews(Axios, course.id),
     enabled: open,
     staleTime: 10 * 60 * 1000,
   })
+
+  const reviews: Review[] = reviewsData?.reviews ?? []
+  const next = reviewsData?.links.next
+
+  useEffect(() => {
+    if (reviewsData && next) {
+      setNextUrl(next)
+    }
+  }, [reviewsData?.links.next])
+
+  useEffect(() => {
+    if (!open) {
+      setAdditionalReviews([])
+      setNextUrl(null)
+    }
+  }, [open])
+
+  const loadMoreReviews = async () => {
+    if (!nextUrl || isLoadingMore) return
+
+    setIsLoadingMore(true)
+    try {
+      const response = await Axios.get(nextUrl)
+      const newReviews = response.data?.data.reviews ?? []
+      console.log(newReviews);
+      const newNext = response.data?.links?.next ?? null
+      
+      setAdditionalReviews((prev) => [...prev, ...newReviews])
+      setNextUrl(newNext)
+    } catch (error: any) {
+      const errorMessage =
+        error?.response?.data?.message || t("courseDetails.loadMoreError")
+      toast.error(errorMessage)
+    } finally {
+      setIsLoadingMore(false)
+    }
+  }
 
   const mutation = useMutation({
     mutationFn: async (values: { rate: number; comment: string }) => {
@@ -70,6 +111,8 @@ export default function ReviewsDialog({ course, open, setOpen }: ReviewDialog) {
       queryClient.invalidateQueries({ queryKey: ["reviews", course.id] })
       formik.resetForm()
       toast.success(t("courseDetails.reviewSuccess"))
+      // Reset additional reviews when new review is submitted
+      setAdditionalReviews([])
     },
     onError: (error: any) => {
       const errorMessage =
@@ -92,6 +135,8 @@ export default function ReviewsDialog({ course, open, setOpen }: ReviewDialog) {
   const handleStarClick = (rating: number) => {
     formik.setFieldValue("rate", rating)
   }
+
+  const allReviews = [...reviews, ...additionalReviews]
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -135,11 +180,30 @@ export default function ReviewsDialog({ course, open, setOpen }: ReviewDialog) {
               <div className="space-y-4 flex-1 flex justify-center items-center">
                 <BtnLoad color="main" size={30} />
               </div>
-            ) : reviews && reviews.length > 0 ? (
-              <div>
-                {reviews.map((review) => (
-                  <ReviewItem key={review.created} review={review} />
-                ))}
+            ) : allReviews && allReviews.length > 0 ? (
+              <div className="space-y-4">
+                <div>
+                  {allReviews.map((review, index) => (
+                    <ReviewItem key={`${review.created}-${index}`} review={review} />
+                  ))}
+                </div>
+                
+                {nextUrl && (
+                  <div className="flex justify-center pb-4">
+                    <Button
+                      onClick={loadMoreReviews}
+                      disabled={isLoadingMore}
+                      variant="outline"
+                      className="w-full"
+                    >
+                      {isLoadingMore ? (
+                        <BtnLoad color="main" size={20} />
+                      ) : (
+                        t("courseDetails.loadMore")
+                      )}
+                    </Button>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="py-10 text-center text-[#666]">
