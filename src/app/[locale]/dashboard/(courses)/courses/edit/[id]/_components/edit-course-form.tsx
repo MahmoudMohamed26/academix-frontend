@@ -74,8 +74,8 @@ function HtmlPlugin({ onChange }: { onChange: (html: string) => void }) {
       onChange={(editorState) => {
         editorState.read(() => {
           const html = $generateHtmlFromNodes(editor, null)
-          const textContent = html.replace(/<[^>]*>/g, '').trim()
-          const cleanHtml = textContent ? html : ''
+          const textContent = html.replace(/<[^>]*>/g, "").trim()
+          const cleanHtml = textContent ? html : ""
           onChange(cleanHtml)
         })
       }}
@@ -160,6 +160,9 @@ export default function EditCourseForm() {
       .min(0.1, t("Dashboard.addCourse.minHoursError")),
     level: Yup.string().required(t("Dashboard.addCourse.requiredLevelError")),
     image: Yup.mixed(),
+    video_url: Yup.string()
+      .url(t("Dashboard.SectionContent.videoUrlInvalid"))
+      .required(t("Dashboard.SectionContent.videoUrlRequired")),
   })
 
   const form = useFormik<CourseFormData>({
@@ -194,6 +197,7 @@ export default function EditCourseForm() {
       formData.append("detailed_description", values.detailed_description)
       formData.append("price", values.price.toString())
       formData.append("hours", values.hours.toString())
+      formData.append("video_url", values.video_url)
       formData.append("level", values.level)
       formData.append("category_slug", values.category_slug.toString())
       formData.append("_method", "PATCH")
@@ -205,11 +209,12 @@ export default function EditCourseForm() {
       return response.data
     },
     onSuccess: () => {
-      if(course?.published){
+      if (course?.published) {
         queryClient.invalidateQueries({ queryKey: ["published-courses"] })
-      }else{
+      } else {
         queryClient.invalidateQueries({ queryKey: ["non-published-courses"] })
       }
+      queryClient.invalidateQueries({ queryKey: ["courses", id] })
       router.push("/dashboard/courses")
       toast.success(t("Dashboard.addCourse.editSuccessMessage"))
     },
@@ -508,6 +513,13 @@ export default function EditCourseForm() {
                   </div>
                 </div>
               </div>
+
+              <Input
+                formik={form as any}
+                placeholder={t("Dashboard.addCourse.video_urlPlaceholder")}
+                label={t("Dashboard.addCourse.video_url")}
+                name="video_url"
+              />
 
               <label className="text-sm text-gray-700 font-[501]">
                 {t("Dashboard.addCourse.shortDescriptionLabel")}

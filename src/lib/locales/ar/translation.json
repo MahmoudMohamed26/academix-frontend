@@ -181,6 +181,7 @@
     "reviewsDialogDescription": "تحقق من جميع التقييمات لهذه الدورة",
     "noReviews": "لا توجد تقييمات بعد. كن أول من يقيم هذه الدورة!",
     "loadMore": "عرض المزيد",
+    "loadMoreError": "حدث خطأ ما",
     "shareThoughts": "شارك أفكارك حول هذه الدورة...",
     "submitting": "جاري الإرسال...",
     "submitReview": "إرسال التقييم",
