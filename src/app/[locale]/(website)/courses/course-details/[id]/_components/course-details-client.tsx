@@ -6,6 +6,7 @@ import {
   Clock,
   Heart,
   MonitorPlay,
+  Play,
   Presentation,
   Section as SectionIcon,
   Star,
@@ -31,6 +32,7 @@ import { getCourse } from "@/lib/api/Courses"
 import { useTranslation } from "react-i18next"
 import { useParams } from "next/navigation"
 import "react-loading-skeleton/dist/skeleton.css"
+import VideoPreviewDialog from "./video-preview-dialog"
 
 const getStarDisplay = (rating: number) => {
   const fullStars = Math.floor(rating)
@@ -46,6 +48,7 @@ export default function CourseDetailsClient() {
   const { id } = useParams()
   const [cleanHtml, setCleanHtml] = useState("")
   const [openReviews, setOpenReviews] = useState<boolean>(false)
+  const [openPreview, setOpenPreview] = useState<boolean>(false)
   const Axios = useAxios()
 
   const html = showAll ? cleanHtml : truncate(cleanHtml, 1000)
@@ -248,6 +251,11 @@ export default function CourseDetailsClient() {
 
         <section className="lg:max-w-[350px] w-full lg:p-4 mt-5 lg:-mt-60 lg:shadow-2xl bg-white lg:sticky top-2 flex-1 rounded-sm">
           <div className={`relative rounded-sm h-[300px] lg:h-[175px]`}>
+            <div className="absolute z-10 top-1/2 left-1/2 -translate-1/2">
+              <button onClick={() => setOpenPreview(true)} className="outline-0 group bg-white p-3 rounded-full cursor-pointer">
+                <Play className="fill-(--main-color) duration-300 group-hover:scale-110 text-(--main-color)" />
+              </button>
+            </div>
             <Image
               src={course?.image as any}
               fill
@@ -289,6 +297,8 @@ export default function CourseDetailsClient() {
           </p>
         </section>
       </div>
+
+      <VideoPreviewDialog open={openPreview} setOpen={setOpenPreview} video={course?.video_url || ""} />
 
       <ReviewsDialog
         course={course as any}
