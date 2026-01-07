@@ -198,7 +198,7 @@ export default function CourseDetailsClient() {
             <div className="mt-5 flex gap-5">
               <Link href={`/instructors/${course?.instructor.id}`}>
                 <Avatar className="w-16 h-16">
-                  <AvatarImage src={course?.instructor.avatar_url as any} />
+                  <AvatarImage alt={`${course?.instructor.name} avatar`} src={course?.instructor.avatar_url as any} />
                   <AvatarFallback>
                     <img src={avatarImg.src as any} alt="avatar fall back" />
                   </AvatarFallback>

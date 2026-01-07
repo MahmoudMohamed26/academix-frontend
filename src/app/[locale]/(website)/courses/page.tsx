@@ -10,6 +10,64 @@ import { getFilterdCourses } from "@/lib/api/Courses"
 import { getServerAxios } from "@/lib/axios-server"
 import { CoursePageProps, CourseSearchParams } from "@/lib/types/course"
 import { useTranslation } from "@/lib/i18n-server"
+import type { Metadata } from "next"
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const isArabic = locale === "ar"
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL!
+
+  return {
+    title: isArabic
+      ? "جميع الدورات | أكاديمكس"
+      : "All Courses | Academix",
+
+    description: isArabic
+      ? "تصفح جميع الدورات المتاحة على أكاديمكس في البرمجة، التصميم، والتقنية، مع تقييمات ومحتوى منظم."
+      : "Browse all available courses on Academix in programming, design, and technology, with ratings and structured learning paths.",
+
+    openGraph: {
+      title: isArabic
+        ? "جميع الدورات التعليمية | أكاديمكس"
+        : "Browse Online Courses | Academix",
+
+      description: isArabic
+        ? "استكشف مجموعة واسعة من الدورات التعليمية مع محتوى احترافي ومدربين خبراء."
+        : "Explore a wide range of online courses with expert instructors and structured content.",
+
+      url: `${siteUrl}/${locale}/courses`,
+      siteName: "Academix",
+      images: [
+        {
+          url: `${siteUrl}/og/courses.png`,
+          width: 1200,
+          height: 630,
+          alt: "Academix Online Courses",
+        },
+      ],
+      locale: isArabic ? "ar_AR" : "en_US",
+      type: "website",
+    },
+
+    alternates: {
+      canonical: `${siteUrl}/${locale}/courses`,
+      languages: {
+        en: `${siteUrl}/en/courses`,
+        ar: `${siteUrl}/ar/courses`,
+      },
+    },
+
+    robots: {
+      index: true,
+      follow: true,
+    },
+  }
+}
+
 
 const ALLOWED_PARAMS: readonly (keyof CourseSearchParams)[] = [
   "category_slug",

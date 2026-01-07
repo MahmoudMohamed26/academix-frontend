@@ -146,6 +146,7 @@ export default function NavBar() {
                   <AvatarImage
                     className="rounded-full h-8 w-8 outline-none!"
                     src={user?.avatar_url as any}
+                    alt={`${user?.name} avatar`}
                   />
                   <AvatarFallback>
                     <img

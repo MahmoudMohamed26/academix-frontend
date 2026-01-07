@@ -4,12 +4,88 @@ import CourseDetailsClient from "./_components/course-details-client"
 import { OctagonAlert, User } from "lucide-react"
 import Breadcrumb from "@/components/BreadCrumb"
 import { formatDate } from "date-fns"
-import { 
-  dehydrate, 
-  HydrationBoundary, 
-  QueryClient 
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
 } from "@tanstack/react-query"
 import { useTranslation } from "@/lib/i18n-server"
+import { Metadata } from "next"
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; id: string }>
+}): Promise<Metadata> {
+  const { locale, id } = await params
+  const isArabic = locale === "ar"
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL!
+
+  try {
+    const axiosInstance = await getServerAxios(locale)
+    const course = await getCourse(axiosInstance, id)
+
+    if (!course) {
+      return {
+        title: "Course Not Found | Academix",
+        robots: {
+          index: false,
+          follow: false,
+        },
+      }
+    }
+
+    return {
+      title: isArabic
+        ? `${course.title} | أكاديمكس`
+        : `${course.title} | Academix`,
+
+      description:
+        course.short_description ||
+        (isArabic
+          ? "دورة تعليمية احترافية على منصة أكاديمكس."
+          : "A professional online course on Academix."),
+
+      openGraph: {
+        title: course.title,
+        description: course.short_description,
+        url: `${siteUrl}/${locale}/courses/${id}`,
+        siteName: "Academix",
+        images: [
+          {
+            url: course.image || `${siteUrl}/og/course-default.png`,
+            width: 1200,
+            height: 630,
+            alt: course.title,
+          },
+        ],
+        locale: isArabic ? "ar_AR" : "en_US",
+        type: "article",
+      },
+
+      alternates: {
+        canonical: `${siteUrl}/${locale}/courses/${id}`,
+        languages: {
+          en: `${siteUrl}/en/courses/${id}`,
+          ar: `${siteUrl}/ar/courses/${id}`,
+        },
+      },
+
+      robots: {
+        index: true,
+        follow: true,
+      },
+    }
+  } catch {
+    return {
+      title: "Course | Academix",
+      robots: {
+        index: false,
+        follow: false,
+      },
+    }
+  }
+}
 
 export default async function CourseDetailsPage({
   params,
@@ -20,7 +96,7 @@ export default async function CourseDetailsPage({
   const axiosInstance = await getServerAxios(locale)
   const { t } = await useTranslation(locale)
   const queryClient = new QueryClient()
-  
+
   await queryClient.prefetchQuery({
     queryKey: ["course", id],
     queryFn: () => getCourse(axiosInstance, id),
@@ -41,7 +117,8 @@ export default async function CourseDetailsPage({
             </p>
             <p className="mt-10 text-xs">
               <span className="flex gap-2 items-center">
-                <User size={18} /> {t("courseDetails.createdBy")} {course?.instructor.name}
+                <User size={18} /> {t("courseDetails.createdBy")}{" "}
+                {course?.instructor.name}
               </span>
               <span className="flex gap-2 mt-4 items-center">
                 <OctagonAlert size={18} /> {t("courseDetails.lastUpdated")}{" "}

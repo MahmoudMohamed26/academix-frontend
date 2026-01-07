@@ -1,5 +1,33 @@
 import bgImg from "@/assets/loginImg.jpeg"
 import RegisterForm from "./registerForm"
+import type { Metadata } from "next"
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const isArabic = locale === "ar"
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL!
+
+  return {
+    title: isArabic ? "إنشاء حساب | أكاديمكس" : "Create Account | Academix",
+
+    description: isArabic
+      ? "أنشئ حسابك في أكاديمكس وابدأ رحلتك التعليمية."
+      : "Create your Academix account and start learning today.",
+
+    robots: {
+      index: false,
+      follow: false,
+    },
+
+    alternates: {
+      canonical: `${siteUrl}/${locale}/register`,
+    },
+  }
+}
 
 export default function LoginPage() {
   return (

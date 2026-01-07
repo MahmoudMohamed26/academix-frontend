@@ -18,6 +18,7 @@ import useAxios from "@/hooks/useAxios"
 import { useTranslation } from "react-i18next"
 import BtnLoad from "@/components/BtnLoad"
 import { Review } from "@/lib/types/review"
+import { getUser } from "@/lib/api/User"
 
 interface ReviewDialog {
   course: Course
@@ -62,6 +63,13 @@ export default function ReviewsDialog({ course, open, setOpen }: ReviewDialog) {
     queryFn: () => getReviews(Axios, course.id),
     staleTime: 10 * 60 * 1000,
   })
+
+  const { data: user } = useQuery({
+      queryKey: ["loggedInUser"],
+      queryFn: () => getUser(Axios),
+      staleTime: 10 * 60 * 1000,
+      retry: false,
+    })
 
   useEffect(() => {
     if (reviewsData?.links?.next) {
@@ -206,12 +214,13 @@ export default function ReviewsDialog({ course, open, setOpen }: ReviewDialog) {
             <div className=" py-2 space-y-4 start-0 sticky bg-white bottom-0">
               <div className="flex items-start gap-3">
                 <Avatar className="w-12 h-12">
-                  <AvatarImage src={avatarImg.src as any} />
+                  <AvatarImage alt={`${user?.name} avatar`} src={user?.avatar_url as any} />
                   <AvatarFallback>
                     <img src={avatarImg.src as any} alt="avatar fall back" />
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
+                  <h3 className="text-sm font-semibold mb-1 text-[#333]">{user?.name}</h3>
                   <div className="mb-3">
                     <div
                       className="flex gap-1 mb-1"
@@ -235,9 +244,9 @@ export default function ReviewsDialog({ course, open, setOpen }: ReviewDialog) {
                     </div>
                   </div>
 
-                  <Textarea
+                  <textarea
                     placeholder={t("courseDetails.shareThoughts")}
-                    className="min-h-[100px] resize-none"
+                    className="min-h-20 resize-none outline-none border p-2 text-sm text-[#666] duration-300 focus:border-(--main-color) w-full rounded-sm"
                     value={formik.values.comment}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}

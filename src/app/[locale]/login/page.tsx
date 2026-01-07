@@ -1,5 +1,33 @@
-import LoginForm from './loginForm'
-import bgImg from '@/assets/loginImg.jpeg'
+import LoginForm from "./loginForm"
+import bgImg from "@/assets/loginImg.jpeg"
+import type { Metadata } from "next"
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const isArabic = locale === "ar"
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL!
+
+  return {
+    title: isArabic ? "تسجيل الدخول | أكاديمكس" : "Login | Academix",
+
+    description: isArabic
+      ? "سجل الدخول إلى حسابك في أكاديمكس للوصول إلى الدورات ولوحة التحكم."
+      : "Log in to your Academix account to access courses and your dashboard.",
+
+    robots: {
+      index: false,
+      follow: false,
+    },
+
+    alternates: {
+      canonical: `${siteUrl}/${locale}/login`,
+    },
+  }
+}
 
 export default function LoginPage() {
   return (

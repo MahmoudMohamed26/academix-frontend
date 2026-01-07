@@ -21,7 +21,7 @@ export default function ReviewItem({ review }: ReviewItemProps) {
   return (
     <div className="flex gap-4 border-b py-5">
       <Avatar className="w-12 h-12">
-        <AvatarImage src={review.user_avatar} />
+        <AvatarImage alt={`${review.user_name} review`} src={review.user_avatar} />
         <AvatarFallback>
           <img src={avatarImg.src as any} alt="avatar fallback" />
         </AvatarFallback>
