@@ -27,7 +27,7 @@ export default function Language({ form }: { form?: number }) {
       onValueChange={changeLanguage} 
       value={currentLanguage}
     >
-      <SelectTrigger className={`${form === 1 ? "w-[150px]" : form === 2 ? "w-full" : form === 3 ? "border-none text-[#666] shadow-none outline-none p-0 focus:outline-none focus:ring-0 focus-visible:ring-0" : ""} rounded-sm`}>
+      <SelectTrigger aria-label="change language" className={`${form === 1 ? "w-[150px]" : form === 2 ? "w-full" : form === 3 ? "border-none text-[#666] shadow-none outline-none p-0 focus:outline-none focus:ring-0 focus-visible:ring-0" : ""} rounded-sm`}>
         <SelectValue className="gap-0" />
       </SelectTrigger>
       <SelectContent className="w-fit">

@@ -252,7 +252,7 @@ export default function CourseDetailsClient() {
         <section className="lg:max-w-[350px] w-full lg:p-4 mt-5 lg:-mt-60 lg:shadow-2xl bg-white lg:sticky top-2 flex-1 rounded-sm">
           <div className={`relative rounded-sm h-[300px] lg:h-[175px]`}>
             <div className="absolute z-10 top-1/2 left-1/2 -translate-1/2">
-              <button onClick={() => setOpenPreview(true)} className="outline-0 group bg-white p-3 rounded-full cursor-pointer">
+              <button aria-label="play preview video" onClick={() => setOpenPreview(true)} className="outline-0 group bg-white p-3 rounded-full cursor-pointer">
                 <Play className="fill-(--main-color) duration-300 group-hover:scale-110 text-(--main-color)" />
               </button>
             </div>
@@ -281,7 +281,7 @@ export default function CourseDetailsClient() {
               <button className="w-full py-3 rounded-sm bg-(--main-color) border border-(--main-color) duration-300 text-white hover:bg-(--main-darker-color) cursor-pointer">
                 {t("courseDetails.enroll")}
               </button>
-              <button className="border cursor-pointer duration-300 border-(--main-color) text-(--main-color) hover:bg-(--main-color) group p-2 rounded-sm">
+              <button aria-label="add wishlist" className="border cursor-pointer duration-300 border-(--main-color) text-(--main-color) hover:bg-(--main-color) group p-2 rounded-sm">
                 <Heart
                   className="fill-(--main-color) group-hover:fill-white"
                   size={30}
