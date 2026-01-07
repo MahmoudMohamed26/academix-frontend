@@ -53,7 +53,7 @@ export async function generateMetadata({
         siteName: "Academix",
         images: [
           {
-            url: course.image || `${siteUrl}/og/course-default.png`,
+            url: course.image || `${siteUrl}/og/courses.png`,
             width: 1200,
             height: 630,
             alt: course.title,
