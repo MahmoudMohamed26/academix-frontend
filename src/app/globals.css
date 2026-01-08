@@ -52,6 +52,10 @@
   border: 1px solid var(--main-color) !important;
 }
 
+.special-shadow{
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+
 .special-grid{
   display: grid;
   gap: 20px;
