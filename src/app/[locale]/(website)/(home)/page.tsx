@@ -6,6 +6,7 @@ import FeaturedCourses from "./_components/featured-courses"
 import { getServerAxios } from "@/lib/axios-server"
 import { QueryClient } from "@tanstack/react-query"
 import { getFilterdCourses } from "@/lib/api/Courses"
+import BecomeInstructor from "./_components/become-instructor"
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL!
 
@@ -51,20 +52,26 @@ export async function generateMetadata({
   }
 }
 
-export default async function home({params}: {params: Promise<{locale: string}>}) {
-
+export default async function home({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
   const { locale } = await params
   const axiosInstance = await getServerAxios(locale)
   const queryClient = new QueryClient()
 
   const courseRes = await queryClient.fetchQuery({
     queryKey: ["featured-courses"],
-    queryFn: () => getFilterdCourses(axiosInstance, "/courses/filter?sortBy=rating_avg&orderedBy=desc")
+    queryFn: () =>
+      getFilterdCourses(
+        axiosInstance,
+        "/courses/filter?sortBy=rating_avg&orderedBy=desc"
+      ),
   })
-  console.log(courseRes);
 
   return (
-    <div className="min-h-[8000px]">
+    <div>
       <section className="container">
         <SwipperSlider />
       </section>
@@ -77,8 +84,12 @@ export default async function home({params}: {params: Promise<{locale: string}>}
         <WhyUs />
       </section>
 
-      <section className="pb-30">
+      <section className="pb-15">
         <FeaturedCourses courses={courseRes.courses} />
+      </section>
+
+      <section className="pb-15">
+        <BecomeInstructor />
       </section>
     </div>
   )
