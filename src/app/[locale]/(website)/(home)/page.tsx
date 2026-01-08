@@ -1,9 +1,14 @@
+import Stats from "./_components/stats"
 import SwipperSlider from "./_components/swiper"
 import type { Metadata } from "next"
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL!
 
-export async function generateMetadata({ params }: {params: Promise<{locale: string}>}): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
   const { locale } = await params
   const isArabic = locale === "ar"
 
@@ -47,6 +52,9 @@ export default function home() {
     <>
       <section className="container">
         <SwipperSlider />
+      </section>
+      <section>
+        <Stats />
       </section>
     </>
   )

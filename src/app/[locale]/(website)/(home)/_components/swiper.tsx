@@ -20,7 +20,7 @@ import swiper3 from "@/assets/swiper3.png"
 export default function SwipperSlider() {
   return (
     <>
-      <div className="mainSwiper mt-5">
+      <div className="mainSwiper">
         <Swiper
           modules={[Navigation, Pagination, Scrollbar, A11y, Autoplay]}
           spaceBetween={0}
