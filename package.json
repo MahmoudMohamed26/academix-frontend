@@ -65,6 +65,7 @@
     "swiper": "^12.0.3",
     "tailwind-merge": "^3.4.0",
     "truncate-html": "^1.2.2",
+    "vaul": "^1.1.2",
     "yup": "^1.7.1",
     "zustand": "^5.0.9"
   },

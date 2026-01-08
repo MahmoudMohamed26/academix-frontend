@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { ListFilter, Loader2, Star } from "lucide-react"
+import { ListFilter, Star } from "lucide-react"
 import { useQuery } from "@tanstack/react-query"
 import {
   Dialog,
@@ -14,6 +14,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -29,12 +38,14 @@ import useAxios from "@/hooks/useAxios"
 import { getCategories } from "@/lib/api/Categories"
 import { useTranslation } from "react-i18next"
 import { FilterDialogProps } from "@/lib/types/course"
+import { useMediaQuery } from "@/hooks/use-media-query"
 
 const MAX_PRICE = 1000
 const MAX_HOURS = 200
 
 export default function FilterDialog({ currentFilters }: FilterDialogProps) {
   const [open, setOpen] = useState(false)
+  const isDesktop = useMediaQuery("(min-width: 768px)")
   const Axios = useAxios()
   const { i18n, t } = useTranslation()
   const pathname = usePathname()
@@ -45,7 +56,6 @@ export default function FilterDialog({ currentFilters }: FilterDialogProps) {
     staleTime: 10 * 60 * 1000,
   })
 
-  // Form state
   const [filters, setFilters] = useState({
     min_price: currentFilters.min_price || "",
     max_price: currentFilters.max_price || "",
@@ -102,7 +112,6 @@ export default function FilterDialog({ currentFilters }: FilterDialogProps) {
   const buildFilterUrl = () => {
     const params = new URLSearchParams()
 
-    // Add price range (don't add max if it's at maximum)
     if (priceRange[0] > 0) {
       params.append("min_price", priceRange[0].toString())
     }
@@ -110,7 +119,6 @@ export default function FilterDialog({ currentFilters }: FilterDialogProps) {
       params.append("max_price", priceRange[1].toString())
     }
 
-    // Add hours range (don't add max if it's at maximum)
     if (hoursRange[0] > 0) {
       params.append("min_hours", hoursRange[0].toString())
     }
@@ -118,7 +126,6 @@ export default function FilterDialog({ currentFilters }: FilterDialogProps) {
       params.append("max_hours", hoursRange[1].toString())
     }
 
-    // Add other filters
     Object.entries(filters).forEach(([key, value]) => {
       if (
         key !== "min_price" &&
@@ -136,7 +143,6 @@ export default function FilterDialog({ currentFilters }: FilterDialogProps) {
       params.append("search", currentFilters.search)
     }
 
-    // Build the URL path using Next.js pathname
     const basePath = pathname
     return `${basePath}${params.toString() ? `?${params.toString()}` : ""}`
   }
@@ -162,246 +168,297 @@ export default function FilterDialog({ currentFilters }: FilterDialogProps) {
     setOpen(false)
   }
 
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <button className="flex gap-2 items-center duration-300 hover:text-white hover:bg-black py-2 px-4 border border-black rounded-full cursor-pointer text-sm">
-          <ListFilter size={15} />
-          <span>{t("filters.allFilters")}</span>
-          {activeFiltersCount > 0 && (
-            <span className="flex items-center justify-center h-5 px-[7px] bg-black text-white text-xs rounded-full">
-              {activeFiltersCount}
+  const TriggerButton = (
+    <button 
+      className="flex gap-2 items-center duration-300 hover:text-white hover:bg-black py-2 px-4 border border-black rounded-full cursor-pointer text-sm"
+      aria-label={activeFiltersCount > 0 ? `${t("filters.allFilters")} (${activeFiltersCount} active)` : t("filters.allFilters")}
+    >
+      <ListFilter size={15} aria-hidden="true" />
+      <span>{t("filters.allFilters")}</span>
+      {activeFiltersCount > 0 && (
+        <span 
+          className="flex items-center justify-center h-5 px-[7px] bg-black text-white text-xs rounded-full"
+          aria-label={`${activeFiltersCount} active filters`}
+        >
+          {activeFiltersCount}
+        </span>
+      )}
+    </button>
+  )
+
+  const FilterContent = (
+    <div className="space-y-6 py-4">
+      {/* Price Range */}
+      <div className="space-y-3">
+        <Label className="text-base font-semibold">
+          {t("filters.priceRange")}
+        </Label>
+        <div className="space-y-4 px-2">
+          <Slider
+            value={priceRange}
+            dir={i18n.language === "en" ? "ltr" : "rtl"}
+            onValueChange={setPriceRange}
+            min={0}
+            max={MAX_PRICE}
+            step={10}
+            className="w-full"
+          />
+          <div className="flex justify-between text-sm text-gray-600">
+            <span>
+              {priceRange[0] === 0
+                ? t("coursesPage.free")
+                : `${priceRange[0]} $`}
             </span>
-          )}
-        </button>
-      </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>{t("filters.filterCourses")}</DialogTitle>
-          <DialogDescription>
-            {t("filters.filterDescription")}
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="space-y-6 py-4">
-          {/* Price Range */}
-          <div className="space-y-3">
-            <Label className="text-base font-semibold">
-              {t("filters.priceRange")}
-            </Label>
-            <div className="space-y-4 px-2">
-              <Slider
-                value={priceRange}
-                dir={i18n.language === "en" ? "ltr" : "rtl"}
-                onValueChange={setPriceRange}
-                min={0}
-                max={MAX_PRICE}
-                step={10}
-                className="w-full"
-              />
-              <div className="flex justify-between text-sm text-gray-600">
-                <span>
-                  {priceRange[0] === 0
-                    ? t("coursesPage.free")
-                    : `${priceRange[0]} $`}
-                </span>
-                <span>${priceRange[1]}{priceRange[1] === MAX_PRICE && '+'}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Hours Range */}
-          <div className="space-y-3">
-            <Label className="text-base font-semibold">
-              {t("filters.courseDuration")}
-            </Label>
-            <div className="space-y-4 px-2">
-              <Slider
-                value={hoursRange}
-                dir={i18n.language === "en" ? "ltr" : "rtl"}
-                onValueChange={setHoursRange}
-                min={0}
-                max={MAX_HOURS}
-                step={5}
-                className="w-full"
-              />
-              <div className="flex justify-between text-sm text-gray-600">
-                <span>{hoursRange[0]}</span>
-                <span>{hoursRange[1]}{hoursRange[1] === MAX_HOURS && '+'}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Rating */}
-          <div className="space-y-3">
-            <Label className="text-base font-semibold">
-              {t("filters.minimumRating")}
-            </Label>
-            <div className="flex gap-2">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <button
-                  key={star}
-                  type="button"
-                  onClick={() =>
-                    setFilters({
-                      ...filters,
-                      min_rating: star.toString(),
-                    })
-                  }
-                  className="cursor-pointer"
-                >
-                  <Star
-                    size={24}
-                    className={
-                      parseInt(filters.min_rating) >= star
-                        ? "fill-[#C67514] text-[#C67514]"
-                        : "text-gray-300"
-                    }
-                  />
-                </button>
-              ))}
-              {filters.min_rating && (
-                <button
-                  type="button"
-                  onClick={() =>
-                    setFilters({ ...filters, min_rating: "" })
-                  }
-                  className="ml-2 text-sm hover:underline cursor-pointer text-gray-500 hover:text-gray-700"
-                >
-                  {t("filters.clear")}
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Category and Level */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="category" className="text-base font-semibold">
-                {t("filters.category")}
-              </Label>
-              <Select
-                value={filters.category_slug || "all"}
-                dir={i18n.language === "en" ? "ltr" : "rtl"}
-                onValueChange={(value) =>
-                  setFilters({ ...filters, category_slug: value === "all" ? "" : value })
-                }
-              >
-                <SelectTrigger className="w-full" id="category">
-                  <SelectValue placeholder={t("filters.allCategories")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t("filters.allCategories")}</SelectItem>
-                  {categories.map((category: any) => (
-                    <SelectItem key={category.id} value={category.id}>
-                      {i18n.language === "en"
-                        ? category.name_en
-                        : category.name_ar}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="level" className="text-base font-semibold">
-                {t("filters.courseLevel")}
-              </Label>
-              <Select
-                value={filters.level || "all"}
-                dir={i18n.language === "en" ? "ltr" : "rtl"}
-                onValueChange={(value) =>
-                  setFilters({ ...filters, level: value === "all" ? "" : value })
-                }
-              >
-                <SelectTrigger className="w-full" id="level">
-                  <SelectValue placeholder={t("filters.allLevels")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t("filters.allLevels")}</SelectItem>
-                  <SelectItem value="beginner">{t("filters.beginner")}</SelectItem>
-                  <SelectItem value="intermediate">{t("filters.intermediate")}</SelectItem>
-                  <SelectItem value="advanced">{t("filters.advanced")}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          {/* Sort By */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="sortBy" className="text-base font-semibold">
-                {t("filters.sortBy")}
-              </Label>
-              <Select
-                value={filters.sortBy}
-                dir={i18n.language === "en" ? "ltr" : "rtl"}
-                onValueChange={(value) =>
-                  setFilters({ ...filters, sortBy: value })
-                }
-              >
-                <SelectTrigger className="w-full" id="sortBy">
-                  <SelectValue placeholder={t("filters.selectPlaceholder")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="title">{t("filters.title")}</SelectItem>
-                  <SelectItem value="price">{t("filters.price")}</SelectItem>
-                  <SelectItem value="hours">{t("filters.hours")}</SelectItem>
-                  <SelectItem value="rating_avg">{t("filters.rating")}</SelectItem>
-                  <SelectItem value="created_at">{t("filters.dateCreated")}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="orderedBy" className="text-base font-semibold">
-                {t("filters.order")}
-              </Label>
-              <Select
-                value={filters.orderedBy}
-                dir={i18n.language === "en" ? "ltr" : "rtl"}
-                onValueChange={(value) =>
-                  setFilters({ ...filters, orderedBy: value })
-                }
-              >
-                <SelectTrigger className="w-full" id="orderedBy">
-                  <SelectValue placeholder={t("filters.selectPlaceholder")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="asc">{t("filters.ascending")}</SelectItem>
-                  <SelectItem value="desc">{t("filters.descending")}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="user_id" className="text-base font-semibold">
-              {t("filters.instructorId")}
-            </Label>
-            <Input
-              id="user_id"
-              type="text"
-              placeholder={t("filters.instructorIdPlaceholder")}
-              value={filters.user_id}
-              onChange={(e) =>
-                setFilters({ ...filters, user_id: e.target.value })
-              }
-            />
+            <span>${priceRange[1]}{priceRange[1] === MAX_PRICE && '+'}</span>
           </div>
         </div>
+      </div>
 
-        <DialogFooter className="gap-2">
-          <Button variant="outline" onClick={handleResetFilters}>
-            {t("filters.resetFilters")}
-          </Button>
+      {/* Hours Range */}
+      <div className="space-y-3">
+        <Label className="text-base font-semibold">
+          {t("filters.courseDuration")}
+        </Label>
+        <div className="space-y-4 px-2">
+          <Slider
+            value={hoursRange}
+            dir={i18n.language === "en" ? "ltr" : "rtl"}
+            onValueChange={setHoursRange}
+            min={0}
+            max={MAX_HOURS}
+            step={5}
+            className="w-full"
+          />
+          <div className="flex justify-between text-sm text-gray-600">
+            <span>{hoursRange[0]}</span>
+            <span>{hoursRange[1]}{hoursRange[1] === MAX_HOURS && '+'}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Rating */}
+      <div className="space-y-3">
+        <Label className="text-base font-semibold">
+          {t("filters.minimumRating")}
+        </Label>
+        <div className="flex gap-2">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <button
+              key={star}
+              type="button"
+              onClick={() =>
+                setFilters({
+                  ...filters,
+                  min_rating: star.toString(),
+                })
+              }
+              className="cursor-pointer"
+            >
+              <Star
+                size={24}
+                className={
+                  parseInt(filters.min_rating) >= star
+                    ? "fill-[#C67514] text-[#C67514]"
+                    : "text-gray-300"
+                }
+              />
+            </button>
+          ))}
+          {filters.min_rating && (
+            <button
+              type="button"
+              onClick={() =>
+                setFilters({ ...filters, min_rating: "" })
+              }
+              className="ml-2 text-sm hover:underline cursor-pointer text-gray-500 hover:text-gray-700"
+            >
+              {t("filters.clear")}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Category and Level */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="category" className="text-base font-semibold">
+            {t("filters.category")}
+          </Label>
+          <Select
+            value={filters.category_slug || "all"}
+            dir={i18n.language === "en" ? "ltr" : "rtl"}
+            onValueChange={(value) =>
+              setFilters({ ...filters, category_slug: value === "all" ? "" : value })
+            }
+          >
+            <SelectTrigger className="w-full" id="category">
+              <SelectValue placeholder={t("filters.allCategories")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t("filters.allCategories")}</SelectItem>
+              {categories.map((category: any) => (
+                <SelectItem key={category.id} value={category.id}>
+                  {i18n.language === "en"
+                    ? category.name_en
+                    : category.name_ar}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="level" className="text-base font-semibold">
+            {t("filters.courseLevel")}
+          </Label>
+          <Select
+            value={filters.level || "all"}
+            dir={i18n.language === "en" ? "ltr" : "rtl"}
+            onValueChange={(value) =>
+              setFilters({ ...filters, level: value === "all" ? "" : value })
+            }
+          >
+            <SelectTrigger className="w-full" id="level">
+              <SelectValue placeholder={t("filters.allLevels")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t("filters.allLevels")}</SelectItem>
+              <SelectItem value="beginner">{t("filters.beginner")}</SelectItem>
+              <SelectItem value="intermediate">{t("filters.intermediate")}</SelectItem>
+              <SelectItem value="advanced">{t("filters.advanced")}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      {/* Sort By */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="sortBy" className="text-base font-semibold">
+            {t("filters.sortBy")}
+          </Label>
+          <Select
+            value={filters.sortBy}
+            dir={i18n.language === "en" ? "ltr" : "rtl"}
+            onValueChange={(value) =>
+              setFilters({ ...filters, sortBy: value })
+            }
+          >
+            <SelectTrigger className="w-full" id="sortBy">
+              <SelectValue placeholder={t("filters.selectPlaceholder")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="title">{t("filters.title")}</SelectItem>
+              <SelectItem value="price">{t("filters.price")}</SelectItem>
+              <SelectItem value="hours">{t("filters.hours")}</SelectItem>
+              <SelectItem value="rating_avg">{t("filters.rating")}</SelectItem>
+              <SelectItem value="created_at">{t("filters.dateCreated")}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="orderedBy" className="text-base font-semibold">
+            {t("filters.order")}
+          </Label>
+          <Select
+            value={filters.orderedBy}
+            dir={i18n.language === "en" ? "ltr" : "rtl"}
+            onValueChange={(value) =>
+              setFilters({ ...filters, orderedBy: value })
+            }
+          >
+            <SelectTrigger className="w-full" id="orderedBy">
+              <SelectValue placeholder={t("filters.selectPlaceholder")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="asc">{t("filters.ascending")}</SelectItem>
+              <SelectItem value="desc">{t("filters.descending")}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="user_id" className="text-base font-semibold">
+          {t("filters.instructorId")}
+        </Label>
+        <Input
+          id="user_id"
+          type="text"
+          placeholder={t("filters.instructorIdPlaceholder")}
+          value={filters.user_id}
+          onChange={(e) =>
+            setFilters({ ...filters, user_id: e.target.value })
+          }
+        />
+      </div>
+    </div>
+  )
+
+  if (isDesktop) {
+    return (
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <div>
+            {TriggerButton}
+          </div>
+        </DialogTrigger>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{t("filters.filterCourses")}</DialogTitle>
+            <DialogDescription>
+              {t("filters.filterDescription")}
+            </DialogDescription>
+          </DialogHeader>
+
+          {FilterContent}
+
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={handleResetFilters}>
+              {t("filters.resetFilters")}
+            </Button>
+            <Button className="bg-(--main-color) hover:bg-(--main-darker-color)" asChild>
+              <Link href={buildFilterUrl()} onClick={handleLinkClick}>
+                {t("filters.applyFilters")}
+              </Link>
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    )
+  }
+
+  return (
+    <Drawer open={open} onOpenChange={setOpen}>
+      <DrawerTrigger asChild>
+        <div>
+          {TriggerButton}
+        </div>
+      </DrawerTrigger>
+      <DrawerContent className="max-h-[90vh]">
+        <DrawerHeader className="text-left">
+          <DrawerTitle>{t("filters.filterCourses")}</DrawerTitle>
+          <DrawerDescription>
+            {t("filters.filterDescription")}
+          </DrawerDescription>
+        </DrawerHeader>
+        
+        <div className="overflow-y-auto px-4">
+          {FilterContent}
+        </div>
+
+        <DrawerFooter className="pt-2">
           <Button className="bg-(--main-color) hover:bg-(--main-darker-color)" asChild>
             <Link href={buildFilterUrl()} onClick={handleLinkClick}>
               {t("filters.applyFilters")}
             </Link>
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          <Button variant="outline" onClick={handleResetFilters}>
+            {t("filters.resetFilters")}
+          </Button>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
   )
 }
