@@ -24,7 +24,7 @@ export default function AddCategory() {
 
   const createCategoryMutation = useMutation({
     mutationFn: async (values: CategoryFormData) => {
-      const response = await Axios.post("/category", values)
+      const response = await Axios.post("/categories", values)
       return response.data
     },
     onSuccess: () => {

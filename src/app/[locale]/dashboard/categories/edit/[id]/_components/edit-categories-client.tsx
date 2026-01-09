@@ -11,7 +11,6 @@ import BtnLoad from "@/components/BtnLoad"
 import { CategoryFormData } from "@/lib/types/category"
 import { useParams, useRouter } from "next/navigation"
 import Skeleton from "react-loading-skeleton"
-import { useEffect, useState } from "react"
 import { getCategory } from "@/lib/api/Categories"
 
 export default function EditCategory() {
@@ -19,26 +18,13 @@ export default function EditCategory() {
   const { id } = useParams()
   const Axios = useAxios()
   const queryClient = useQueryClient()
-  const [category, setCategory] = useState<any>(null)
-  const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
 
-  useEffect(() => {
-    const fetchCategory = async () => {
-      try {
-        setIsLoading(true)
-        const response = await getCategory(Axios, id)
-        setCategory(response)
-      } catch (error) {
-        console.error("Error fetching category:", error)
-        toast.error("Failed to load category")
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchCategory()
-  }, [id, Axios])
+  const {data: category , isLoading} = useQuery({
+    queryKey: ["category", id],
+    queryFn: () => getCategory(Axios, id),
+    staleTime: 1000 * 60 * 60
+  })
 
   const validationSchema = Yup.object({
     name_en: Yup.string().required(t("Dashboard.addCategory.requiredEnError")),
