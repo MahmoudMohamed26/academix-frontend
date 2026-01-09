@@ -88,8 +88,6 @@ export default function CourseDetailsClient() {
     staleTime: 10 * 60 * 1000,
   })
 
-  console.log(relatedCoursesRes)
-
   const relatedCourses: Course[] = relatedCoursesRes?.courses ?? []
 
   useEffect(() => {
