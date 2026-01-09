@@ -6,11 +6,22 @@ import { Star } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { SingleCourseProps } from "@/lib/types/course"
 
-export default function SingleCourse({ grid, course }: SingleCourseProps) {
+export default function SingleCourse({
+  grid,
+  course,
+  category,
+}: SingleCourseProps) {
   const { t, i18n } = useTranslation()
   return (
-    <Link href={`/courses/course-details/${course.id}`} className="border h-full flex flex-col relative hover:bg-gray-50 rounded-md">
-      <div className={`p-4 ${!grid ? "lg:flex lg:flex-row lg:gap-10" : ""} flex-1 flex flex-col`}>
+    <Link
+      href={`/courses/course-details/${course.id}`}
+      className="border h-full flex flex-col relative hover:bg-gray-50 rounded-md"
+    >
+      <div
+        className={`p-4 ${
+          !grid ? "lg:flex lg:flex-row lg:gap-10" : ""
+        } flex-1 flex flex-col`}
+      >
         <div
           className={`rounded-md overflow-hidden ${
             !grid ? "w-full lg:w-[500px]" : ""
@@ -37,7 +48,11 @@ export default function SingleCourse({ grid, course }: SingleCourseProps) {
           <div className={`${grid ? "mt-auto" : "mt-auto"}`}>
             <div className="flex gap-2 flex-wrap mt-8 text-[#333]">
               <span className="border rounded-sm py-1 px-2 flex gap-1 items-center text-xs">
-                {i18n.language === "en"
+                {category
+                  ? i18n.language === "en"
+                    ? category.name_en
+                    : category.name_ar
+                  : i18n.language === "en"
                   ? course.category.name_en
                   : course.category.name_ar}
               </span>

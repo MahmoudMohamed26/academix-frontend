@@ -1,3 +1,4 @@
+import { CategoriesTopCourses } from "./category"
 import { User } from "./user"
 
 export interface Course {
@@ -43,6 +44,7 @@ export interface CourseRes {
 export interface SingleCourseProps {
   grid: boolean
   course: Course
+  category?: CategoriesTopCourses
 }
 
 export interface CourseFormData {

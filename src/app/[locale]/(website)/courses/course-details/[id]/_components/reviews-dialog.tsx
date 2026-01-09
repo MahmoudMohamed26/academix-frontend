@@ -49,8 +49,6 @@ export default function ReviewsDialog({ course, open, setOpen }: ReviewDialog) {
       .max(5, t("courseDetails.ratingRange"))
       .required(t("courseDetails.ratingRequired")),
     comment: Yup.string()
-      .min(10, t("courseDetails.commentMinLength"))
-      .max(500, t("courseDetails.commentMaxLength"))
       .required(t("courseDetails.commentRequired")),
   })
 

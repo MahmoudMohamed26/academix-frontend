@@ -26,6 +26,8 @@ export default function CategoriesClient() {
     staleTime: 1000 * 60 * 5,
   })
 
+  console.log(categories)
+
   return (
     <>
       <div className="mt-5 space-y-10">
@@ -43,22 +45,24 @@ export default function CategoriesClient() {
               className="w-full"
               opts={{
                 direction: i18n.language === "ar" ? "rtl" : "ltr",
-                slidesToScroll: 'auto',
-                
+                slidesToScroll: "auto",
               }}
             >
               <CarouselContent className="-ml-2 md:-ml-4">
-                {category.courses
-                  .map((course) => (
-                    <CarouselItem
-                      key={course.id}
-                      className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3 xl:basis-1/4 flex"
-                    >
-                      <div className="w-full h-full">
-                        <SingleCourse grid={true} course={course} />
-                      </div>
-                    </CarouselItem>
-                  ))}
+                {category.courses.map((course) => (
+                  <CarouselItem
+                    key={course.id}
+                    className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3 flex"
+                  >
+                    <div className="w-full h-full">
+                      <SingleCourse
+                        category={category}
+                        grid={true}
+                        course={course}
+                      />
+                    </div>
+                  </CarouselItem>
+                ))}
               </CarouselContent>
               <CarouselPrevious
                 className={`shadow-2xl bg-(--main-color) hover:bg-(--main-darker-color) hover:text-white text-white ${
@@ -67,7 +71,9 @@ export default function CategoriesClient() {
               />
               <CarouselNext
                 className={`shadow-2xl bg-(--main-color) hover:bg-(--main-darker-color) hover:text-white text-white ${
-                  i18n.language === "ar" ? "right-[calc(100%-25px)] rotate-180" : "-right-2"
+                  i18n.language === "ar"
+                    ? "right-[calc(100%-25px)] rotate-180"
+                    : "-right-2"
                 }`}
               />
             </Carousel>
