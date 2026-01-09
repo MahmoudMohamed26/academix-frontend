@@ -28,11 +28,21 @@ import { getSections } from "@/lib/api/Sections"
 import useAxios from "@/hooks/useAxios"
 import Skeleton from "react-loading-skeleton"
 import ReviewsDialog from "./reviews-dialog"
-import { getCourse } from "@/lib/api/Courses"
+import { getCourse, getFilterdCourses } from "@/lib/api/Courses"
 import { useTranslation } from "react-i18next"
 import { useParams } from "next/navigation"
 import "react-loading-skeleton/dist/skeleton.css"
 import VideoPreviewDialog from "./video-preview-dialog"
+import SpecialHeader from "@/components/SpecialHeader"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
+import SingleCourse from "@/components/SingleCourse"
+import { Course } from "@/lib/types/course"
 
 const getStarDisplay = (rating: number) => {
   const fullStars = Math.floor(rating)
@@ -66,6 +76,19 @@ export default function CourseDetailsClient() {
     staleTime: 10 * 60 * 1000,
   })
 
+  const { data: relatedCoursesRes, isLoading: isCategoriesLoading } = useQuery({
+    queryKey: ["categoriesTopCourses"],
+    queryFn: () =>
+      getFilterdCourses(
+        Axios,
+        `/courses/filter?category_slug=${course?.category.id}`
+      ),
+    enabled: !!course,
+    staleTime: 10 * 60 * 1000,
+  })
+
+  const relatedCourses: Course[] = relatedCoursesRes?.courses ?? []
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const DOMPurify = createDOMPurify(window)
@@ -76,8 +99,6 @@ export default function CourseDetailsClient() {
   const { fullStars, hasHalfStar, emptyStars } = getStarDisplay(
     course?.rating_avg || 0
   )
-
-  console.log(course)
 
   return (
     <>
@@ -97,7 +118,12 @@ export default function CourseDetailsClient() {
                   <Star key={index} fill="#C67514" color="#C67514" size={12} />
                 ))}
                 {hasHalfStar && (
-                  <StarHalf className={`${i18n.language === "ar" ? "rotate-180" : ""}`} fill="#C67514" color="#C67514" size={12} />
+                  <StarHalf
+                    className={`${i18n.language === "ar" ? "rotate-180" : ""}`}
+                    fill="#C67514"
+                    color="#C67514"
+                    size={12}
+                  />
                 )}
                 {Array.from({ length: emptyStars }).map((_, index) => (
                   <Star key={`empty-${index}`} color="#C67514" size={12} />
@@ -110,30 +136,43 @@ export default function CourseDetailsClient() {
             <div className="flex flex-col items-center w-full border-b md:border-e md:border-b-0 py-5 md:py-0 md:w-[calc(100%/4)] gap-1">
               <Presentation size={25} />
               <p className="font-bold">{course?.lectures_count}</p>
-              <p className="text-sm underline text-[#666]">{t("courseDetails.lectures")}</p>
+              <p className="text-sm underline text-[#666]">
+                {t("courseDetails.lectures")}
+              </p>
             </div>
             <div className="flex flex-col items-center gap-1 w-full py-5 md:py-0 md:w-[calc(100%/4)]">
               <Clock size={25} />
               <p className="font-bold">{course?.hours}</p>
-              <p className="text-sm underline text-[#666]">{t("courseDetails.hours")}</p>
+              <p className="text-sm underline text-[#666]">
+                {t("courseDetails.hours")}
+              </p>
             </div>
           </section>
 
           <section className="mt-10">
-            <h2 className="font-semibold text-2xl">{t("courseDetails.courseIncludes")}</h2>
+            <h2 className="font-semibold text-2xl">
+              {t("courseDetails.courseIncludes")}
+            </h2>
             <div className="flex flex-col sm:flex-row mt-5 justify-between">
               <ul className="space-y-4 text-[#333]">
                 <li className="flex items-center gap-4">
                   <Clock size={16} />
-                  <span>{course?.hours} {t("courseDetails.hoursOfLearning")}</span>
+                  <span>
+                    {course?.hours} {t("courseDetails.hoursOfLearning")}
+                  </span>
                 </li>
                 <li className="flex items-center gap-4">
                   <SectionIcon size={16} />
-                  <span>{course?.sections_count} {t("courseDetails.sections")}</span>
+                  <span>
+                    {course?.sections_count} {t("courseDetails.sections")}
+                  </span>
                 </li>
                 <li className="flex items-center gap-4">
                   <MonitorPlay size={16} />
-                  <span>{course?.lectures_count} {t("courseDetails.lecturesLowercase")}</span>
+                  <span>
+                    {course?.lectures_count}{" "}
+                    {t("courseDetails.lecturesLowercase")}
+                  </span>
                 </li>
               </ul>
               <ul className="space-y-4 text-[#333] mt-4 sm:mt-0">
@@ -143,7 +182,10 @@ export default function CourseDetailsClient() {
                 </li>
                 <li className="flex items-center gap-4">
                   <Users size={16} />
-                  <span>{course?.enrollments_count} {t("courseDetails.enrolledStudents")}</span>
+                  <span>
+                    {course?.enrollments_count}{" "}
+                    {t("courseDetails.enrolledStudents")}
+                  </span>
                 </li>
                 <li className="flex items-center gap-4">
                   <Trophy size={16} />
@@ -154,11 +196,13 @@ export default function CourseDetailsClient() {
           </section>
 
           <section className="mt-10">
-            <h2 className="font-semibold text-2xl">{t("courseDetails.courseContent")}</h2>
+            <h2 className="font-semibold text-2xl">
+              {t("courseDetails.courseContent")}
+            </h2>
             <div className="mt-5">
               <p className="text-[#333] text-sm mb-2">
-                {course?.sections_count} {t("courseDetails.sections")} • {course?.lectures_count}{" "}
-                {t("courseDetails.lectures")}
+                {course?.sections_count} {t("courseDetails.sections")} •{" "}
+                {course?.lectures_count} {t("courseDetails.lectures")}
               </p>
               {sectionsLoading ? (
                 <Skeleton className="w-full! h-[400px]" />
@@ -176,29 +220,38 @@ export default function CourseDetailsClient() {
           </section>
 
           <section className="my-10">
-            <h2 className="font-semibold text-2xl">{t("courseDetails.description")}</h2>
+            <h2 className="font-semibold text-2xl">
+              {t("courseDetails.description")}
+            </h2>
             <div
               className="prose mt-4 text-[#333] text-sm"
               dangerouslySetInnerHTML={{
                 __html: html,
               }}
             />
-            {course?.detailed_description.length as any > 4000 && (
+            {(course?.detailed_description.length as any) > 4000 && (
               <button
                 onClick={() => setShowAll((prev) => !prev)}
                 className="mt-2 py-2 px-4 bg-orange-100 text-(--main-color) text-sm cursor-pointer rounded-sm"
               >
-                {showAll ? t("courseDetails.showLess") : t("courseDetails.showAll")}
+                {showAll
+                  ? t("courseDetails.showLess")
+                  : t("courseDetails.showAll")}
               </button>
             )}
           </section>
 
           <section className="mt-10">
-            <h2 className="font-semibold text-2xl">{t("courseDetails.instructor")}</h2>
+            <h2 className="font-semibold text-2xl">
+              {t("courseDetails.instructor")}
+            </h2>
             <div className="mt-5 flex gap-5">
               <Link href={`/instructors/${course?.instructor.id}`}>
                 <Avatar className="w-16 h-16">
-                  <AvatarImage alt={`${course?.instructor.name} avatar`} src={course?.instructor.avatar_url as any} />
+                  <AvatarImage
+                    alt={`${course?.instructor.name} avatar`}
+                    src={course?.instructor.avatar_url as any}
+                  />
                   <AvatarFallback>
                     <img src={avatarImg.src as any} alt="avatar fall back" />
                   </AvatarFallback>
@@ -216,7 +269,9 @@ export default function CourseDetailsClient() {
           </section>
 
           <section className="mt-10">
-            <h2 className="font-semibold text-2xl">{t("courseDetails.reviewsSection")}</h2>
+            <h2 className="font-semibold text-2xl">
+              {t("courseDetails.reviewsSection")}
+            </h2>
             <div className="mt-5 flex gap-5">
               <button
                 onClick={() => setOpenReviews((prev) => !prev)}
@@ -235,7 +290,14 @@ export default function CourseDetailsClient() {
                     />
                   ))}
                   {hasHalfStar && (
-                    <StarHalf className={`${i18n.language === "ar" ? "rotate-180" : ""}`} fill="#C67514" color="#C67514" size={12} />
+                    <StarHalf
+                      className={`${
+                        i18n.language === "ar" ? "rotate-180" : ""
+                      }`}
+                      fill="#C67514"
+                      color="#C67514"
+                      size={12}
+                    />
                   )}
                   {Array.from({ length: emptyStars }).map((_, index) => (
                     <Star key={`empty-${index}`} color="#C67514" size={12} />
@@ -252,7 +314,11 @@ export default function CourseDetailsClient() {
         <section className="lg:max-w-[350px] w-full lg:p-4 mt-5 lg:-mt-60 lg:shadow-2xl bg-white lg:sticky top-2 flex-1 rounded-sm">
           <div className={`relative rounded-sm h-[300px] lg:h-[175px]`}>
             <div className="absolute z-10 top-1/2 left-1/2 -translate-1/2">
-              <button aria-label="play preview video" onClick={() => setOpenPreview(true)} className="outline-0 group bg-white p-3 rounded-full cursor-pointer">
+              <button
+                aria-label="play preview video"
+                onClick={() => setOpenPreview(true)}
+                className="outline-0 group bg-white p-3 rounded-full cursor-pointer"
+              >
                 <Play className="fill-(--main-color) duration-300 group-hover:scale-110 text-(--main-color)" />
               </button>
             </div>
@@ -281,7 +347,10 @@ export default function CourseDetailsClient() {
               <button className="w-full py-3 rounded-sm bg-(--main-color) border border-(--main-color) duration-300 text-white hover:bg-(--main-darker-color) cursor-pointer">
                 {t("courseDetails.enroll")}
               </button>
-              <button aria-label="add wishlist" className="border cursor-pointer duration-300 border-(--main-color) text-(--main-color) hover:bg-(--main-color) group p-2 rounded-sm">
+              <button
+                aria-label="add wishlist"
+                className="border cursor-pointer duration-300 border-(--main-color) text-(--main-color) hover:bg-(--main-color) group p-2 rounded-sm"
+              >
                 <Heart
                   className="fill-(--main-color) group-hover:fill-white"
                   size={30}
@@ -298,7 +367,55 @@ export default function CourseDetailsClient() {
         </section>
       </div>
 
-      <VideoPreviewDialog open={openPreview} setOpen={setOpenPreview} video={course?.video_url || ""} />
+      <div className="mt-20! container">
+        <SpecialHeader name={"Related Courses"} />
+        <Carousel
+          className="w-full"
+          opts={{
+            direction: i18n.language === "ar" ? "rtl" : "ltr",
+            slidesToScroll: "auto",
+          }}
+        >
+          <CarouselContent className="-ml-2 md:-ml-4">
+            {relatedCourses.map((course) => (
+              <CarouselItem
+                key={course.id}
+                className="pl-2 md:pl-4 md:basis-1/2 xl:basis-1/3 flex"
+              >
+                <div className="w-full h-full">
+                  <SingleCourse grid={true} course={course} />
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious
+            className={`shadow-2xl bg-(--main-color) hover:bg-(--main-darker-color) hover:text-white text-white ${
+              i18n.language === "ar" ? "-right-2 rotate-180" : "-left-2"
+            }`}
+          />
+          <CarouselNext
+            className={`shadow-2xl bg-(--main-color) hover:bg-(--main-darker-color) hover:text-white text-white ${
+              i18n.language === "ar"
+                ? "right-[calc(100%-25px)] rotate-180"
+                : "-right-2"
+            }`}
+          />
+        </Carousel>
+        <div className="w-fit m-auto">
+          <Link
+            href={`/courses?category_slug=${course?.category.id}`}
+            className="py-2 block px-5 border border-(--main-color) text-(--main-color) hover:bg-orange-100 cursor-pointer my-10"
+          >
+            {t("categories.showall")}
+          </Link>
+        </div>
+      </div>
+
+      <VideoPreviewDialog
+        open={openPreview}
+        setOpen={setOpenPreview}
+        video={course?.video_url || ""}
+      />
 
       <ReviewsDialog
         course={course as any}

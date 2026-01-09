@@ -1,9 +1,14 @@
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { AxiosInstance } from 'axios';
-import { Category } from '../types/category';
+import { CategoriesTopCourses, Category } from '../types/category';
 
 export async function getCategories(axiosInstance: AxiosInstance): Promise<Category[]> {
   const res = await axiosInstance.get('/categories');
+  return res.data.data.categories;
+}
+
+export async function getCategoriesTopCourses(axiosInstance: AxiosInstance): Promise<CategoriesTopCourses[]> {
+  const res = await axiosInstance.get('/categories/popular');
   return res.data.data.categories;
 }
 

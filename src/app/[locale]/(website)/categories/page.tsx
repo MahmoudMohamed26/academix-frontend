@@ -7,8 +7,7 @@ import {
   HydrationBoundary,
   QueryClient,
 } from "@tanstack/react-query"
-import { getCategories } from "@/lib/api/Categories"
-import { getCourses } from "@/lib/api/Courses"
+import { getCategoriesTopCourses } from "@/lib/api/Categories"
 import type { Metadata } from "next"
 
 export async function generateMetadata({
@@ -78,13 +77,8 @@ export default async function CategoriesPage({
   const queryClient = new QueryClient()
 
   await queryClient.prefetchQuery({
-    queryKey: ["categories"],
-    queryFn: () => getCategories(axiosInstance),
-  })
-
-  await queryClient.prefetchQuery({
-    queryKey: ["courses"],
-    queryFn: () => getCourses(axiosInstance),
+    queryKey: ["categoriesTopCourses"],
+    queryFn: () => getCategoriesTopCourses(axiosInstance),
   })
 
   return (

@@ -10,7 +10,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"
 import useAxios from "@/hooks/useAxios"
-import { getCategories } from "@/lib/api/Categories"
+import { getCategories, getCategoriesTopCourses } from "@/lib/api/Categories"
 import { getCourses } from "@/lib/api/Courses"
 import { useQuery } from "@tanstack/react-query"
 import Link from "next/link"
@@ -21,14 +21,8 @@ export default function CategoriesClient() {
   const Axios = useAxios()
 
   const { data: categories, isLoading: isCategoriesLoading } = useQuery({
-    queryKey: ["categories"],
-    queryFn: () => getCategories(Axios),
-    staleTime: 1000 * 60 * 5,
-  })
-
-  const { data: courses, isLoading: isCoursesLoading } = useQuery({
-    queryKey: ["courses"],
-    queryFn: () => getCourses(Axios),
+    queryKey: ["categoriesTopCourses"],
+    queryFn: () => getCategoriesTopCourses(Axios),
     staleTime: 1000 * 60 * 5,
   })
 
@@ -54,9 +48,7 @@ export default function CategoriesClient() {
               }}
             >
               <CarouselContent className="-ml-2 md:-ml-4">
-                {courses
-                  ?.filter((course) => course.category.id === category.id)
-                  .slice(0, 5)
+                {category.courses
                   .map((course) => (
                     <CarouselItem
                       key={course.id}
