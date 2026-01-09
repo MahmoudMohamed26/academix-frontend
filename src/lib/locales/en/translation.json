@@ -2,6 +2,45 @@
   "welcome": "Welcome",
   "language": "Language",
   "genericError": "Something went wrong. Please try again later.",
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Everything you need to know about Academix Learning Management System",
+    "questions": {
+      "q1": {
+        "question": "What is Academix?",
+        "answer": "Academix is a full-featured Learning Management System (LMS) that connects students with instructors through structured courses and interactive content. Similar to platforms like Udemy or Coursera, it offers a modern dashboard experience with course browsing, instructor tools, and admin management features."
+      },
+      "q2": {
+        "question": "How do I browse and enroll in courses?",
+        "answer": "You can browse courses using our advanced filtering system by category, rating, price, and search keywords. Courses are displayed in both grid and list views. Each course has a detailed page showing structured sections, lessons, instructor information, and student reviews. Simply click on any course to view details and enroll."
+      },
+      "q3": {
+        "question": "Can I become an instructor on Academix?",
+        "answer": "Yes! Instructors have access to a dedicated dashboard where they can create and manage courses, add sections and lessons, build quizzes with multiple-choice questions, and track course status. You can also manage your instructor profile and view your published courses."
+      },
+      "q4": {
+        "question": "What features does the Instructor Dashboard include?",
+        "answer": "The Instructor Dashboard allows you to create courses with structured sections and lessons, build interactive quizzes with multiple questions and answers, edit and update course content, manage your instructor profile, and track course status including pending, published, and verified states."
+      },
+      "q5": {
+        "question": "Is Academix available in multiple languages?",
+        "answer": "Yes, Academix supports multi-language functionality with full support for English and Arabic, including complete RTL (Right-to-Left) layout for Arabic. The platform is designed to provide a seamless experience regardless of your preferred language."
+      },
+      "q6": {
+        "question": "How are courses reviewed and approved?",
+        "answer": "All courses go through an admin review process. The Admin Dashboard allows platform administrators to review pending courses, manage course visibility, control verification status, and ensure quality standards are met before courses are published to learners."
+      },
+      "q8": {
+        "question": "Is Academix mobile-friendly?",
+        "answer": "Absolutely! Academix features a fully responsive design that works perfectly on all screen sizes, from desktop computers to tablets and mobile phones. The interface adapts to provide the best learning experience regardless of your device."
+      }
+    },
+    "contact": {
+      "stillHaveQuestions": "Still have questions?",
+      "description": "Contact our support team at",
+      "email": "support@academix.com"
+    }
+  },
   "login": {
     "title": "Login to",
     "description": "Sign in to continue your learning journey",

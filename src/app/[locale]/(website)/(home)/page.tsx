@@ -7,6 +7,7 @@ import { getServerAxios } from "@/lib/axios-server"
 import { QueryClient } from "@tanstack/react-query"
 import { getFilterdCourses } from "@/lib/api/Courses"
 import BecomeInstructor from "./_components/become-instructor"
+import AcademixFAQ from "./_components/faq"
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL!
 
@@ -80,16 +81,20 @@ export default async function home({
         <Stats />
       </section>
 
-      <section className="py-30">
-        <WhyUs />
-      </section>
-
-      <section className="pb-15">
+      <section className="py-10">
         <FeaturedCourses courses={courseRes.courses} />
       </section>
 
-      <section className="pb-15">
+      <section className="py-10">
+        <WhyUs />
+      </section>
+
+      <section className="py-10">
         <BecomeInstructor />
+      </section>
+
+      <section className="py-10">
+        <AcademixFAQ />
       </section>
     </div>
   )
