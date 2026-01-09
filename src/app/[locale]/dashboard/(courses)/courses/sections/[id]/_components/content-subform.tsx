@@ -16,14 +16,22 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer"
 import QuizMaker from "./quiz-maker"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import useAxios from "@/hooks/useAxios"
 import { toast } from "sonner"
 import { ContentItem } from "@/lib/types/section"
 import { Quiz } from "@/lib/types/quiz"
+import { useMediaQuery } from "@/hooks/use-media-query"
 
 interface ContentSubFormProps {
   content: ContentItem
@@ -43,6 +51,7 @@ export default function ContentSubForm({
   allContent,
 }: ContentSubFormProps) {
   const { t, i18n } = useTranslation()
+  const isDesktop = useMediaQuery("(min-width: 768px)")
   const [isOpen, setIsOpen] = useState(false)
   const [contentType, setContentType] = useState<"lecture" | "quiz" | null>(
     content.type
@@ -217,10 +226,10 @@ export default function ContentSubForm({
       : t("Dashboard.SectionContent.quiz")
   }
 
-  return (
+  const deleteDialogContent = (
     <>
-      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent>
+      {isDesktop ? (
+        <>
           <DialogHeader>
             <DialogTitle>
               {content.type === "lecture"
@@ -264,8 +273,120 @@ export default function ContentSubForm({
                 : t("Dashboard.SectionContent.delete")}
             </Button>
           </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        </>
+      ) : (
+        <>
+          <DrawerHeader>
+            <DrawerTitle>
+              {content.type === "lecture"
+                ? t("Dashboard.SectionContent.deleteLecture")
+                : t("Dashboard.SectionContent.deleteQuiz")}
+            </DrawerTitle>
+            <DrawerDescription>
+              {t("Dashboard.SectionContent.deleteContentConfirmation", {
+                type: getContentTypeLabel().toLowerCase(),
+              })}
+              {content.type === "quiz" && content.questions?.length > 0 && (
+                <span className="block mt-2 text-red-600 font-medium">
+                  {t("Dashboard.SectionContent.deleteQuizWarning", {
+                    count: content.questions.length,
+                  })}
+                </span>
+              )}
+            </DrawerDescription>
+          </DrawerHeader>
+          <DrawerFooter>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={confirmDelete}
+              disabled={
+                deleteLectureMutation.isPending || deleteQuizMutation.isPending
+              }
+            >
+              {deleteLectureMutation.isPending || deleteQuizMutation.isPending
+                ? t("Dashboard.SectionContent.deleting")
+                : t("Dashboard.SectionContent.delete")}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsDeleteDialogOpen(false)}
+              disabled={
+                deleteLectureMutation.isPending || deleteQuizMutation.isPending
+              }
+            >
+              {t("Dashboard.SectionContent.cancel")}
+            </Button>
+          </DrawerFooter>
+        </>
+      )}
+    </>
+  )
+
+  const quizDialogContent = (
+    <>
+      {isDesktop ? (
+        <>
+          <DialogHeader>
+            <DialogTitle>
+              {t("Dashboard.SectionContent.quizMaker")}
+            </DialogTitle>
+            <DialogDescription>
+              {t("Dashboard.SectionContent.quizMakerDescription")}
+            </DialogDescription>
+          </DialogHeader>
+          <QuizMaker
+            onSave={handleQuizSave}
+            initialData={
+              content.type === "quiz" ? content : undefined
+            }
+            courseId={courseId}
+            allContent={allContent}
+            sectionId={sectionId}
+          />
+        </>
+      ) : (
+        <>
+          <DrawerHeader>
+            <DrawerTitle>
+              {t("Dashboard.SectionContent.quizMaker")}
+            </DrawerTitle>
+            <DrawerDescription>
+              {t("Dashboard.SectionContent.quizMakerDescription")}
+            </DrawerDescription>
+          </DrawerHeader>
+          <div className="px-4 pb-4 overflow-y-auto max-h-[70vh]">
+            <QuizMaker
+              onSave={handleQuizSave}
+              initialData={
+                content.type === "quiz" ? content : undefined
+              }
+              courseId={courseId}
+              allContent={allContent}
+              sectionId={sectionId}
+            />
+          </div>
+        </>
+      )}
+    </>
+  )
+
+  return (
+    <>
+      {isDesktop ? (
+        <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+          <DialogContent>
+            {deleteDialogContent}
+          </DialogContent>
+        </Dialog>
+      ) : (
+        <Drawer open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+          <DrawerContent>
+            {deleteDialogContent}
+          </DrawerContent>
+        </Drawer>
+      )}
 
       <div>
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
@@ -487,15 +608,16 @@ export default function ContentSubForm({
                       </p>
                     </div>
 
-                    <Dialog
-                      open={isQuizDialogOpen}
-                      onOpenChange={setIsQuizDialogOpen}
-                    >
-                      <DialogTrigger asChild>
+                    {isDesktop ? (
+                      <Dialog
+                        open={isQuizDialogOpen}
+                        onOpenChange={setIsQuizDialogOpen}
+                      >
                         <Button
                           type="button"
                           variant="outline"
                           className="w-full"
+                          onClick={() => setIsQuizDialogOpen(true)}
                         >
                           {content.type === "quiz" &&
                           content.id &&
@@ -503,32 +625,37 @@ export default function ContentSubForm({
                             ? t("Dashboard.SectionContent.editQuiz")
                             : t("Dashboard.SectionContent.createQuiz")}
                         </Button>
-                      </DialogTrigger>
-                      <DialogContent
-                        onInteractOutside={(e) => {
-                          e.preventDefault()
-                        }}
-                        className="max-w-3xl max-h-[90vh] overflow-y-auto"
+                        <DialogContent
+                          onInteractOutside={(e) => {
+                            e.preventDefault()
+                          }}
+                          className="max-w-3xl max-h-[90vh] overflow-y-auto"
+                        >
+                          {quizDialogContent}
+                        </DialogContent>
+                      </Dialog>
+                    ) : (
+                      <Drawer
+                        open={isQuizDialogOpen}
+                        onOpenChange={setIsQuizDialogOpen}
                       >
-                        <DialogHeader>
-                          <DialogTitle>
-                            {t("Dashboard.SectionContent.quizMaker")}
-                          </DialogTitle>
-                          <DialogDescription>
-                            {t("Dashboard.SectionContent.quizMakerDescription")}
-                          </DialogDescription>
-                        </DialogHeader>
-                        <QuizMaker
-                          onSave={handleQuizSave}
-                          initialData={
-                            content.type === "quiz" ? content : undefined
-                          }
-                          courseId={courseId}
-                          allContent={allContent}
-                          sectionId={sectionId}
-                        />
-                      </DialogContent>
-                    </Dialog>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="w-full"
+                          onClick={() => setIsQuizDialogOpen(true)}
+                        >
+                          {content.type === "quiz" &&
+                          content.id &&
+                          !content.id.startsWith("temp-")
+                            ? t("Dashboard.SectionContent.editQuiz")
+                            : t("Dashboard.SectionContent.createQuiz")}
+                        </Button>
+                        <DrawerContent className="max-h-[90vh]">
+                          {quizDialogContent}
+                        </DrawerContent>
+                      </Drawer>
+                    )}
                   </div>
                 )}
               </div>

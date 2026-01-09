@@ -12,6 +12,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer"
 import { Plus, Trash2, X } from "lucide-react"
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query"
 import useAxios from "@/hooks/useAxios"
@@ -20,6 +28,7 @@ import { Quiz, QuizQuestion } from "@/lib/types/quiz"
 import * as Yup from "yup"
 import BtnLoad from "@/components/BtnLoad"
 import { getQuestions } from "@/lib/api/Quizes"
+import { useMediaQuery } from "@/hooks/use-media-query"
 
 interface QuizMakerProps {
   onSave: (quiz: Quiz) => void
@@ -39,6 +48,7 @@ export default function QuizMaker({
   allContent = [],
 }: QuizMakerProps) {
   const { t } = useTranslation()
+  const isDesktop = useMediaQuery("(min-width: 768px)")
   const [title, setTitle] = useState(initialData?.title || "")
   const [description, setDescription] = useState(initialData?.description || "")
   const [points, setPoints] = useState(initialData?.points || 10)
@@ -62,7 +72,6 @@ export default function QuizMaker({
 
   const Axios = useAxios()
   const queryClient = useQueryClient()
-  console.log(initialData)
   const generateId = () => `temp-${Math.random().toString(36).substr(2, 9)}`
 
   const isEditMode = !!initialData?.id && !initialData?.id.startsWith("temp-")
@@ -504,38 +513,85 @@ export default function QuizMaker({
   const isQuizCreated = (!!quizId && !quizId.startsWith("temp-")) || isEditMode
   const hasLocalQuestions = questions.some((q) => q.id.startsWith("temp-"))
 
+  const deleteDialogContent = (
+    <>
+      {isDesktop ? (
+        <DialogHeader>
+          <DialogTitle>{t("Dashboard.QuizMaker.deleteQuestion")}</DialogTitle>
+          <DialogDescription>
+            {t("Dashboard.QuizMaker.deleteQuestionConfirmation")}
+          </DialogDescription>
+        </DialogHeader>
+      ) : (
+        <DrawerHeader>
+          <DrawerTitle>{t("Dashboard.QuizMaker.deleteQuestion")}</DrawerTitle>
+          <DrawerDescription>
+            {t("Dashboard.QuizMaker.deleteQuestionConfirmation")}
+          </DrawerDescription>
+        </DrawerHeader>
+      )}
+
+      {isDesktop ? (
+        <DialogFooter>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setIsDeleteDialogOpen(false)}
+            disabled={deleteQuestionMutation.isPending}
+          >
+            {t("Dashboard.QuizMaker.cancel")}
+          </Button>
+          <Button
+            type="button"
+            variant="destructive"
+            onClick={confirmDeleteQuestion}
+            disabled={deleteQuestionMutation.isPending}
+          >
+            {deleteQuestionMutation.isPending 
+              ? t("Dashboard.QuizMaker.deleting") 
+              : t("Dashboard.QuizMaker.delete")}
+          </Button>
+        </DialogFooter>
+      ) : (
+        <DrawerFooter>
+          <Button
+            type="button"
+            variant="destructive"
+            onClick={confirmDeleteQuestion}
+            disabled={deleteQuestionMutation.isPending}
+          >
+            {deleteQuestionMutation.isPending 
+              ? t("Dashboard.QuizMaker.deleting") 
+              : t("Dashboard.QuizMaker.delete")}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setIsDeleteDialogOpen(false)}
+            disabled={deleteQuestionMutation.isPending}
+          >
+            {t("Dashboard.QuizMaker.cancel")}
+          </Button>
+        </DrawerFooter>
+      )}
+    </>
+  )
+
   return (
     <>
-      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t("Dashboard.QuizMaker.deleteQuestion")}</DialogTitle>
-            <DialogDescription>
-              {t("Dashboard.QuizMaker.deleteQuestionConfirmation")}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setIsDeleteDialogOpen(false)}
-              disabled={deleteQuestionMutation.isPending}
-            >
-              {t("Dashboard.QuizMaker.cancel")}
-            </Button>
-            <Button
-              type="button"
-              variant="destructive"
-              onClick={confirmDeleteQuestion}
-              disabled={deleteQuestionMutation.isPending}
-            >
-              {deleteQuestionMutation.isPending 
-                ? t("Dashboard.QuizMaker.deleting") 
-                : t("Dashboard.QuizMaker.delete")}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {isDesktop ? (
+        <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+          <DialogContent>
+            {deleteDialogContent}
+          </DialogContent>
+        </Dialog>
+      ) : (
+        <Drawer open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+          <DrawerContent>
+            {deleteDialogContent}
+          </DrawerContent>
+        </Drawer>
+      )}
 
       <div className="space-y-6">
         <div className="space-y-4">
