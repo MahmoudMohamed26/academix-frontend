@@ -43,6 +43,7 @@ import {
 } from "@/components/ui/carousel"
 import SingleCourse from "@/components/SingleCourse"
 import { Course } from "@/lib/types/course"
+import CourseSkeleton from "@/components/course-skeleton"
 
 const getStarDisplay = (rating: number) => {
   const fullStars = Math.floor(rating)
@@ -76,8 +77,8 @@ export default function CourseDetailsClient() {
     staleTime: 10 * 60 * 1000,
   })
 
-  const { data: relatedCoursesRes, isLoading: isCategoriesLoading } = useQuery({
-    queryKey: ["categoriesTopCourses"],
+  const { data: relatedCoursesRes, isLoading: isRelatedLoading } = useQuery({
+    queryKey: ["relatedCoursesRes"],
     queryFn: () =>
       getFilterdCourses(
         Axios,
@@ -86,6 +87,8 @@ export default function CourseDetailsClient() {
     enabled: !!course,
     staleTime: 10 * 60 * 1000,
   })
+
+  console.log(relatedCoursesRes)
 
   const relatedCourses: Course[] = relatedCoursesRes?.courses ?? []
 
@@ -374,19 +377,37 @@ export default function CourseDetailsClient() {
           opts={{
             direction: i18n.language === "ar" ? "rtl" : "ltr",
             slidesToScroll: "auto",
+            loop: isRelatedLoading
           }}
         >
           <CarouselContent className="-ml-2 md:-ml-4">
-            {relatedCourses.map((course) => (
-              <CarouselItem
-                key={course.id}
-                className="pl-2 md:pl-4 md:basis-1/2 xl:basis-1/3 flex"
-              >
-                <div className="w-full h-full">
-                  <SingleCourse grid={true} course={course} />
-                </div>
-              </CarouselItem>
-            ))}
+            {isRelatedLoading ? (
+              <>
+                <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 xl:basis-1/3 justify-center flex">
+                  <CourseSkeleton grid={true} />
+                </CarouselItem>
+                <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 xl:basis-1/3 justify-center flex">
+                  <CourseSkeleton grid={true} />
+                </CarouselItem>
+                <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 xl:basis-1/3 justify-center flex">
+                  <CourseSkeleton grid={true} />
+                </CarouselItem>
+                <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 xl:basis-1/3 justify-center flex">
+                  <CourseSkeleton grid={true} />
+                </CarouselItem>
+              </>
+            ) : (
+              relatedCourses.map((course) => (
+                <CarouselItem
+                  key={course.id}
+                  className="pl-2 md:pl-4 md:basis-1/2 xl:basis-1/3 flex"
+                >
+                  <div className="w-full h-full">
+                    <SingleCourse grid={true} course={course} />
+                  </div>
+                </CarouselItem>
+              ))
+            )}
           </CarouselContent>
           <CarouselPrevious
             className={`shadow-2xl bg-(--main-color) hover:bg-(--main-darker-color) hover:text-white text-white ${
