@@ -1,4 +1,7 @@
-import SpecialHeader from "@/components/SpecialHeader"
+"use client"
+
+import SpecialHeader from "@/components/SpecialHeader";
+import { useTranslation } from "react-i18next";
 import {
   BadgeCheck,
   Globe,
@@ -6,116 +9,79 @@ import {
   Loader,
   ScanEye,
   UserCheck,
-} from "lucide-react"
+} from "lucide-react";
 
 export default function WhyUs() {
+  const { t } = useTranslation();
+
+  const features = [
+    {
+      icon: Layers,
+      title: t("whyus.features.structuredLearning.title"),
+      description: t("whyus.features.structuredLearning.description"),
+    },
+    {
+      icon: UserCheck,
+      title: t("whyus.features.expertInstructors.title"),
+      description: t("whyus.features.expertInstructors.description"),
+    },
+    {
+      icon: ScanEye,
+      title: t("whyus.features.learnAtYourPace.title"),
+      description: t("whyus.features.learnAtYourPace.description"),
+    },
+    {
+      icon: Globe,
+      title: t("whyus.features.multilingualExperience.title"),
+      description: t("whyus.features.multilingualExperience.description"),
+    },
+    {
+      icon: Loader,
+      title: t("whyus.features.trackYourProgress.title"),
+      description: t("whyus.features.trackYourProgress.description"),
+    },
+    {
+      icon: BadgeCheck,
+      title: t("whyus.features.verifiedContent.title"),
+      description: t("whyus.features.verifiedContent.description"),
+    }
+  ];
+
   return (
-    <div className="container">
-        <SpecialHeader size="big" name="Why join Academix ?" />
-      <div className="flex flex-col md:flex-row justify-between">
-        <div>
-          <div className="item mt-10">
-            <div className="flex gap-4">
-              <div>
-                <Layers size={30} />
-              </div>
-              <div>
-                <h6 className="font-semibold text-[#333]">
-                  Structured Learning
-                </h6>
-                <p className="text-[#666]">
-                  Carefully organized courses with sections, lessons, and
-                  quizzes to keep learning focused and effective.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="item mt-10">
-            <div className="flex gap-4">
-              <div>
-                <UserCheck size={30} />
-              </div>
-              <div>
-                <h6 className="font-semibold text-[#333]">
-                  Expert Instructors
-                </h6>
-                <p className="text-[#666]">
-                  Learn from instructors with real-world experience, not just
-                  theory.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="item mt-10">
-            <div className="flex gap-4">
-              <div>
-                <ScanEye size={30} />
-              </div>
-              <div>
-                <h6 className="font-semibold text-[#333]">
-                  Learn at Your Pace
-                </h6>
-                <p className="text-[#666]">
-                  Access content anytime, anywhere, and learn on your own
-                  schedule.
-                </p>
-              </div>
-            </div>
-          </div>
+    <div className="from-gray-50 to-white">
+      <div className="container">
+        <div className="mb-16">
+          <SpecialHeader size="big" name={t("whyus.header")} />
         </div>
-        <div>
-          <div className="item mt-10">
-            <div className="flex gap-4">
-              <div>
-                <Globe size={30} />
-              </div>
-              <div>
-                <h6 className="font-semibold text-[#333]">
-                  Multilingual Experience
-                </h6>
-                <p className="text-[#666]">
-                  Full support for English and Arabic with a seamless
-                  experience.
-                </p>
-              </div>
-            </div>
-          </div>
 
-          <div className="item mt-10">
-            <div className="flex gap-4">
-              <div>
-                <Loader size={30} />
-              </div>
-              <div>
-                <h6 className="font-semibold text-[#333]">
-                  Track Your Progress
-                </h6>
-                <p className="text-[#666]">
-                  Stay motivated with clear progress tracking across lessons and
-                  courses.
-                </p>
-              </div>
-            </div>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {features.map((feature, index) => {
+            const Icon = feature.icon;
+            return (
+              <div
+                key={index}
+                className="group relative bg-white rounded-2xl p-6 duration-300 border"
+              >
+                <div className="relative z-10">
+                  <div className={`inline-flex items-center bg-orange-50 justify-center w-14 h-14 rounded-xl mb-4 shadow-lg`}>
+                    <Icon className="text-(--main-color)" size={26} />
+                  </div>
 
-          <div className="item mt-10">
-            <div className="flex gap-4">
-              <div>
-                <BadgeCheck size={30} />
+                  <h6 className="font-bold text-xl text-gray-900 mb-3">
+                    {feature.title}
+                  </h6>
+
+                  <p className="text-gray-600 leading-relaxed">
+                    {feature.description}
+                  </p>
+                </div>
+
+                <div className="absolute top-0 right-0 w-20 h-20 from-blue-100/50 to-purple-100/50 rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
-              <div>
-                <h6 className="font-semibold text-[#333]">Verified Content</h6>
-                <p className="text-[#666]">
-                  Courses are reviewed and approved to ensure quality and
-                  accuracy.
-                </p>
-              </div>
-            </div>
-          </div>
+            );
+          })}
         </div>
       </div>
     </div>
-  )
+  );
 }

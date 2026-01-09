@@ -17,7 +17,7 @@ export default function FeaturedCourses({ courses }: { courses: Course[] }) {
   const { t, i18n } = useTranslation()
   return (
     <div className="container">
-        <SpecialHeader size="big" name="Featured Courses" />
+        <SpecialHeader size="big" name={t("featuredCourses")} />
       <Carousel
         className="w-full"
         opts={{
@@ -53,7 +53,7 @@ export default function FeaturedCourses({ courses }: { courses: Course[] }) {
       <div className="w-fit m-auto">
         <Link
           href={`/courses?sortBy=rating_avg&orderedBy=desc`}
-          className="py-2 block px-5 border border-(--main-color) text-(--main-color) hover:bg-orange-100 cursor-pointer my-10"
+          className="py-2 block px-5 border border-(--main-color) text-(--main-color) hover:bg-orange-100 cursor-pointer mt-10"
         >
           {t("categories.showall")}
         </Link>

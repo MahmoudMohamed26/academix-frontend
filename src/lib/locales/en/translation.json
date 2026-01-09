@@ -2,6 +2,54 @@
   "welcome": "Welcome",
   "language": "Language",
   "genericError": "Something went wrong. Please try again later.",
+  "stats": {
+    "enrolledStudents": "+3515 Enrolled students",
+    "instructors": "+120 Instructors",
+    "courses": "+540 Courses",
+    "categories": "+40 Categories"
+  },
+  "featuredCourses": "Featured Courses",
+  "whyus": {
+    "header": "Why join Academix?",
+    "features": {
+      "structuredLearning": {
+        "title": "Structured Learning",
+        "description": "Carefully organized courses with sections, lessons, and quizzes to keep learning focused and effective."
+      },
+      "expertInstructors": {
+        "title": "Expert Instructors",
+        "description": "Learn from instructors with real-world experience, not just theory."
+      },
+      "learnAtYourPace": {
+        "title": "Learn at Your Pace",
+        "description": "Access content anytime, anywhere, and learn on your own schedule."
+      },
+      "multilingualExperience": {
+        "title": "Multilingual Experience",
+        "description": "Full support for English and Arabic with a seamless experience."
+      },
+      "trackYourProgress": {
+        "title": "Track Your Progress",
+        "description": "Stay motivated with clear progress tracking across lessons and courses."
+      },
+      "verifiedContent": {
+        "title": "Verified Content",
+        "description": "Courses are reviewed and approved to ensure quality and accuracy."
+      }
+    }
+  },
+  "becomeInstructor": {
+    "student": {
+      "title": "Learn Without Limits",
+      "description": "Access high-quality courses from expert instructors and learn at your own pace.",
+      "button": "Start Learning today"
+    },
+    "instructor": {
+      "title": "Become An Instructor",
+      "description": "Top instructors from around the world teach millions of students on Academix.",
+      "button": "Start Teaching today"
+    }
+  },
   "faq": {
     "title": "Frequently Asked Questions",
     "subtitle": "Everything you need to know about Academix Learning Management System",
