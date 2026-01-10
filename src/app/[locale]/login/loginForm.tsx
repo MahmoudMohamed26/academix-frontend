@@ -6,7 +6,7 @@ import * as Yup from "yup"
 import { toast } from "sonner"
 import axios, { isAxiosError } from "axios"
 import { useTranslation } from "react-i18next"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
@@ -21,6 +21,8 @@ export default function LoginForm() {
   const [load, setLoad] = useState(false)
   const { t } = useTranslation()
   const Axios = useAxios()
+  const searchParams = useSearchParams()
+  const redirect = searchParams.get("redirect")
   const router = useRouter()
 
   const validationSchema = Yup.object({
@@ -50,7 +52,11 @@ export default function LoginForm() {
       setLoad(true)
       await Axios.post(`/auth/login`, form.values)
       toast.success(t("login.success"))
-      router.replace("/")
+      if(redirect){
+        router.replace(redirect)
+      }else{
+        router.replace("/")
+      }
     } catch (err) {
       if (axios.isAxiosError(err)) {
         if (err.response?.status === 422 || err.response?.status === 401)

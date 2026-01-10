@@ -14,7 +14,7 @@ import Link from "next/link"
 import BtnLoad from "@/components/BtnLoad"
 import Input from "@/components/Input"
 import Logo from "@/components/Logo"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 
 export default function RegisterForm() {
   const [load, setLoad] = useState<boolean>(false)
@@ -22,6 +22,8 @@ export default function RegisterForm() {
   const router = useRouter()
   const [usedEmail, setUsedEmail] = useState<boolean>(false)
   const { i18n, t } = useTranslation()
+  const searchParams = useSearchParams()
+  const redirect = searchParams.get("redirect")
   const validationSchema = Yup.object({
     name: Yup.string()
       .required(t("register.errors.nameRequired"))
@@ -64,15 +66,21 @@ export default function RegisterForm() {
       setLoad(false)
       setUsedEmail(false)
       toast.success(t("register.success"))
-      router.replace("/")
+      if (redirect) {
+        router.replace(redirect)
+      } else {
+        router.replace("/")
+      }
     } catch (err) {
-      console.log(err);
+      console.log(err)
       setLoad(false)
       if (axios.isAxiosError(err)) {
-        if (err.response?.data.message === "The email has already been taken.") {
+        if (
+          err.response?.data.message === "The email has already been taken."
+        ) {
           setUsedEmail(true)
           toast.error(t("register.errors.emailExists"))
-        }else{
+        } else {
           toast.error(err.response?.data.message)
         }
       }
@@ -162,14 +170,10 @@ export default function RegisterForm() {
           </button>
         </form>
 
-        <div className="flex gap-2 flex-wrap">
-        </div>
+        <div className="flex gap-2 flex-wrap"></div>
         <p className="text-gray-600 text-sm mt-4">
           {t("register.alreadyHaveAccount")}{" "}
-          <Link
-            href="/login"
-            className="text-(--main-color) hover:underline"
-          >
+          <Link href="/login" className="text-(--main-color) hover:underline">
             {t("register.loginNow")}
           </Link>
         </p>
