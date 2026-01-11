@@ -345,9 +345,15 @@ export default function CourseDetailsClient() {
               {t("courseDetails.courseLevel")} {course?.level}
             </p>
             <div className="flex gap-2 mt-5">
-              <button className="w-full py-3 rounded-sm bg-(--main-color) border border-(--main-color) duration-300 text-white hover:bg-(--main-darker-color) cursor-pointer">
-                {t("courseDetails.enroll")}
-              </button>
+              {course?.enrolled ? (
+                <Link href={`/dashboard/my-learning`} className="w-full font-semibold text-center py-3 rounded-sm bg-(--main-color) border border-(--main-color) duration-300 text-white hover:bg-(--main-darker-color) cursor-pointer">
+                  {t("coursesPage.gotocourse")}
+                </Link>
+              ) : (
+                <button className="w-full py-3 font-semibold rounded-sm bg-(--main-color) border border-(--main-color) duration-300 text-white hover:bg-(--main-darker-color) cursor-pointer">
+                  {t("courseDetails.enroll")}
+                </button>
+              )}
               <button
                 aria-label="add wishlist"
                 className="border cursor-pointer duration-300 border-(--main-color) text-(--main-color) hover:bg-(--main-color) group p-2 rounded-sm"
@@ -375,7 +381,7 @@ export default function CourseDetailsClient() {
           opts={{
             direction: i18n.language === "ar" ? "rtl" : "ltr",
             slidesToScroll: "auto",
-            loop: isRelatedLoading
+            loop: isRelatedLoading,
           }}
         >
           <CarouselContent className="-ml-2 md:-ml-4">

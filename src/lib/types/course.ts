@@ -12,6 +12,7 @@ export interface Course {
   level: "beginner" | "intermediate" | "advanced"
   hours: number
   price: number
+  enrolled: boolean
   lectures_count: number
   video_url: string
   sections_count: number
