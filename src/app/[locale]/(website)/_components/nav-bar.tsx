@@ -134,12 +134,6 @@ export default function NavBar() {
               </span>
               <Heart className="text-[#666]" />
             </Link>
-            <Link href={"/cart"} className="relative">
-              <span className="text-xs text-white bg-red-600 rounded-full absolute -top-3 -end-3 px-[7px] py-0.5 ">
-                2
-              </span>
-              <ShoppingCart className="text-[#666]" />
-            </Link>
             <DropdownMenu>
               <DropdownMenuTrigger suppressHydrationWarning className="cursor-pointer">
                 <Avatar className="outline-none!">

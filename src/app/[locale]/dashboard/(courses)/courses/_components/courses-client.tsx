@@ -79,8 +79,6 @@ export default function Courses({
     queryFn: () => getPublishedCourses(Axios, url),
   })
 
-  console.log(courseData);
-
   const handleDeleteClick = (courseId: string) => {
     setSelectedCourseId(courseId)
     setIsDialogOpen(true)

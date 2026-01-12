@@ -32,6 +32,7 @@ import {
   Plus,
   NotebookText,
   Loader,
+  ChartNoAxesCombined,
 } from "lucide-react"
 import Logo from "@/components/Logo"
 import Skeleton from "react-loading-skeleton"
@@ -87,19 +88,25 @@ export function AppSidebar() {
       title: t("sidebar.home"),
       url: "/",
       icon: Home,
-      isActive: pathname === "/dashboard",
+      isActive: pathname === `/${currLang}`,
+    },
+    {
+      title: t("sidebar.dashboard"),
+      url: `/dashboard`,
+      icon: ChartNoAxesCombined,
+      isActive: pathname === `/${currLang}/dashboard`,
     },
     {
       title: t("sidebar.browseCourses"),
       url: "/courses",
       icon: Search,
-      isActive: pathname === "/courses",
+      isActive: pathname === `/${currLang}/courses`,
     },
     {
       title: t("sidebar.myLearning"),
-      url: "/learning",
+      url: "/dashboard/my-learning",
       icon: BookOpen,
-      isActive: pathname === "/learning",
+      isActive: pathname === `/${currLang}/dashboard/my-learning`,
     },
     {
       title: t("sidebar.certificates"),

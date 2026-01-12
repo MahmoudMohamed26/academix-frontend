@@ -81,7 +81,7 @@ export default function WebsiteSidebar({
     },
     {
       title: t("sidebar.myLearning"),
-      url: "/learning",
+      url: "/dashboard/my-learning",
       icon: BookOpen,
     },
     {
