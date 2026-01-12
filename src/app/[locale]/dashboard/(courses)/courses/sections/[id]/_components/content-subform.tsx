@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useFormik } from "formik"
 import * as Yup from "yup"
 import { useTranslation } from "react-i18next"
@@ -26,12 +26,13 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer"
 import QuizMaker from "./quiz-maker"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query"
 import useAxios from "@/hooks/useAxios"
 import { toast } from "sonner"
 import { ContentItem } from "@/lib/types/section"
 import { Quiz } from "@/lib/types/quiz"
 import { useMediaQuery } from "@/hooks/use-media-query"
+import { getLectureVideo } from "@/lib/api/Lectures"
 
 interface ContentSubFormProps {
   content: ContentItem
@@ -61,6 +62,14 @@ export default function ContentSubForm({
   const Axios = useAxios()
   const queryClient = useQueryClient()
 
+  const isNonLocalLecture = content.type === "lecture" && !content.id.startsWith("temp-")
+
+  const { data: lectureVideoUrl, isLoading: isLoadingVideoUrl } = useQuery({
+    queryKey: ["lecture_url", sectionId, content.id],
+    queryFn: () => getLectureVideo(Axios, courseId, sectionId, content.id),
+    enabled: isOpen && isNonLocalLecture,
+  })
+
   const calculatePosition = () => {
     const savedContentCount = allContent.filter(
       (item) => !item.id.startsWith("temp-")
@@ -85,10 +94,10 @@ export default function ContentSubForm({
 
   const lectureFormik = useFormik({
     initialValues: {
-      title: content.type === "lecture" ? content.title : "",
-      content: content.type === "lecture" ? content.content : "",
-      duration: content.type === "lecture" ? content.duration : 0,
-      video_url: content.type === "lecture" ? content.video_url : "",
+      title: content.type === "lecture" ? content.title || "" : "",
+      content: content.type === "lecture" ? content.content || "" : "",
+      duration: content.type === "lecture" ? content.duration || 0 : 0,
+      video_url: content.type === "lecture" ? content.video_url || "" : "",
     },
     enableReinitialize: true,
     validationSchema: lectureValidationSchema,
@@ -96,6 +105,12 @@ export default function ContentSubForm({
       saveLectureMutation.mutate(values)
     },
   })
+
+  useEffect(() => {
+    if (lectureVideoUrl && isNonLocalLecture) {
+      lectureFormik.setFieldValue("video_url", lectureVideoUrl)
+    }
+  }, [lectureVideoUrl, isNonLocalLecture])
 
   const saveLectureMutation = useMutation({
     mutationFn: async (values: any) => {
@@ -557,22 +572,26 @@ export default function ContentSubForm({
                         <label className="text-xs text-gray-700 font-[501]">
                           {t("Dashboard.SectionContent.videoUrl")}
                         </label>
-                        <input
-                          type="url"
-                          name="video_url"
-                          value={lectureFormik.values.video_url}
-                          onChange={lectureFormik.handleChange}
-                          onBlur={lectureFormik.handleBlur}
-                          className={`w-full text-sm outline-none my-1 border rounded-sm duration-200 p-2 focus:border-(--main-color) ${
-                            lectureFormik.touched.video_url &&
-                            lectureFormik.errors.video_url
-                              ? "border-red-500"
-                              : "border-[#e2e6f1]"
-                          }`}
-                          placeholder={t(
-                            "Dashboard.SectionContent.videoUrlPlaceholder"
-                          )}
-                        />
+                        {isLoadingVideoUrl && isNonLocalLecture ? (
+                          <div className="w-full h-9 my-1 bg-gray-200 animate-pulse rounded-sm" />
+                        ) : (
+                          <input
+                            type="url"
+                            name="video_url"
+                            value={lectureFormik.values.video_url}
+                            onChange={lectureFormik.handleChange}
+                            onBlur={lectureFormik.handleBlur}
+                            className={`w-full text-sm outline-none my-1 border rounded-sm duration-200 p-2 focus:border-(--main-color) ${
+                              lectureFormik.touched.video_url &&
+                              lectureFormik.errors.video_url
+                                ? "border-red-500"
+                                : "border-[#e2e6f1]"
+                            }`}
+                            placeholder={t(
+                              "Dashboard.SectionContent.videoUrlPlaceholder"
+                            )}
+                          />
+                        )}
                         {lectureFormik.touched.video_url &&
                           lectureFormik.errors.video_url && (
                             <p className="text-red-500 text-xs">

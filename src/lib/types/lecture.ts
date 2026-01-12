@@ -14,6 +14,10 @@ export type LocalLecture = {
   url: string
 }
 
+export interface LectureUrl {
+  video_url: string
+}
+
 export type ExistingLectureFormValues = Record<string, {
   title: string
   url: string
