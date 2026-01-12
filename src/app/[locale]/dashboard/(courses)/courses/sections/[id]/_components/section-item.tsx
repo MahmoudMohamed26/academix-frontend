@@ -415,11 +415,11 @@ export default function SectionItem({
 
                 {!section.id.startsWith("temp-") && (
                   <div className="mt-6 border-t border-gray-200 pt-4">
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="flex flex-wrap gap-2 items-center justify-between mb-4">
                       <h4 className="text-sm font-medium text-gray-700">
                         {t("Dashboard.SectionForm.contentCount", { count: contents.length })}
                       </h4>
-                      <div className="flex gap-2">
+                      <div className="flex flex-wrap gap-2">
                         <Button
                           type="button"
                           onClick={handleAddLecture}
