@@ -176,7 +176,7 @@ export default function SectionsForm() {
   return (
     <>
       <div className="px-2 py-4 mt-6 bg-[#ffff] rounded-md">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-wrap gap-2 items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-800">
             {t("Dashboard.SectionForm.courseSections")}
           </h3>

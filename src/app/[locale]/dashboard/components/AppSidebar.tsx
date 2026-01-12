@@ -319,7 +319,7 @@ export function AppSidebar() {
                       className="flex bg-orange-100 text-(--main-color) hover:bg-orange-100! hover:text-(--main-color)! justify-between"
                       href={`/categories`}
                     >
-                      Show All
+                      {t("categories.showall")}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

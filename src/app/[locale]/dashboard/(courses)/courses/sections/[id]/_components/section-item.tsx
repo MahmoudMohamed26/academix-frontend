@@ -42,6 +42,7 @@ import BtnLoad from "@/components/BtnLoad"
 import { Lecture } from "@/lib/types/lecture"
 import { Quiz } from "@/lib/types/quiz"
 import { ContentItem } from "@/lib/types/section"
+import { truncateText } from "@/helpers/word-cut"
 
 interface SectionItemProps {
   section: {
@@ -336,7 +337,7 @@ export default function SectionItem({
                     }`}
                   />
                   <span className="font-medium text-gray-700">
-                    {formik.values.title || section.title}
+                    {truncateText(formik.values.title, 20) || section.title}
                   </span>
                 </button>
               </CollapsibleTrigger>
