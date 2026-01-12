@@ -48,7 +48,7 @@ export function useDeleteCourse(axiosInstance: AxiosInstance) {
       await deleteCourse(axiosInstance, courseId);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['courses'] });
+      queryClient.invalidateQueries({ queryKey: ['published-courses'] });
     },
     onError: (error) => {
       console.error('Error deleting course:', error);
