@@ -23,14 +23,14 @@ import Link from "next/link"
 import ShowLinksComponent from "@/components/ShowLinks"
 import SectionItem from "./section-item"
 import avatarImg from "@/assets/avatar.webp"
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { getSections } from "@/lib/api/Sections"
 import useAxios from "@/hooks/useAxios"
 import Skeleton from "react-loading-skeleton"
 import ReviewsDialog from "./reviews-dialog"
 import { getCourse, getFilterdCourses } from "@/lib/api/Courses"
 import { useTranslation } from "react-i18next"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import "react-loading-skeleton/dist/skeleton.css"
 import VideoPreviewDialog from "./video-preview-dialog"
 import SpecialHeader from "@/components/SpecialHeader"
@@ -44,6 +44,8 @@ import {
 import SingleCourse from "@/components/SingleCourse"
 import { Course } from "@/lib/types/course"
 import CourseSkeleton from "@/components/course-skeleton"
+import { toast } from "sonner"
+import BtnLoad from "@/components/BtnLoad"
 
 const getStarDisplay = (rating: number) => {
   const fullStars = Math.floor(rating)
@@ -61,6 +63,8 @@ export default function CourseDetailsClient() {
   const [openReviews, setOpenReviews] = useState<boolean>(false)
   const [openPreview, setOpenPreview] = useState<boolean>(false)
   const Axios = useAxios()
+  const queryClient = useQueryClient()
+  const router = useRouter()
 
   const html = showAll ? cleanHtml : truncate(cleanHtml, 1000)
 
@@ -69,7 +73,7 @@ export default function CourseDetailsClient() {
     queryFn: () => getCourse(Axios, id),
     staleTime: 10 * 60 * 1000,
   })
-
+  console.log(course);
   const { data: sections, isLoading: sectionsLoading } = useQuery({
     queryKey: ["sections", course?.id],
     queryFn: () => getSections(Axios, course?.id),
@@ -87,6 +91,28 @@ export default function CourseDetailsClient() {
     enabled: !!course,
     staleTime: 10 * 60 * 1000,
   })
+
+  const enrollMutation = useMutation({
+    mutationFn: async (courseId: string | undefined) => {
+      const res = await Axios.post(`/courses/${courseId}/enroll`, {
+        course_id: courseId
+      })
+      return res
+    },
+    onSuccess: (courseId) => {
+      toast.success("Course enrolled successfully")
+      queryClient.invalidateQueries({ queryKey: ["course", courseId] })
+      queryClient.invalidateQueries({ queryKey: ["courses"] })
+      router.push(`/dashboard/my-learning`)
+    },
+    onError: () => {
+      toast.error(t("genericError"))
+    },
+  })
+
+  function handleEnroll(courseId: string | undefined){
+    enrollMutation.mutate(courseId)
+  }
 
   const relatedCourses: Course[] = relatedCoursesRes?.courses ?? []
 
@@ -346,12 +372,21 @@ export default function CourseDetailsClient() {
             </p>
             <div className="flex gap-2 mt-5">
               {course?.enrolled ? (
-                <Link href={`/dashboard/my-learning`} className="w-full font-semibold text-center py-3 rounded-sm bg-(--main-color) border border-(--main-color) duration-300 text-white hover:bg-(--main-darker-color) cursor-pointer">
+                <Link
+                  href={`/dashboard/my-learning`}
+                  className="w-full font-semibold text-center py-3 rounded-sm bg-(--main-color) border border-(--main-color) duration-300 text-white hover:bg-(--main-darker-color) cursor-pointer"
+                >
                   {t("coursesPage.gotocourse")}
                 </Link>
               ) : (
-                <button className="w-full py-3 font-semibold rounded-sm bg-(--main-color) border border-(--main-color) duration-300 text-white hover:bg-(--main-darker-color) cursor-pointer">
-                  {t("courseDetails.enroll")}
+                <button onClick={() => handleEnroll(course?.id)} disabled={enrollMutation.isPending} className="w-full disabled:opacity-50 disabled:cursor-not-allowed py-3 font-semibold rounded-sm bg-(--main-color) border border-(--main-color) duration-300 text-white hover:bg-(--main-darker-color) cursor-pointer">
+                  {enrollMutation.isPending ? (
+                    <div className="flex justify-center items-center">
+                      <BtnLoad size={24} />
+                    </div>
+                  ) : (
+                    t("courseDetails.enroll")
+                  )}
                 </button>
               )}
               <button
