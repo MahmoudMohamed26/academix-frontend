@@ -1,12 +1,18 @@
+"use client"
+
 import { EnrolledCourse } from "@/lib/types/enrolls"
+import { formatDate } from "date-fns"
 import Image from "next/image"
 import Link from "next/link"
+import { useTranslation } from "react-i18next"
 
 export default function LearnItem({
   enrollments,
 }: {
   enrollments: EnrolledCourse
 }) {
+  const { t } = useTranslation()
+
   return (
     <div className="block p-4 border rounded-md">
       <div className="flex flex-col lg:flex-row gap-4">
@@ -34,12 +40,18 @@ export default function LearnItem({
           </div>
           <div className="flex items-center flex-wrap gap-2 justify-between">
             <div className="flex gap-2 flex-wrap">
-              <span className="text-[12px] text-[#666] py-1 px-2 border rounded-sm">
-                Enrolled on {enrollments.started}
-              </span>
-              <span className="text-[12px] text-[#666] py-1 px-2 border rounded-sm">
-                Progress {enrollments.progress} %
-              </span>
+              {enrollments.started && (
+                <>
+                  <span className="text-[12px] text-[#666] py-1 px-2 border rounded-sm">
+                    {t("Dashboard.myLearning.enrolledOn")}{" "}
+                    {formatDate(enrollments.started, "MMMM dd, yyyy")}
+                  </span>
+                  <span className="text-[12px] text-[#666] py-1 px-2 border rounded-sm">
+                    {t("Dashboard.myLearning.progress")} {enrollments.progress}{" "}
+                    %
+                  </span>
+                </>
+              )}
               <span
                 className={`text-[12px] ${
                   enrollments.status === "pending"
@@ -47,7 +59,7 @@ export default function LearnItem({
                     : "border-green-300 bg-green-100 text-green-600"
                 } text-[#666] py-1 px-2 border rounded-sm`}
               >
-                {enrollments.status}
+                {t(`Dashboard.myLearning.status.${enrollments.status}`)}
               </span>
             </div>
             <div>
@@ -56,14 +68,14 @@ export default function LearnItem({
                   href={`/dashboard/my-learning/${enrollments.course_id}`}
                   className="py-2 px-4 block text-white rounded-sm bg-(--main-color) hover:bg-(--main-darker-color) duration-300 text-sm font-semibold"
                 >
-                  Watch now
+                  {t("Dashboard.myLearning.watchNow")}
                 </Link>
               ) : (
                 <Link
                   href={`/dashboard/pay/under-development`}
                   className="py-2 px-4 block text-white rounded-sm bg-(--main-color) hover:bg-(--main-darker-color) duration-300 text-sm font-semibold"
                 >
-                  Buy now
+                  {t("Dashboard.myLearning.buyNow")}
                 </Link>
               )}
             </div>

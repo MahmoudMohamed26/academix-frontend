@@ -305,6 +305,17 @@
       "deleteButton": "Yes, Delete",
       "RejectButton": "Yes, Reject"
     },
+    "myLearning": {
+      "title": "My Learning",
+      "enrolledOn": "Enrolled on",
+      "progress": "Progress",
+      "watchNow": "Watch now",
+      "buyNow": "Buy now",
+      "status": {
+        "pending": "Pending",
+        "active": "Active"
+      }
+    },
     "addCategory": {
       "title": "Add Category",
       "nameLabelEn": "English Category Name",

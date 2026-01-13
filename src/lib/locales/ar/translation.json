@@ -309,6 +309,17 @@
       "deleteButton": "نعم، حذف",
       "RejectButton": "نعم، رفض"
     },
+    "myLearning": {
+      "title": "دوراتي",
+      "enrolledOn": "تاريخ الالتحاق",
+      "progress": "التقدم",
+      "watchNow": "شاهد الآن",
+      "buyNow": "اشترِ الآن",
+      "status": {
+        "pending": "معلق",
+        "active": "مفعل"
+      }
+    },
     "addCategory": {
       "title": "إضافة فئة",
       "nameLabel": "اسم الفئة",
