@@ -1,4 +1,5 @@
 import SpecialHeader from "@/components/SpecialHeader"
+import MyLearningClient from "./_components/my-learning-client"
 
 export default function MyLearning({
   params,
@@ -8,7 +9,7 @@ export default function MyLearning({
   return (
     <div>
       <SpecialHeader name={"My Learning"} />
-      
+      <MyLearningClient />
     </div>
   )
 }

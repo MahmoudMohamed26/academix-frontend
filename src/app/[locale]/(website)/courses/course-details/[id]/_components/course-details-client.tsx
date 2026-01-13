@@ -382,7 +382,7 @@ export default function CourseDetailsClient() {
                 {t("courseDetails.courseVerified")}
               </span>
             </p>
-            <p className="text-3xl font-bold">${course?.price}</p>
+            <p className="text-3xl font-bold">{course?.price === 0 ? t("coursesPage.free") : `$${course?.price}`}</p>
             <p className="text-xs text-[#666]">
               {t("courseDetails.courseLevel")} {course?.level}
             </p>

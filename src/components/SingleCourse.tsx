@@ -74,7 +74,7 @@ export default function SingleCourse({
               </span>
             </div>
             <div className="mt-4 flex justify-between items-center">
-              <p className="text-3xl font-bold">${course.price}</p>
+              <p className="text-3xl font-bold">{course.price === 0 ? t("coursesPage.free") : `$${course.price}`}</p>
               <button className="bg-(--main-color) py-2 px-4 text-white text-sm rounded-md cursor-pointer duration-300 hover:bg-transparent border border-(--main-color) hover:text-(--main-color)">
                 {course.enrolled
                   ? t("coursesPage.view")
