@@ -30,7 +30,7 @@ import Skeleton from "react-loading-skeleton"
 import ReviewsDialog from "./reviews-dialog"
 import { getCourse, getFilterdCourses } from "@/lib/api/Courses"
 import { useTranslation } from "react-i18next"
-import { useParams, useRouter } from "next/navigation"
+import { useParams, usePathname, useRouter } from "next/navigation"
 import "react-loading-skeleton/dist/skeleton.css"
 import VideoPreviewDialog from "./video-preview-dialog"
 import SpecialHeader from "@/components/SpecialHeader"
@@ -46,6 +46,7 @@ import { Course } from "@/lib/types/course"
 import CourseSkeleton from "@/components/course-skeleton"
 import { toast } from "sonner"
 import BtnLoad from "@/components/BtnLoad"
+import { getUser } from "@/lib/api/User"
 
 const getStarDisplay = (rating: number) => {
   const fullStars = Math.floor(rating)
@@ -60,11 +61,13 @@ export default function CourseDetailsClient() {
   const { t, i18n } = useTranslation()
   const { id } = useParams()
   const [cleanHtml, setCleanHtml] = useState("")
+  const [enrollLoading, setEnrollLoading] = useState(false)
   const [openReviews, setOpenReviews] = useState<boolean>(false)
   const [openPreview, setOpenPreview] = useState<boolean>(false)
   const Axios = useAxios()
   const queryClient = useQueryClient()
   const router = useRouter()
+  const pathname = usePathname()
 
   const html = showAll ? cleanHtml : truncate(cleanHtml, 1000)
 
@@ -73,7 +76,7 @@ export default function CourseDetailsClient() {
     queryFn: () => getCourse(Axios, id),
     staleTime: 10 * 60 * 1000,
   })
-  console.log(course);
+  
   const { data: sections, isLoading: sectionsLoading } = useQuery({
     queryKey: ["sections", course?.id],
     queryFn: () => getSections(Axios, course?.id),
@@ -92,10 +95,17 @@ export default function CourseDetailsClient() {
     staleTime: 10 * 60 * 1000,
   })
 
+  const { data: user } = useQuery({
+    queryKey: ["loggedInUser"],
+    queryFn: () => getUser(Axios),
+    staleTime: 10 * 60 * 1000,
+    retry: false,
+  })
+
   const enrollMutation = useMutation({
     mutationFn: async (courseId: string | undefined) => {
       const res = await Axios.post(`/courses/${courseId}/enroll`, {
-        course_id: courseId
+        course_id: courseId,
       })
       return res
     },
@@ -110,8 +120,13 @@ export default function CourseDetailsClient() {
     },
   })
 
-  function handleEnroll(courseId: string | undefined){
-    enrollMutation.mutate(courseId)
+  function handleEnroll(courseId: string | undefined) {
+    if(!user){
+      setEnrollLoading(true);
+      router.push(`/login?redirect=${pathname}`)
+    }else{
+      enrollMutation.mutate(courseId)
+    }
   }
 
   const relatedCourses: Course[] = relatedCoursesRes?.courses ?? []
@@ -379,8 +394,12 @@ export default function CourseDetailsClient() {
                   {t("coursesPage.gotocourse")}
                 </Link>
               ) : (
-                <button onClick={() => handleEnroll(course?.id)} disabled={enrollMutation.isPending} className="w-full disabled:opacity-50 disabled:cursor-not-allowed py-3 font-semibold rounded-sm bg-(--main-color) border border-(--main-color) duration-300 text-white hover:bg-(--main-darker-color) cursor-pointer">
-                  {enrollMutation.isPending ? (
+                <button
+                  onClick={() => handleEnroll(course?.id)}
+                  disabled={enrollMutation.isPending || enrollLoading}
+                  className="w-full disabled:opacity-50 disabled:cursor-not-allowed py-3 font-semibold rounded-sm bg-(--main-color) border border-(--main-color) duration-300 text-white hover:bg-(--main-darker-color) cursor-pointer"
+                >
+                  {enrollMutation.isPending || enrollLoading ? (
                     <div className="flex justify-center items-center">
                       <BtnLoad size={24} />
                     </div>

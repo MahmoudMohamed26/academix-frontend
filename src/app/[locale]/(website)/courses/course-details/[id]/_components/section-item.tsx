@@ -1,18 +1,24 @@
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
 import { Lecture } from "@/lib/types/lecture"
 import { Quiz } from "@/lib/types/quiz"
 import { ContentItem, Section } from "@/lib/types/section"
 import { BookText, ChevronDown, MonitorPlay } from "lucide-react"
 import { useEffect, useState } from "react"
+import { useTranslation } from "react-i18next"
 
 interface SectionItemProbs {
-  section: Section,
+  section: Section
   last: boolean
 }
 
 export default function SectionItem({ section, last }: SectionItemProbs) {
   const [open, setOpen] = useState<boolean>()
   const [contents, setContents] = useState<ContentItem[]>([])
+  const { t } = useTranslation()
 
   useEffect(() => {
     const lectureContents: Lecture[] = (section.lectures || []).map(
@@ -33,8 +39,14 @@ export default function SectionItem({ section, last }: SectionItemProbs) {
   }, [section.lectures, section.quizzes])
 
   return (
-    <Collapsible open={open} className={`border ${(!last && open) ? "border-b-transparent" : ""}`} onOpenChange={setOpen}>
-      <CollapsibleTrigger className={`p-4 bg-gray-100 ${open ? "border-b" : ""} w-full text-left`}>
+    <Collapsible
+      open={open}
+      className={`border ${!last && open ? "border-b-transparent" : ""}`}
+      onOpenChange={setOpen}
+    >
+      <CollapsibleTrigger
+        className={`p-4 bg-gray-100 ${open ? "border-b" : ""} w-full text-left`}
+      >
         <div className="flex gap-4 items-center">
           <ChevronDown
             className={`h-4 w-4 transition-transform ${
@@ -45,19 +57,34 @@ export default function SectionItem({ section, last }: SectionItemProbs) {
         </div>
       </CollapsibleTrigger>
       <CollapsibleContent>
-      <ul>
-        {contents.map((content) => (
-        <li key={content.id} className="flex text-[#666] p-3 text-sm justify-between items-center">
-          <p className="flex gap-2 items-center">
-            {content.type === "lecture" ? <MonitorPlay size={14} /> : <BookText size={14} />}
-            <span>{content.title}</span>
-          </p>
-          <p>
-            {content.type === "lecture" ? <span>{content.duration} minute</span> : <span>{content.time_limit} minute quiz</span>}
-          </p>
-        </li>
-      ))}
-      </ul>
+        <ul>
+          {contents.map((content) => (
+            <li
+              key={content.id}
+              className="flex text-[#666] p-3 text-sm justify-between items-center"
+            >
+              <p className="flex gap-2 items-center">
+                {content.type === "lecture" ? (
+                  <MonitorPlay size={14} />
+                ) : (
+                  <BookText size={14} />
+                )}
+                <span>{content.title}</span>
+              </p>
+              <p>
+                {content.type === "lecture" ? (
+                  <span>
+                    {content.duration} {t("courseDetails.minute")}
+                  </span>
+                ) : (
+                  <span>
+                    {content.points} {t("courseDetails.point")}
+                  </span>
+                )}
+              </p>
+            </li>
+          ))}
+        </ul>
       </CollapsibleContent>
     </Collapsible>
   )

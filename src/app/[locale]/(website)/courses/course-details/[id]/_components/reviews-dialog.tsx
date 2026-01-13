@@ -26,6 +26,7 @@ import { Review } from "@/lib/types/review"
 import { getUser } from "@/lib/api/User"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 interface ReviewDialog {
   course: Course
@@ -50,6 +51,7 @@ export default function ReviewsDialog({ course, open, setOpen }: ReviewDialog) {
   const Axios = useAxios()
   const { t, i18n } = useTranslation()
   const queryClient = useQueryClient()
+  const pathname = usePathname()
 
   const reviewSchema = Yup.object({
     rate: Yup.number()
@@ -205,8 +207,8 @@ export default function ReviewsDialog({ course, open, setOpen }: ReviewDialog) {
         )}
         {!user ? (
           <div className="bg-white flex flex-col sm:flex-row gap-2 sticky bottom-0 py-2">
-            <Link href={`/login?redirect=${window.location.href}`} className="block border border-(--main-color) text-sm font-semibold w-full bg-(--main-color) text-white py-2 rounded-sm text-center hover:bg-(--main-darker-color) duration-300">Login</Link>
-            <Link href={`/register?redirect=${window.location.href}`} className="block text-sm border text-(--main-color) border-(--main-color) hover:bg-orange-50 font-semibold w-full py-2 rounded-sm text-center">Signup</Link>
+            <Link href={`/login?redirect=${pathname}`} className="block border border-(--main-color) text-sm font-semibold w-full bg-(--main-color) text-white py-2 rounded-sm text-center hover:bg-(--main-darker-color) duration-300">Login</Link>
+            <Link href={`/register?redirect=${pathname}`} className="block text-sm border text-(--main-color) border-(--main-color) hover:bg-orange-50 font-semibold w-full py-2 rounded-sm text-center">Signup</Link>
           </div>
         ) : (
           <div className=" py-2 space-y-4 start-0 sticky bg-white bottom-0">

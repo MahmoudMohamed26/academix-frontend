@@ -30,6 +30,10 @@ export interface Course {
   }
 }
 
+export interface EnrolledCourse {
+  
+}
+
 export interface CourseLinks {
   next_cursor: string | null
   per_page: number

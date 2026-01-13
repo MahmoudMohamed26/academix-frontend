@@ -60,9 +60,9 @@ export default function WhyUs() {
             return (
               <div
                 key={index}
-                className="group relative bg-white rounded-2xl p-6 duration-300 border"
+                className="group rounded-2xl p-6 duration-300 border"
               >
-                <div className="relative z-10">
+                <div>
                   <div className={`inline-flex items-center bg-orange-50 justify-center w-14 h-14 rounded-xl mb-4 shadow-lg`}>
                     <Icon className="text-(--main-color)" size={26} />
                   </div>

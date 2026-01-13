@@ -77,7 +77,7 @@ export default function SingleCourse({
               <p className="text-3xl font-bold">${course.price}</p>
               <button className="bg-(--main-color) py-2 px-4 text-white text-sm rounded-md cursor-pointer duration-300 hover:bg-transparent border border-(--main-color) hover:text-(--main-color)">
                 {course.enrolled
-                  ? t("coursesPage.gotocourse")
+                  ? t("coursesPage.view")
                   : t("coursesPage.enroll")}
               </button>
             </div>
