@@ -109,10 +109,11 @@ export default function CourseDetailsClient() {
       })
       return res
     },
-    onSuccess: (courseId) => {
+    onSuccess: () => {
       toast.success("Course enrolled successfully")
-      queryClient.invalidateQueries({ queryKey: ["course", courseId] })
+      queryClient.invalidateQueries({ queryKey: ["course", id] })
       queryClient.invalidateQueries({ queryKey: ["courses"] })
+      queryClient.invalidateQueries({ queryKey: ["enrollments"] })
       router.push(`/dashboard/my-learning`)
     },
     onError: () => {
