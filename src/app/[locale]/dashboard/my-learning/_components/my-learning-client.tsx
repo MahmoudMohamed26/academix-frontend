@@ -10,7 +10,7 @@ import Skeleton from "react-loading-skeleton"
 export default function MyLearningClient() {
   const Axios = useAxios()
   const { data: enrollmentsRes, isLoading: enrollmentsLoading } = useQuery({
-    queryKey: ["enrollments"],
+    queryKey: ["loggedInUser", "enrollments"],
     queryFn: () => getEnrollments(Axios),
     staleTime: 10 * 60 * 1000,
   })

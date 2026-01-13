@@ -11,12 +11,6 @@ export default function SidebarSkeleton() {
       <Skeleton width={80} />
       <Skeleton />
       <Skeleton width={100} />
-      <div className="mt-5"></div>
-      <Skeleton height={69} />
-      <Skeleton height={69} />
-      <Skeleton height={69} />
-      <Skeleton height={69} />
-      <div className="mt-5"></div>
       <Skeleton width={100} />
       <Skeleton width={200} />
       <Skeleton width={80} />
@@ -24,6 +18,11 @@ export default function SidebarSkeleton() {
       <Skeleton width={180} />
       <Skeleton width={40} />
       <Skeleton width={80} />
+      <div className="mt-5"></div>
+      <Skeleton height={69} />
+      <Skeleton height={69} />
+      <Skeleton height={69} />
+      <div className="mt-5"></div>
       <Skeleton width={170} />
       <Skeleton width={140} />
       <Skeleton width={160} />

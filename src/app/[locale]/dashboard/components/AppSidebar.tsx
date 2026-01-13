@@ -52,6 +52,9 @@ import { Category } from "@/lib/types/category"
 import { getUser } from "@/lib/api/User"
 import Image from "next/image"
 import avatarFallbackImage from "@/assets/avatar.webp"
+import { getEnrollments } from "@/lib/api/Enrollment"
+import { EnrolledCourse } from "@/lib/types/enrolls"
+import { truncateText } from "@/helpers/word-cut"
 
 export function AppSidebar() {
   const { i18n, t } = useTranslation()
@@ -74,6 +77,12 @@ export function AppSidebar() {
   const { data: categories = [], isLoading: catsLoading } = useQuery({
     queryKey: ["categories"],
     queryFn: () => getCategories(Axios),
+    staleTime: 10 * 60 * 1000,
+  })
+
+  const { data: enrollmentsRes, isLoading: enrollmentsLoading } = useQuery({
+    queryKey: ["loggedInUser", "enrollments"],
+    queryFn: () => getEnrollments(Axios),
     staleTime: 10 * 60 * 1000,
   })
 
@@ -116,13 +125,9 @@ export function AppSidebar() {
     },
   ]
 
-  const recentCourses = [
-    { title: "React Fundamentals", progress: 75, instructor: "John Doe" },
-    { title: "Python for Beginners", progress: 45, instructor: "Jane Smith" },
-    { title: "UI/UX Design", progress: 90, instructor: "Mike Johnson" },
-  ]
-
-  const secondname = user?.name.split(" ")[1] || ""
+  const enrollments: EnrolledCourse[] = enrollmentsRes?.enrollments || []
+  const filterEnrollments = enrollments.filter((el) => el.status === "active")
+  console.log(filterEnrollments)
 
   async function logout() {
     try {
@@ -152,7 +157,7 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
 
-      {catsLoading ? (
+      {catsLoading || enrollmentsLoading ? (
         <SidebarSkeleton />
       ) : (
         <SidebarContent>
@@ -276,31 +281,33 @@ export function AppSidebar() {
           </SidebarGroup>
 
           {/* Continue Learning */}
-          <SidebarGroup>
-            <SidebarGroupLabel>
-              {t("sidebar.continueLearning")}
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-              <div className="space-y-3 px-2">
-                {recentCourses.map((course, index) => (
-                  <div key={index} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-sm font-medium text-gray-900 truncate">
-                        {course.title}
-                      </h4>
-                      <span className="text-xs text-gray-500">
-                        {course.progress}%
-                      </span>
-                    </div>
-                    <Progress value={course.progress} />
-                    <p className="text-xs text-gray-600">
-                      {t("sidebar.by")} {course.instructor}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </SidebarGroupContent>
-          </SidebarGroup>
+          {filterEnrollments.length > 0 && (
+            <SidebarGroup>
+              <SidebarGroupLabel>
+                {t("sidebar.continueLearning")}
+              </SidebarGroupLabel>
+              <SidebarGroupContent>
+                <div className="space-y-3 px-2">
+                  {filterEnrollments.slice(0,3).map((course, index) => (
+                    <Link href={`/dashboard/my-learning/${course.course_id}`} key={index} className="space-y-2 py-1 px-2 hover:bg-sidebar-accent rounded-md block">
+                      <div className="flex gap-4 items-center justify-between">
+                        <h4 className="text-sm font-medium text-gray-900">
+                          {truncateText(course.title, 24)}
+                        </h4>
+                        <span className="text-xs text-gray-500">
+                          {course.progress}%
+                        </span>
+                      </div>
+                      <Progress value={course.progress} />
+                      <p className="text-xs text-gray-600">
+                        {t("sidebar.by")} Mahmoud Kamel
+                      </p>
+                    </Link>
+                  ))}
+                </div>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          )}
 
           {/* Dynamic Categories */}
           <SidebarGroup>
