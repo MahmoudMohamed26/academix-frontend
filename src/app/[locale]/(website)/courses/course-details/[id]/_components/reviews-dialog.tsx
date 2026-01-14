@@ -207,78 +207,90 @@ export default function ReviewsDialog({ course, open, setOpen }: ReviewDialog) {
         )}
         {!user ? (
           <div className="bg-white flex flex-col sm:flex-row gap-2 sticky bottom-0 py-2">
-            <Link href={`/login?redirect=${pathname}`} className="block border border-(--main-color) text-sm font-semibold w-full bg-(--main-color) text-white py-2 rounded-sm text-center hover:bg-(--main-darker-color) duration-300">Login</Link>
-            <Link href={`/register?redirect=${pathname}`} className="block text-sm border text-(--main-color) border-(--main-color) hover:bg-orange-50 font-semibold w-full py-2 rounded-sm text-center">Signup</Link>
+            <Link
+              href={`/login?redirect=${pathname}`}
+              className="block border border-(--main-color) text-sm font-semibold w-full bg-(--main-color) text-white py-2 rounded-sm text-center hover:bg-(--main-darker-color) duration-300"
+            >
+              Login
+            </Link>
+            <Link
+              href={`/register?redirect=${pathname}`}
+              className="block text-sm border text-(--main-color) border-(--main-color) hover:bg-orange-50 font-semibold w-full py-2 rounded-sm text-center"
+            >
+              Signup
+            </Link>
           </div>
         ) : (
-          <div className=" py-2 space-y-4 start-0 sticky bg-white bottom-0">
-            <div className="flex items-start gap-3">
-              <Avatar className="w-12 h-12">
-                <AvatarImage
-                  alt={`${user?.name} avatar`}
-                  src={user?.avatar_url as any}
-                />
-                <AvatarFallback>
-                  <img src={avatarImg.src as any} alt="avatar fall back" />
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <h3 className="text-sm font-semibold mb-1 text-[#333]">
-                  {user?.name}
-                </h3>
-                <div className="mb-3">
-                  <div
-                    className="flex gap-1 mb-1"
-                    onMouseLeave={() => setHoveredStar(0)}
-                  >
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star
-                        key={star}
-                        size={14}
-                        className="cursor-pointer transition-colors"
-                        fill={
-                          star <= (hoveredStar || formik.values.rate)
-                            ? "#C67514"
-                            : "none"
-                        }
-                        color="#C67514"
-                        onClick={() => handleStarClick(star)}
-                        onMouseEnter={() => setHoveredStar(star)}
-                      />
-                    ))}
+          course.enrolled && (
+            <div className=" py-2 space-y-4 start-0 sticky bg-white bottom-0">
+              <div className="flex items-start gap-3">
+                <Avatar className="w-12 h-12">
+                  <AvatarImage
+                    alt={`${user?.name} avatar`}
+                    src={user?.avatar_url as any}
+                  />
+                  <AvatarFallback>
+                    <img src={avatarImg.src as any} alt="avatar fall back" />
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1">
+                  <h3 className="text-sm font-semibold mb-1 text-[#333]">
+                    {user?.name}
+                  </h3>
+                  <div className="mb-3">
+                    <div
+                      className="flex gap-1 mb-1"
+                      onMouseLeave={() => setHoveredStar(0)}
+                    >
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          size={14}
+                          className="cursor-pointer transition-colors"
+                          fill={
+                            star <= (hoveredStar || formik.values.rate)
+                              ? "#C67514"
+                              : "none"
+                          }
+                          color="#C67514"
+                          onClick={() => handleStarClick(star)}
+                          onMouseEnter={() => setHoveredStar(star)}
+                        />
+                      ))}
+                    </div>
                   </div>
-                </div>
 
-                <textarea
-                  placeholder={t("courseDetails.shareThoughts")}
-                  className="min-h-20 resize-none outline-none border p-2 text-sm text-[#666] duration-300 focus:border-(--main-color) w-full rounded-sm"
-                  value={formik.values.comment}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  name="comment"
-                />
-                {formik.touched.comment && formik.errors.comment && (
-                  <span className="text-xs text-red-500 mt-1">
-                    {formik.errors.comment}
-                    {formik.touched.rate && formik.errors.rate && (
-                      <span className="text-xs text-red-500">
-                        , {formik.errors.rate}
-                      </span>
-                    )}
-                  </span>
-                )}
-                <Button
-                  onClick={() => formik.handleSubmit()}
-                  className="mt-3 block bg-(--main-color) hover:bg-(--main-darker-color)"
-                  disabled={mutation.isPending}
-                >
-                  {mutation.isPending
-                    ? t("courseDetails.submitting")
-                    : t("courseDetails.submitReview")}
-                </Button>
+                  <textarea
+                    placeholder={t("courseDetails.shareThoughts")}
+                    className="min-h-20 resize-none outline-none border p-2 text-sm text-[#666] duration-300 focus:border-(--main-color) w-full rounded-sm"
+                    value={formik.values.comment}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    name="comment"
+                  />
+                  {formik.touched.comment && formik.errors.comment && (
+                    <span className="text-xs text-red-500 mt-1">
+                      {formik.errors.comment}
+                      {formik.touched.rate && formik.errors.rate && (
+                        <span className="text-xs text-red-500">
+                          , {formik.errors.rate}
+                        </span>
+                      )}
+                    </span>
+                  )}
+                  <Button
+                    onClick={() => formik.handleSubmit()}
+                    className="mt-3 block bg-(--main-color) hover:bg-(--main-darker-color)"
+                    disabled={mutation.isPending}
+                  >
+                    {mutation.isPending
+                      ? t("courseDetails.submitting")
+                      : t("courseDetails.submitReview")}
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
+          )
         )}
       </div>
     </div>
