@@ -40,10 +40,12 @@ export default function WatchLecture() {
     enabled: isVideo,
   })
 
+  console.log(course?.created);
+
   const [expandDesc, setExpandDesc] = useState<boolean>(false)
   return (
     <>
-      {lectureLoading || urlLoading ? (
+      {isLoading || (isVideo && (lectureLoading || urlLoading)) ? (
         <>
           <div>
             <Skeleton className="aspect-[2/1.11]!" />
@@ -78,7 +80,7 @@ export default function WatchLecture() {
               Last update {formatDate(isVideo ? lecture?.updated as any : course?.updated as any, "MMMM dd, yyyy")}
             </span>
             <p className="mt-4 text-[#333]">
-              {lecture?.content.length as any > 40
+              {!isVideo ? course?.short_description : lecture?.content.length as any > 40
                 ? expandDesc
                   ? lecture?.content
                   : truncateText(lecture?.content as any, 40)
