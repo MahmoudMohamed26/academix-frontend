@@ -15,6 +15,7 @@ import BtnLoad from "@/components/BtnLoad"
 import Input from "@/components/Input"
 import Logo from "@/components/Logo"
 import { useRouter, useSearchParams } from "next/navigation"
+import { useRedirectParam } from "@/hooks/user-redirect"
 
 export default function RegisterForm() {
   const [load, setLoad] = useState<boolean>(false)
@@ -22,8 +23,7 @@ export default function RegisterForm() {
   const router = useRouter()
   const [usedEmail, setUsedEmail] = useState<boolean>(false)
   const { i18n, t } = useTranslation()
-  const searchParams = useSearchParams()
-  const redirect = searchParams.get("redirect")
+  const redirect = useRedirectParam()
   const validationSchema = Yup.object({
     name: Yup.string()
       .required(t("register.errors.nameRequired"))

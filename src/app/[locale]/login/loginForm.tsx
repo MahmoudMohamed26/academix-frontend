@@ -16,13 +16,13 @@ import Input from "@/components/Input"
 import Logo from "@/components/Logo"
 import Language from "@/components/Language"
 import useAxios from "@/hooks/useAxios"
+import { useRedirectParam } from "@/hooks/user-redirect"
 
 export default function LoginForm() {
   const [load, setLoad] = useState(false)
   const { t } = useTranslation()
   const Axios = useAxios()
-  const searchParams = useSearchParams()
-  const redirect = searchParams.get("redirect")
+  const redirect = useRedirectParam()
   const router = useRouter()
 
   const validationSchema = Yup.object({
