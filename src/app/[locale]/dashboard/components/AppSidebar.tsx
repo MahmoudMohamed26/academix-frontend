@@ -127,7 +127,6 @@ export function AppSidebar() {
 
   const enrollments: EnrolledCourse[] = enrollmentsRes?.enrollments || []
   const filterEnrollments = enrollments.filter((el) => el.status === "active")
-  console.log(filterEnrollments)
 
   async function logout() {
     try {
@@ -287,7 +286,7 @@ export function AppSidebar() {
                 {t("sidebar.continueLearning")}
               </SidebarGroupLabel>
               <SidebarGroupContent>
-                <div className="space-y-3 px-2">
+                <div className="space-y-3">
                   {filterEnrollments.slice(0,3).map((course, index) => (
                     <Link href={`/dashboard/my-learning/${course.course_id}`} key={index} className="space-y-2 py-1 px-2 hover:bg-sidebar-accent rounded-md block">
                       <div className="flex gap-4 items-center justify-between">

@@ -311,6 +311,8 @@
       "progress": "Progress",
       "watchNow": "Watch now",
       "buyNow": "Buy now",
+      "noEnroll": "You have no enrolled courses yet.",
+      "browseCourses": "Browse Courses",
       "status": {
         "pending": "Pending",
         "active": "Active"

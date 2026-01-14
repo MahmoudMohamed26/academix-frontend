@@ -6,9 +6,12 @@ import { EnrolledCourse } from "@/lib/types/enrolls"
 import { useQuery } from "@tanstack/react-query"
 import LearnItem from "./learn-item"
 import Skeleton from "react-loading-skeleton"
+import Link from "next/link"
+import { useTranslation } from "react-i18next"
 
 export default function MyLearningClient() {
   const Axios = useAxios()
+  const { t } = useTranslation()
   const { data: enrollmentsRes, isLoading: enrollmentsLoading } = useQuery({
     queryKey: ["loggedInUser", "enrollments"],
     queryFn: () => getEnrollments(Axios),
@@ -17,7 +20,6 @@ export default function MyLearningClient() {
 
   const enrollments: EnrolledCourse[] = enrollmentsRes?.enrollments || []
   const enrollmentsPagination = enrollmentsRes?.links ?? []
-  console.log(enrollments)
 
   return (
     <>
@@ -34,6 +36,7 @@ export default function MyLearningClient() {
               <LearnItem enrollments={course} />
             </div>
           ))}
+          {enrollments.length === 0 && <p className="text-[#666] font-semibold">{t("Dashboard.myLearning.noEnroll")} <Link className="font-semibold text-(--main-color) hover:underline" href={`/courses`}>{t("Dashboard.myLearning.browseCourses")}</Link></p>}
         </div>
       )}
     </>

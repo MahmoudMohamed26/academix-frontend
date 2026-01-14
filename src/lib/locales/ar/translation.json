@@ -315,6 +315,8 @@
       "progress": "التقدم",
       "watchNow": "شاهد الآن",
       "buyNow": "اشترِ الآن",
+      "noEnroll": "لا تمتلك اي دورات مسجلة الان.",
+      "browseCourses": "تصفح الدورات",
       "status": {
         "pending": "معلق",
         "active": "مفعل"
