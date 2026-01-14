@@ -26,6 +26,9 @@ export default function SidebarSkeleton() {
       <Skeleton width={170} />
       <Skeleton width={140} />
       <Skeleton width={160} />
+      <Skeleton width={120} />
+      <Skeleton width={160} />
+      <Skeleton width={180} />
       <Skeleton width={110} />
     </div>
   );

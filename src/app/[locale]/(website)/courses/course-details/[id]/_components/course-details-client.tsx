@@ -85,7 +85,7 @@ export default function CourseDetailsClient() {
   })
 
   const { data: relatedCoursesRes, isLoading: isRelatedLoading } = useQuery({
-    queryKey: ["relatedCoursesRes", course?.id],
+    queryKey: ["relatedCoursesRes", course?.category.id],
     queryFn: () =>
       getFilterdCourses(
         Axios,

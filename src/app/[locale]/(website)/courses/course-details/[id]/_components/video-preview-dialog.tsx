@@ -27,7 +27,7 @@ export default function VideoPreviewDialog({
         <iframe
           className="w-full h-full"
           src={toYoutubeEmbed(video)}
-          title="YouTube video player"
+          title="Course preview video"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
         ></iframe>

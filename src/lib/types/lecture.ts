@@ -6,6 +6,8 @@ export interface Lecture {
   position: number
   duration: number
   video_url: string
+  created: string
+  updated: string
 }
 
 export type LocalLecture = {
