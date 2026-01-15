@@ -9,12 +9,14 @@ import { useQuery } from "@tanstack/react-query"
 import { formatDate } from "date-fns"
 import { useParams, useSearchParams } from "next/navigation"
 import { useState } from "react"
+import { useTranslation } from "react-i18next"
 import Skeleton from "react-loading-skeleton"
 
 export default function WatchLecture() {
   const { id } = useParams()
   const Axios = useAxios()
   const searchParams = useSearchParams()
+  const { t } = useTranslation()
 
   const sectionId = searchParams.get("section")
   const lectureId = searchParams.get("v")
@@ -73,11 +75,11 @@ export default function WatchLecture() {
             className="bg-gray-100 cursor-pointer hover:bg-gray-200 my-2 text-sm py-4 px-2 w-full text-start rounded-md"
           >
             <span className="text-xs text-[#666]">
-              Created {formatDate(isVideo ? lecture?.created as any : course?.created as any, "MMMM dd, yyyy")},
+              {t("Dashboard.myLearning.created")} {formatDate(isVideo ? lecture?.created as any : course?.created as any, "MMMM dd, yyyy")},
             </span>
             <span className="text-xs text-[#666]">
               {" "}
-              Last update {formatDate(isVideo ? lecture?.updated as any : course?.updated as any, "MMMM dd, yyyy")}
+              {t("Dashboard.myLearning.updated")} {formatDate(isVideo ? lecture?.updated as any : course?.updated as any, "MMMM dd, yyyy")}
             </span>
             <p className="mt-4 text-[#333]">
               {!isVideo ? course?.short_description : lecture?.content.length as any > 40

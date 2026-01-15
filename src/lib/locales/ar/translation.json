@@ -320,7 +320,10 @@
       "status": {
         "pending": "معلق",
         "active": "مفعل"
-      }
+      },
+      "updated": "اخر تحديث",
+      "created": "تم انشاءه",
+      "sections": "الأقسام"
     },
     "addCategory": {
       "title": "إضافة فئة",

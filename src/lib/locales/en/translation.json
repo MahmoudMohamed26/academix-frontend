@@ -316,7 +316,10 @@
       "status": {
         "pending": "Pending",
         "active": "Active"
-      }
+      },
+      "updated": "Last Update",
+      "created": "Created",
+      "sections": "Sections"
     },
     "addCategory": {
       "title": "Add Category",
