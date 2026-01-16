@@ -36,12 +36,14 @@ type WebsiteSidebarProps = {
   image?: string | null
   name?: string
   logout?: any
+  loading: boolean
 }
 
 export default function WebsiteSidebar({
   image,
   name,
   logout,
+  loading,
 }: WebsiteSidebarProps) {
   const { t, i18n } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
@@ -169,7 +171,8 @@ export default function WebsiteSidebar({
                   >
                     <SidebarMenuButton
                       onClick={logout}
-                      className="text-red-500 hover:text-red-500 cursor-pointer"
+                      disabled={loading}
+                      className="text-red-500 disabled:opacity-50 hover:text-red-500 cursor-pointer"
                     >
                       <LogOut />
                       {t("sidebar.logout")}

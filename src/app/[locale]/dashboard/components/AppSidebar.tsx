@@ -62,6 +62,7 @@ export function AppSidebar() {
   const router = useRouter()
   const pathname = usePathname()
   const [openCourses, setOpenCourses] = useState(false)
+  const [loading , setLoading] = useState<boolean>(false)
   const [openCategories, setOpenCategories] = useState(false)
 
   const { setOpenMobile } = useSidebar()
@@ -130,6 +131,7 @@ export function AppSidebar() {
 
   async function logout() {
     try {
+      setLoading(true)
       await Axios.post("/auth/logout")
       toast.success(t("sidebar.logoutSuccess"))
       queryClient.removeQueries({ queryKey: ["loggedInUser"] })
@@ -138,6 +140,7 @@ export function AppSidebar() {
     } catch (err) {
       console.log(err)
       toast.error(t("genericError"))
+      setLoading(false)
     }
   }
   const getCategoryName = (category: Category) => {
@@ -400,14 +403,14 @@ export function AppSidebar() {
                 </p>
                 <p className="text-xs text-gray-600 truncate">{user?.email}</p>
               </div>
-              <div title="Logout" onClick={logout}>
+              <button className="disabled:cursor-not-allowed cursor-pointer disabled:opacity-50" disabled={loading} title="Logout" onClick={logout}>
                 <LogOut
-                  className={`text-red-400 cursor-pointer ${
+                  className={`text-red-400 ${
                     i18n.language === "ar" && "rotate-180"
                   } duration-300 hover:text-red-700`}
                   size={20}
                 />
-              </div>
+              </button>
             </div>
           </>
         )}

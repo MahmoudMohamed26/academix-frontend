@@ -38,7 +38,8 @@ import { useState } from "react"
 export default function NavBar() {
   const { t, i18n } = useTranslation()
   const Axios = useAxios()
-  const [open , setOpen] = useState(false);
+  const [open , setOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false)
 
   const { data: user, isLoading: userLoading } = useQuery({
     queryKey: ["loggedInUser"],
@@ -75,6 +76,7 @@ export default function NavBar() {
 
   async function logout() {
     try {
+      setLoading(true)
       await Axios.post("/auth/logout")
       toast.success(t("sidebar.logoutSuccess"))
       queryClient.removeQueries({ queryKey: ["loggedInUser"] })
@@ -82,6 +84,7 @@ export default function NavBar() {
     } catch (err) {
       console.log(err)
       toast.error(t("genericError"))
+      setLoading(false)
     }
   }
   return (
@@ -191,8 +194,9 @@ export default function NavBar() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   dir={i18n.language === "ar" ? "rtl" : "ltr"}
-                  className="cursor-pointer p-1.5! text-red-500 hover:text-red-500!"
+                  className="cursor-pointer disabled:opacity-50 p-1.5! text-red-500 hover:text-red-500!"
                   onClick={logout}
+                  disabled={loading}
                 >
                   <LogOut
                     className={`${i18n.language === "ar" && "rotate-180"} text-red-500`}
@@ -226,6 +230,7 @@ export default function NavBar() {
             image={user?.avatar_url}
             name={user?.name}
             logout={logout}
+            loading={loading}
           />
         </div>
       </div>
