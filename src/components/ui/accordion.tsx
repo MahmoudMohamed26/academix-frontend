@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 function Accordion({
   ...props
 }: React.ComponentProps<typeof AccordionPrimitive.Root>) {
-  return <AccordionPrimitive.Root data-slot="accordion" {...props} />
+  return <AccordionPrimitive.Root suppressHydrationWarning data-slot="accordion" {...props} />
 }
 
 function AccordionItem({
@@ -16,6 +16,7 @@ function AccordionItem({
 }: React.ComponentProps<typeof AccordionPrimitive.Item>) {
   return (
     <AccordionPrimitive.Item
+      suppressHydrationWarning
       data-slot="accordion-item"
       className={cn("border-b last:border-b-0", className)}
       {...props}

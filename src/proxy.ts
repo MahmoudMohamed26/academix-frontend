@@ -1,25 +1,31 @@
 import { NextRequest, NextResponse } from "next/server"
-import { jwtVerify } from "jose"
+import { jwtVerify, JWTPayload } from "jose"
 
 const locales = ["en", "ar"]
 const defaultLocale = "en"
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET!)
 
-async function isValidToken(token?: string) {
-  if (!token) return false
+const roleGuards: Record<string, string[]> = {
+  "/dashboard/add-course": ["Owner", "instructor"],
+}
+
+async function verifyToken(token?: string): Promise<JWTPayload | null> {
+  if (!token) return null
   try {
-    await jwtVerify(token, secret)
-    return true
+    const { payload } = await jwtVerify(token, secret)
+    return payload
   } catch {
-    return false
+    return null
   }
 }
 
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Ignore static & api
+  /* ----------------------------------------
+    Ignore static & api
+  ----------------------------------------- */
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
@@ -28,7 +34,9 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Locale handling
+  /* ----------------------------------------
+    Locale handling
+  ----------------------------------------- */
   const hasLocale = locales.some(
     (l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`)
   )
@@ -47,14 +55,14 @@ export default async function middleware(request: NextRequest) {
   const isAuthPage = path.startsWith("/login") || path.startsWith("/register")
 
   /* ----------------------------------------
-    🚀 NOT dashboard → skip token logic
+    Not dashboard → skip auth
   ----------------------------------------- */
   if (!isDashboard) {
     return NextResponse.next()
   }
 
   /* ----------------------------------------
-    Dashboard-only redirects (no auth needed)
+    Dashboard redirects
   ----------------------------------------- */
   if (path === "/dashboard/profile") {
     const url = request.nextUrl.clone()
@@ -75,9 +83,9 @@ export default async function middleware(request: NextRequest) {
     Dashboard → auth required
   ----------------------------------------- */
   const token = request.cookies.get("access_token")?.value
-  const isLoggedIn = await isValidToken(token)
+  const payload = await verifyToken(token)
 
-  if (!isLoggedIn) {
+  if (!payload) {
     const url = request.nextUrl.clone()
     url.pathname = `/${locale}/login`
 
@@ -88,7 +96,21 @@ export default async function middleware(request: NextRequest) {
     return res
   }
 
-  // Logged in user trying to access auth pages
+  /* ----------------------------------------
+    🔐 ROLE-BASED ACCESS (SCALABLE)
+  ----------------------------------------- */
+  const role = payload.role as string | undefined
+  for (const [route, allowedRoles] of Object.entries(roleGuards)) {
+    if (path === route && !allowedRoles.includes(role ?? "")) {
+      const url = request.nextUrl.clone()
+      url.pathname = `/${locale}/dashboard`
+      return NextResponse.redirect(url)
+    }
+  }
+
+  /* ----------------------------------------
+    Logged-in user accessing auth pages
+  ----------------------------------------- */
   if (isAuthPage) {
     const url = request.nextUrl.clone()
     url.pathname = `/${locale}`
