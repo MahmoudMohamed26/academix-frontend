@@ -1,21 +1,46 @@
 "use client"
 
-import { CourseLinks } from "@/lib/types/course"
+import { CourseLinks, PaginationType } from "@/lib/types/course"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import Link from "next/link"
 import { useTranslation } from "react-i18next"
 
+function isCourseLinks(links: PaginationType): links is CourseLinks {
+  return 'prev_cursor' in links
+}
+
+function extractPageParam(url: string | null): string | null {
+  if (!url) return null
+  try {
+    const urlObj = new URL(url)
+    return urlObj.searchParams.get('page')
+  } catch {
+    return null
+  }
+}
+
 export default function Pagination({
   paginationLinks,
 }: {
-  paginationLinks: CourseLinks | undefined
+  paginationLinks: PaginationType | undefined
 }) {
   const { t, i18n } = useTranslation()
+  
+  if (!paginationLinks) return null
+  
+  const prevLink = isCourseLinks(paginationLinks) 
+    ? paginationLinks.prev_cursor 
+    : extractPageParam(paginationLinks.prev)
+    
+  const nextLink = isCourseLinks(paginationLinks)
+    ? paginationLinks.next_cursor
+    : extractPageParam(paginationLinks.next)
+  
   return (
     <div className="mt-5 flex gap-2 justify-end">
-      {paginationLinks?.prev_cursor ? (
+      {prevLink ? (
         <Link
-          href={`?page=${paginationLinks.prev_cursor}`}
+          href={`?page=${prevLink}`}
           className="flex items-center hover:underline"
         >
           <ChevronLeft
@@ -36,9 +61,9 @@ export default function Pagination({
           <span>{t("pagination.prev")}</span>
         </button>
       )}
-      {paginationLinks?.next_cursor ? (
+      {nextLink ? (
         <Link
-          href={`?page=${paginationLinks.next_cursor}`}
+          href={`?page=${nextLink}`}
           className="flex items-center hover:underline"
         >
           <span className="ms-2">{t("pagination.next")}</span>{" "}

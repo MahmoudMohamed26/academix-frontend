@@ -12,10 +12,10 @@ export interface EnrolledCourse {
 
 export interface EnrollmentslRes {
   enrollments: EnrolledCourse[]
-  links: {
-    first: string
-    last: string
-    next: string | null
-    prev: string | null
-  }
+  links: EnrollmentsLinks
+}
+
+export interface EnrollmentsLinks {
+  next: string | null
+  prev: string | null
 }

@@ -38,7 +38,7 @@ import Logo from "@/components/Logo"
 import Skeleton from "react-loading-skeleton"
 import "react-loading-skeleton/dist/skeleton.css"
 import Link from "next/link"
-import { useRouter, usePathname } from "next/navigation"
+import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { useTranslation } from "react-i18next"
 import { Progress } from "@/components/ui/progress"
 import { toast } from "sonner"
@@ -61,6 +61,8 @@ export function AppSidebar() {
   const currLang = i18n.language as "en" | "ar"
   const router = useRouter()
   const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const page = searchParams.get('page')
   const [openCourses, setOpenCourses] = useState(false)
   const [loading , setLoading] = useState<boolean>(false)
   const [openCategories, setOpenCategories] = useState(false)
@@ -82,8 +84,8 @@ export function AppSidebar() {
   })
 
   const { data: enrollmentsRes, isLoading: enrollmentsLoading } = useQuery({
-    queryKey: ["loggedInUser", "enrollments"],
-    queryFn: () => getEnrollments(Axios),
+    queryKey: ["loggedInUser", "enrollments", 1],
+    queryFn: () => getEnrollments(Axios, 1),
     staleTime: 10 * 60 * 1000,
   })
 

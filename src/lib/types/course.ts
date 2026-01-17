@@ -1,4 +1,5 @@
 import { CategoriesTopCourses } from "./category"
+import { EnrollmentsLinks } from "./enrolls"
 import { User } from "./user"
 
 export interface Course {
@@ -35,6 +36,8 @@ export interface CourseLinks {
   per_page: number
   prev_cursor: string | null
 }
+
+export type PaginationType = EnrollmentsLinks | CourseLinks
 
 export interface CourseRes {
   courses: Course[]

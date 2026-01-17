@@ -88,7 +88,7 @@ export default async function middleware(request: NextRequest) {
   if (!payload) {
     const url = request.nextUrl.clone()
     url.pathname = `/${locale}/login`
-
+    url.searchParams.set("redirect", "/dashboard")
     const res = NextResponse.redirect(url)
     if (token) {
       res.cookies.set("access_token", "", { maxAge: 0, path: "/" })

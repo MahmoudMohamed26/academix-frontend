@@ -1,3 +1,4 @@
+import dynamic from "next/dynamic"
 import Stats from "./_components/stats"
 import SwipperSlider from "./_components/swiper"
 import type { Metadata } from "next"
@@ -7,7 +8,7 @@ import { getServerAxios } from "@/lib/axios-server"
 import { QueryClient } from "@tanstack/react-query"
 import { getFilterdCourses } from "@/lib/api/Courses"
 import BecomeInstructor from "./_components/become-instructor"
-import AcademixFAQ from "./_components/faq"
+const AcademixFAQ = dynamic(() => import(`./_components/faq`))
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL!
 
