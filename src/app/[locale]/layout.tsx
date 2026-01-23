@@ -30,7 +30,7 @@ export default async function LocaleLayout({
     <html lang={locale} dir={direction}>
       <body suppressHydrationWarning>
         <I18nProvider locale={locale}>
-          <NextTopLoader color="#F87317" showSpinner={false} />
+          <NextTopLoader color="#FF6801" showSpinner={false} />
           <Providers>
             {children}
           </Providers>
