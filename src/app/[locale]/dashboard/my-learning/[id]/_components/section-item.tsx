@@ -66,7 +66,7 @@ export default function SectionItem({ section, last }: SectionItemProbs) {
               key={content.id}
               className="flex text-[#666] p-3 text-sm justify-between items-center"
             >
-              <Link href={`?section=${section.id}&v=${content.id}`} className="flex hover:underline gap-2 items-center">
+              <Link href={content.type === "lecture" ? `?section=${section.id}&v=${content.id}` : `quiz/${content.id}`} className="flex hover:underline gap-2 items-center">
                 {content.type === "lecture" ? (
                   <MonitorPlay size={14} />
                 ) : (
