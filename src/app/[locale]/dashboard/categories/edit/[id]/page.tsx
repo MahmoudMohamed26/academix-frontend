@@ -11,7 +11,7 @@ export default async function AddCategoryPage({
   const { t } = await useTranslation(locale)
   return (
     <>
-      <SpecialHeader name={t("Dashboard.addCategory.title")} />
+      <SpecialHeader name={t("sidebar.editCategories")} />
       <EditCategory />
     </>
   )
