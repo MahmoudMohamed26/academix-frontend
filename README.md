@@ -231,7 +231,7 @@ The focus here is UX, discoverability, learning flow, and accessibility.
 
 ### 1️⃣ Clone the Repository
 ```bash
-git clone https://github.com/your-username/academix.git
+git clone https://github.com/MahmoudMohamed26/academix-frontend.git
 cd academix
 ```
 
