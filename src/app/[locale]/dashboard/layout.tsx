@@ -30,22 +30,10 @@ export default async function DashboardLayout({
   const queryClient = new QueryClient()
   const serverAxios = await getServerAxios(locale)
 
-  // try {
-  //   await queryClient.prefetchQuery({
-  //     queryKey: ["loggedInUser"],
-  //     queryFn: () => getUser(serverAxios),
-  //     staleTime: 10 * 60 * 1000,
-  //   })
-  // } catch (err: any) {
-  //   redirect("/login")
-  // }
-
   return (
-    // <HydrationBoundary state={dehydrate(queryClient)}>
       <ClientLayout>
         <AppNavbar />
         <div className="p-4">{children}</div>
       </ClientLayout>
-    // </HydrationBoundary>
   )
 }
